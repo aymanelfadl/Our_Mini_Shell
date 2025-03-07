@@ -14,7 +14,7 @@
 enum data_type
 {
     COMMAND,
-    PIP
+    PIPE
 };
 
 typedef struct s_tree {
