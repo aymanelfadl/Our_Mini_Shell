@@ -24,29 +24,39 @@ int execute_command(t_tree *node)
     pid_t pid;
     int status;
 
-    pid = 0;
-    if (pid == 0)
+    if (!node->parent)
     {
-        if (execve(node->data, node->args, NULL) == -1) // use environ for environment
+        pid = fork();
+        if (pid == 0)
+        {
+            if (execve(node->data, node->args, NULL) == -1) 
+            {
+                perror(node->data);
+                exit(1);
+            }
+        }
+        else if (pid > 0)
+        {
+            waitpid(pid, &status, 0);
+            if (WIFEXITED(status))
+                printf("Child process exited with status: %d\n", WEXITSTATUS(status));
+            else
+                printf("Child process did not exit normally\n");
+        }
+        else
+        {
+            perror("exec_command");
+            return -1;
+        }
+    }
+    else
+    {
+        if (execve(node->data, node->args, NULL) == -1)
         {
             perror(node->data);
             exit(1);
         }
     }
-    else if (pid > 0)
-    {
-        waitpid(pid, &status, 0);
-        if (WIFEXITED(status))
-            printf("Child process exited with status: %d\n", WEXITSTATUS(status));
-        else
-            printf("Child process did not exit normally\n");
-    }
-    else
-    {
-        perror("exec_command");
-        return -1;
-    }
-
     return 0;
 }
 
@@ -65,8 +75,8 @@ int execute_pipe(t_tree *node)
         return -1;
     }
 
-    // p_child_1 = fork();
-    // if (p_child_1 == 0)
+    p_child_1 = fork();
+    if (p_child_1 == 0)
     {
         close(pip_fd[0]);
         if (dup2(pip_fd[1], STDOUT_FILENO) == -1)
@@ -74,14 +84,14 @@ int execute_pipe(t_tree *node)
             perror("dup2");
             exit(EXIT_FAILURE);
         }
-        close(pip_fd[1]);
-        execute_ast(node->left);
+        exit(execute_ast(node->left));
     }
-    // if (p_child_1 == -1)
-    // {
-    //     perror("fork");
-    //     return -1;
-    // }
+
+    if (p_child_1 == -1)
+    {
+        perror("fork");
+        return -1;
+    }
 
     if (waitpid(p_child_1, &status1, 0) == -1)
     {
@@ -99,10 +109,9 @@ int execute_pipe(t_tree *node)
             perror("dup2");
             exit(EXIT_FAILURE);
         }
-        close(pip_fd[0]);
         exit(execute_ast(node->right));
     }
-    else if (p_child_2 == -1)
+    if (p_child_2 == -1)
     {
         perror("fork");
         return -1;
@@ -152,16 +161,14 @@ int main()
     root->right->data = "/bin/grep";
     root->right->args = malloc(3 * sizeof(char*));
     root->right->args[0] = "grep";
-    root->right->args[1] = ".c";
+    root->right->args[1] = "rwx";
     root->right->args[2] = NULL;
     root->right->left = NULL;
     root->right->right = NULL;
 
-    // Execute the pipe
     int status = execute_ast(root);
     printf("Pipeline execution completed with status: %d\n", status);
 
-    // Free memory
     free(root->left->args);
     free(root->left);
     free(root->right->args);
