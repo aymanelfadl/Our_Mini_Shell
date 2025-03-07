@@ -139,40 +139,78 @@ int execute_redirection(t_tree *node)
 }
 int main()
 {
-    // Create a pipe command: "ls -l | grep .c"
+    // Create command node for "ls -l"
+    t_tree *node_ls = malloc(sizeof(t_tree));
+    node_ls->type = COMMAND;
+    node_ls->data = "/bin/ls";
+    node_ls->args = malloc(3 * sizeof(char *));
+    node_ls->args[0] = "ls";
+    node_ls->args[1] = "-l";
+    node_ls->args[2] = NULL;
+    node_ls->left = NULL;
+    node_ls->right = NULL;
+    node_ls->parent = NULL; // will be set later
+
+    // Create command node for "grep rwx"
+    t_tree *node_grep = malloc(sizeof(t_tree));
+    node_grep->type = COMMAND;
+    node_grep->data = "/bin/grep";
+    node_grep->args = malloc(3 * sizeof(char *));
+    node_grep->args[0] = "grep";
+    node_grep->args[1] = "rwx";
+    node_grep->args[2] = NULL;
+    node_grep->left = NULL;
+    node_grep->right = NULL;
+    node_grep->parent = NULL; // will be set later
+
+    // Create command node for "wc -l"
+    t_tree *node_wc = malloc(sizeof(t_tree));
+    node_wc->type = COMMAND;
+    node_wc->data = "/usr/bin/wc";  // Adjust path if needed
+    node_wc->args = malloc(3 * sizeof(char *));
+    node_wc->args[0] = "wc";
+    node_wc->args[1] = "-l";
+    node_wc->args[2] = NULL;
+    node_wc->left = NULL;
+    node_wc->right = NULL;
+    node_wc->parent = NULL; // will be set later
+
+    // Create a pipe node for "grep rwx | wc -l"
+    t_tree *pipe_grep_wc = malloc(sizeof(t_tree));
+    pipe_grep_wc->type = PIPE;
+    pipe_grep_wc->data = "|";
+    pipe_grep_wc->left = node_grep;
+    pipe_grep_wc->right = node_wc;
+    pipe_grep_wc->parent = NULL; // will be set later
+
+    // Set parent pointers for the lower pipe
+    node_grep->parent = pipe_grep_wc;
+    node_wc->parent = pipe_grep_wc;
+
+    // Create the root pipe node for "ls -l | (grep rwx | wc -l)"
     t_tree *root = malloc(sizeof(t_tree));
     root->type = PIPE;
     root->data = "|";
+    root->left = node_ls;
+    root->right = pipe_grep_wc;
+    root->parent = NULL; // top-level node
 
-    // Left side: "ls -l"
-    root->left = malloc(sizeof(t_tree));
-    root->left->type = COMMAND;
-    root->left->data = "/bin/ls";
-    root->left->args = malloc(3 * sizeof(char*));
-    root->left->args[0] = "ls";
-    root->left->args[1] = "-l";
-    root->left->args[2] = NULL;
-    root->left->left = NULL;
-    root->left->right = NULL;
+    // Set parent pointers for the top-level tree
+    node_ls->parent = root;
+    pipe_grep_wc->parent = root;
 
-    // Right side: "grep .c"
-    root->right = malloc(sizeof(t_tree));
-    root->right->type = COMMAND;
-    root->right->data = "/bin/grep";
-    root->right->args = malloc(3 * sizeof(char*));
-    root->right->args[0] = "grep";
-    root->right->args[1] = "rwx";
-    root->right->args[2] = NULL;
-    root->right->left = NULL;
-    root->right->right = NULL;
-
+    // Execute the Abstract Syntax Tree (AST)
     int status = execute_ast(root);
-    printf("Pipeline execution completed with status: %d\n", status);
+    printf("Nested pipeline execution completed with status: %d\n", status);
 
-    free(root->left->args);
-    free(root->left);
-    free(root->right->args);
-    free(root->right);
+    // Free the allocated memory
+    free(node_ls->args);
+    free(node_ls);
+    free(node_grep->args);
+    free(node_grep);
+    free(node_wc->args);
+    free(node_wc);
+    free(pipe_grep_wc);
     free(root);
 
     return 0;
