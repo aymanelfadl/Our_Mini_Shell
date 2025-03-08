@@ -17,7 +17,8 @@ int execute_ast(t_tree *node)
         return execute_pipe(node);
     else if (node->type == OUTPUT_REDIRECTION ||
             node->type == APP_OUTPUT_REDIRECTION ||
-            node->type == INPUT_REDIRECTION)
+            node->type == INPUT_REDIRECTION || 
+            node->type == APP_INPUT_REDIRECTION)
         return execute_redirection(node);
     
     return 0;
@@ -63,7 +64,8 @@ int execute_command(t_tree *node)
     }
     else if (node->parent->type == OUTPUT_REDIRECTION ||
             node->parent->type == APP_OUTPUT_REDIRECTION ||
-            node->parent->type == INPUT_REDIRECTION)
+            node->parent->type == INPUT_REDIRECTION ||
+            node->parent->type == APP_INPUT_REDIRECTION)
     {
         if (execve(node->data, node->args, NULL) == -1)
         {
@@ -148,11 +150,11 @@ int execute_pipe(t_tree *node)
 
 int execute_redirection(t_tree *node)
 {
-    if (!node->right || !node->left)
-        return -1;
+    // if (!node->right || !node->left)
+    //     return -1;
     
     int file_fd, child_pid, status;
-    if (node->right->type == FT_FILE)
+    // if (node->right->type == FT_FILE)
     {
         child_pid = fork();
         if (child_pid == 0)
@@ -205,18 +207,46 @@ int execute_redirection(t_tree *node)
                 close(file_fd);
                 exit(execute_command(node->left));
             }
-            else if (node->type == APP_INPUT_REDIRECTION)
-            {
-                file_fd = open(node->right->data, O_RDONLY);
-                if (file_fd == -1)
-                {
-                    perror("open");
-                    exit(EXIT_FAILURE);  
-                }
-                // TODO: how << works;
-                exit(execute_command(node->left));
+        else if (node->type == APP_INPUT_REDIRECTION)
+        {
+            char *delimiter = node->data;
+            int pipefd[2];
+            
+            if (pipe(pipefd) == -1) {
+                perror("pipe");
+                return EXIT_FAILURE;
             }
-            exit(EXIT_FAILURE);
+            
+            printf("heredoc> ");
+            char *line = readline("");
+            
+            while (line && strcmp(line, delimiter) != 0)
+            {
+                write(pipefd[1], line, strlen(line));
+                write(pipefd[1], "\n", 1);
+                
+                free(line);
+                
+                printf("heredoc> ");
+                line = readline("");
+            }
+            
+            if (line) free(line);
+            close(pipefd[1]);
+            
+            int stdin_backup = dup(STDIN_FILENO);
+            
+            dup2(pipefd[0], STDIN_FILENO);
+            close(pipefd[0]);
+            
+            int result = execute_command(node->left);
+            
+            dup2(stdin_backup, STDIN_FILENO);
+            close(stdin_backup);
+            
+            return result;
+        }
+        exit(EXIT_FAILURE);
         }
         else if (child_pid == -1)
         {
@@ -244,45 +274,39 @@ int main(void)
 {
     // Create the command node for "cat"
     t_tree *cmd = malloc(sizeof(t_tree));
+    if (!cmd)
+        exit(EXIT_FAILURE);
     cmd->type = COMMAND;
-    cmd->data = "/bin/cat";  // Adjust path if necessary
+    cmd->data = "/bin/cat";
     cmd->args = malloc(2 * sizeof(char *));
+    if (!cmd->args)
+        exit(EXIT_FAILURE);
     cmd->args[0] = "cat";
     cmd->args[1] = NULL;
     cmd->left = NULL;
     cmd->right = NULL;
     cmd->parent = NULL;
 
-    // Create the file node for "ayman"
-    t_tree *file = malloc(sizeof(t_tree));
-    file->type = FT_FILE;      // Assume FT_FILE is defined in execution.h for file nodes
-    file->data = "out.text";  // The file from which input will be redirected
-    file->args = NULL;
-    file->left = NULL;
-    file->right = NULL;
-    file->parent = NULL;
+    t_tree *heredoc = malloc(sizeof(t_tree));
+    if (!heredoc)
+        exit(EXIT_FAILURE);
+    heredoc->type = APP_INPUT_REDIRECTION;  
+    heredoc->data = "EOF";
+    heredoc->left = cmd;    // The command to execute
+    heredoc->right = NULL;  // No file node needed
+    heredoc->parent = NULL;
 
-    // Create the redirection node representing "cat < ayman"
-    t_tree *redir = malloc(sizeof(t_tree));
-    redir->type = INPUT_REDIRECTION;  // Using this type for input redirection
-    redir->data = "<";  // The file to read from
-    redir->left = cmd;    // The command to execute
-    redir->right = file;  // The file to read from
-    redir->parent = NULL;
+    // Set parent pointer so that the command knows it's under redirection
+    cmd->parent = heredoc;
 
-    // Set parent pointers so that the command knows it's part of a redirection
-    cmd->parent = redir;
-    file->parent = redir;
-
-    // Execute the AST; this should run "cat" with its input redirected from "ayman"
-    int status = execute_ast(redir);
-    printf("Input redirection execution completed with status: %d\n", status);
+    // Execute the AST. This will trigger your heredoc code.
+    int status = execute_ast(heredoc);
+    printf("Heredoc execution completed with status: %d\n", status);
 
     // Clean up allocated memory
     free(cmd->args);
     free(cmd);
-    free(file);
-    free(redir);
+    free(heredoc);
 
     return 0;
 }

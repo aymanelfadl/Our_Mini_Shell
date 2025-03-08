@@ -3,9 +3,13 @@
 
 // libs::
 #include <unistd.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include "libft/libft.h"
+#include "getNextLine/get_next_line.h"
+#include <readline/readline.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
