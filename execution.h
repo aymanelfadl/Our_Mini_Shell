@@ -5,6 +5,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
@@ -14,7 +16,12 @@
 enum data_type
 {
     COMMAND,
-    PIPE
+    PIPE,
+    FT_FILE,
+    INPUT_REDIRECTION,
+    OUTPUT_REDIRECTION,
+    APP_INPUT_REDIRECTION,
+    APP_OUTPUT_REDIRECTION
 };
 
 typedef struct s_tree {
@@ -34,7 +41,7 @@ typedef struct s_tree {
 int execute_ast(t_tree *node);
 int execute_command(t_tree *node);
 int execute_pipe(t_tree *node);
-int execute_redirection(t_tree *node);
+int execute_input_redirection(t_tree *node);
 
 
 

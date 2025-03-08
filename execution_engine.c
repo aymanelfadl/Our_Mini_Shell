@@ -15,6 +15,8 @@ int execute_ast(t_tree *node)
         return execute_command(node);
     else if (node->type == PIPE)
         return execute_pipe(node);
+    else if (node->type == OUTPUT_REDIRECTION)
+        return execute_input_redirection(node);
     
     return 0;
 }
@@ -49,8 +51,17 @@ int execute_command(t_tree *node)
             return -1;
         }
     }
-    else
+    else if (node->parent->type == PIPE)
     {
+        if (execve(node->data, node->args, NULL) == -1)
+        {
+            perror(node->data);
+            exit(1);
+        }
+    }
+    else if (node->parent->type == OUTPUT_REDIRECTION)
+    {
+        printf("%s", node->data);
         if (execve(node->data, node->args, NULL) == -1)
         {
             perror(node->data);
@@ -132,86 +143,90 @@ int execute_pipe(t_tree *node)
         return -1;
 }
 
-int execute_redirection(t_tree *node)
+int execute_input_redirection(t_tree *node)
 {
     // TODO: Implement redirection execution
+    if (!node->right)
+        return -1;
+    
+    int outfile_fd, child_pid, status;
+    if (node->right->type == FT_FILE)
+    {
+        child_pid = fork();
+        if (child_pid == 0)
+        {
+            outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+            if (outfile_fd == -1)
+            {
+                perror("open");
+                return -1;
+            }
+            if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+            {
+                perror("dup2");
+                return -1;
+            }
+            close(outfile_fd);
+            exit(execute_command(node->left));
+        }
+        else if (child_pid == -1)
+        {
+            perror("fork");
+            return -1;
+        }
+        if (waitpid(child_pid, &status, 0) == -1)
+        {
+            perror("waitpid");
+            return -1;
+        }
+    }
     return 0;
 }
-int main()
+
+int main(void)
 {
-    // Create command node for "ls -l"
-    // t_tree *node_ls = malloc(sizeof(t_tree));
-    // node_ls->type = COMMAND;
-    // node_ls->data = "/bin/ls";
-    // node_ls->args = malloc(3 * sizeof(char *));
-    // node_ls->args[0] = "ls";
-    // node_ls->args[1] = "-l";
-    // node_ls->args[2] = NULL;
-    // node_ls->left = NULL;
-    // node_ls->right = NULL;
-    // node_ls->parent = NULL; // will be set later
+    // Create the command node for "ls -l"
+    t_tree *cmd = malloc(sizeof(t_tree));
+    cmd->type = COMMAND;
+    cmd->data = "/bin/ls";  // Adjust path if necessary
+    cmd->args = malloc(3 * sizeof(char *));
+    cmd->args[0] = "ls";
+    cmd->args[1] = "-l";
+    cmd->args[2] = NULL;
+    cmd->left = NULL;
+    cmd->right = NULL;
+    cmd->parent = NULL;
 
-    // // Create command node for "grep rwx"
-    // t_tree *node_grep = malloc(sizeof(t_tree));
-    // node_grep->type = COMMAND;
-    // node_grep->data = "/bin/grep";
-    // node_grep->args = malloc(3 * sizeof(char *));
-    // node_grep->args[0] = "grep";
-    // node_grep->args[1] = "rwx";
-    // node_grep->args[2] = NULL;
-    // node_grep->left = NULL;
-    // node_grep->right = NULL;
-    // node_grep->parent = NULL; // will be set later
+    // Create the file node for "text.output"
+    t_tree *file = malloc(sizeof(t_tree));
+    file->type = FT_FILE;      // Assume FILE is defined in execution.h for file nodes
+    file->data = "out.text";  // The file where output will be redirected
+    file->args = NULL;
+    file->left = NULL;
+    file->right = NULL;
+    file->parent = NULL;
 
-    // // Create command node for "wc -l"
-    // t_tree *node_wc = malloc(sizeof(t_tree));
-    // node_wc->type = COMMAND;
-    // node_wc->data = "/usr/bin/wc";  // Adjust path if needed
-    // node_wc->args = malloc(3 * sizeof(char *));
-    // node_wc->args[0] = "wc";
-    // node_wc->args[1] = "-l";
-    // node_wc->args[2] = NULL;
-    // node_wc->left = NULL;
-    // node_wc->right = NULL;
-    // node_wc->parent = NULL; // will be set later
+    // Create the redirection node representing "ls -l > text.output"
+    t_tree *redir = malloc(sizeof(t_tree));
+    redir->type = OUTPUT_REDIRECTION;  // Using this type for redirection (even though it's output redirection)
+    redir->data = ">";
+    redir->left = cmd;    // The command whose output is to be redirected
+    redir->right = file;  // The file to which the output will be written
+    redir->parent = NULL;
 
-    // // Create a pipe node for "grep rwx | wc -l"
-    // t_tree *pipe_grep_wc = malloc(sizeof(t_tree));
-    // pipe_grep_wc->type = PIPE;
-    // pipe_grep_wc->data = "|";
-    // pipe_grep_wc->left = node_grep;
-    // pipe_grep_wc->right = node_wc;
-    // pipe_grep_wc->parent = NULL; // will be set later
+    // Set parent pointers so that the command knows it's part of a redirection
+    cmd->parent = redir;
+    file->parent = redir;
 
-    // // Set parent pointers for the lower pipe
-    // node_grep->parent = pipe_grep_wc;
-    // node_wc->parent = pipe_grep_wc;
+    // Execute the AST; this should run "ls -l" with its output redirected to "text.output"
+    int status = execute_ast(redir);
+    printf("Output redirection execution completed with status: %d\n", status);
 
-    // Create the root pipe node for "ls -l | (grep rwx | wc -l)"
-    t_tree *root = malloc(sizeof(t_tree));
-    root->type = COMMAND;
-    root->data = "/bin/ls";
-    root->left = NULL;
-    root->right = NULL;
-    root->parent = NULL; // top-level node
-
-    // Set parent pointers for the top-level tree
-    // node_ls->parent = root;
-    // pipe_grep_wc->parent = root;
-
-    // Execute the Abstract Syntax Tree (AST)
-    int status = execute_ast(root);
-    printf("Nested pipeline execution completed with status: %d\n", status);
-
-    // Free the allocated memory
-    // free(node_ls->args);
-    // free(node_ls);
-    // free(node_grep->args);
-    // free(node_grep);
-    // free(node_wc->args);
-    // free(node_wc);
-    // free(pipe_grep_wc);
-    free(root);
+    // Clean up allocated memory
+    free(cmd->args);
+    free(cmd);
+    free(file);
+    free(redir);
 
     return 0;
 }
