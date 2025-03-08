@@ -15,8 +15,8 @@ int execute_ast(t_tree *node)
         return execute_command(node);
     else if (node->type == PIPE)
         return execute_pipe(node);
-    else if (node->type == OUTPUT_REDIRECTION)
-        return execute_input_redirection(node);
+    else if (node->type == OUTPUT_REDIRECTION || node->type == APP_OUTPUT_REDIRECTION)
+        return execute_redirection(node);
     
     return 0;
 }
@@ -59,7 +59,7 @@ int execute_command(t_tree *node)
             exit(1);
         }
     }
-    else if (node->parent->type == OUTPUT_REDIRECTION)
+    else if (node->parent->type == OUTPUT_REDIRECTION || node->parent->type == APP_OUTPUT_REDIRECTION )
     {
         printf("%s", node->data);
         if (execve(node->data, node->args, NULL) == -1)
@@ -143,7 +143,7 @@ int execute_pipe(t_tree *node)
         return -1;
 }
 
-int execute_input_redirection(t_tree *node)
+int execute_redirection(t_tree *node)
 {
     // TODO: Implement redirection execution
     if (!node->right)
@@ -155,19 +155,38 @@ int execute_input_redirection(t_tree *node)
         child_pid = fork();
         if (child_pid == 0)
         {
-            outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-            if (outfile_fd == -1)
+            if (node->type == OUTPUT_REDIRECTION)
             {
-                perror("open");
-                return -1;
+                outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+                if (outfile_fd == -1)
+                {
+                    perror("open");
+                    return -1;
+                }
+                if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+                {
+                    perror("dup2");
+                    return -1;
+                }
+                close(outfile_fd);
+                exit(execute_command(node->left));
             }
-            if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+            else if (node->type == APP_OUTPUT_REDIRECTION)
             {
-                perror("dup2");
-                return -1;
+                outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_APPEND, 0644);
+                if (outfile_fd == -1)
+                {
+                    perror("open");
+                    return -1;
+                }
+                if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+                {
+                    perror("dup2");
+                    return -1;
+                }
+                close(outfile_fd);
+                exit(execute_command(node->left));       
             }
-            close(outfile_fd);
-            exit(execute_command(node->left));
         }
         else if (child_pid == -1)
         {
@@ -208,8 +227,8 @@ int main(void)
 
     // Create the redirection node representing "ls -l > text.output"
     t_tree *redir = malloc(sizeof(t_tree));
-    redir->type = OUTPUT_REDIRECTION;  // Using this type for redirection (even though it's output redirection)
-    redir->data = ">";
+    redir->type = APP_OUTPUT_REDIRECTION;  // Using this type for redirection (even though it's output redirection)
+    redir->data = ">>";
     redir->left = cmd;    // The command whose output is to be redirected
     redir->right = file;  // The file to which the output will be written
     redir->parent = NULL;

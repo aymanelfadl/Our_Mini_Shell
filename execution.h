@@ -41,7 +41,7 @@ typedef struct s_tree {
 int execute_ast(t_tree *node);
 int execute_command(t_tree *node);
 int execute_pipe(t_tree *node);
-int execute_input_redirection(t_tree *node);
+int execute_redirection(t_tree *node);
 
 
 
