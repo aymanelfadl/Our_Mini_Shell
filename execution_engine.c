@@ -15,7 +15,9 @@ int execute_ast(t_tree *node)
         return execute_command(node);
     else if (node->type == PIPE)
         return execute_pipe(node);
-    else if (node->type == OUTPUT_REDIRECTION || node->type == APP_OUTPUT_REDIRECTION)
+    else if (node->type == OUTPUT_REDIRECTION ||
+            node->type == APP_OUTPUT_REDIRECTION ||
+            node->type == INPUT_REDIRECTION)
         return execute_redirection(node);
     
     return 0;
@@ -34,7 +36,7 @@ int execute_command(t_tree *node)
             if (execve(node->data, node->args, NULL) == -1) 
             {
                 perror(node->data);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         }
         else if (pid > 0)
@@ -59,9 +61,10 @@ int execute_command(t_tree *node)
             exit(1);
         }
     }
-    else if (node->parent->type == OUTPUT_REDIRECTION || node->parent->type == APP_OUTPUT_REDIRECTION )
+    else if (node->parent->type == OUTPUT_REDIRECTION ||
+            node->parent->type == APP_OUTPUT_REDIRECTION ||
+            node->parent->type == INPUT_REDIRECTION)
     {
-        printf("%s", node->data);
         if (execve(node->data, node->args, NULL) == -1)
         {
             perror(node->data);
@@ -83,7 +86,7 @@ int execute_pipe(t_tree *node)
     if (pipe(pip_fd) == -1)
     {
         perror("pipe");
-        return -1;
+        exit(EXIT_FAILURE); 
     }
 
     p_child_1 = fork();
@@ -101,13 +104,13 @@ int execute_pipe(t_tree *node)
     if (p_child_1 == -1)
     {
         perror("fork");
-        return -1;
+        exit(EXIT_FAILURE); 
     }
 
     if (waitpid(p_child_1, &status1, 0) == -1)
     {
         perror("waitpid");
-        return -1;
+        exit(EXIT_FAILURE); 
     }
 
     p_child_2 = fork();
@@ -125,7 +128,7 @@ int execute_pipe(t_tree *node)
     if (p_child_2 == -1)
     {
         perror("fork");
-        return -1;
+        exit(EXIT_FAILURE); 
     }
 
     close(pip_fd[0]);
@@ -134,7 +137,7 @@ int execute_pipe(t_tree *node)
     if (waitpid(p_child_2, &status2, 0) == -1)
     {
         perror("waitpid");
-        return -1;
+        exit(EXIT_FAILURE); 
     }
 
     if (WIFEXITED(status2))
@@ -145,11 +148,10 @@ int execute_pipe(t_tree *node)
 
 int execute_redirection(t_tree *node)
 {
-    // TODO: Implement redirection execution
     if (!node->right || !node->left)
         return -1;
     
-    int outfile_fd, child_pid, status;
+    int file_fd, child_pid, status;
     if (node->right->type == FT_FILE)
     {
         child_pid = fork();
@@ -157,89 +159,124 @@ int execute_redirection(t_tree *node)
         {
             if (node->type == OUTPUT_REDIRECTION)
             {
-                outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-                if (outfile_fd == -1)
+                file_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+                if (file_fd == -1)
                 {
                     perror("open");
-                    return -1;
+                    exit(EXIT_FAILURE); 
                 }
-                if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+                if (dup2(file_fd, STDOUT_FILENO) == -1)
                 {
                     perror("dup2");
-                    return -1;
+                    exit(EXIT_FAILURE); 
                 }
-                close(outfile_fd);
+                close(file_fd);
                 exit(execute_command(node->left));
             }
             else if (node->type == APP_OUTPUT_REDIRECTION)
             {
-                outfile_fd = open(node->right->data, O_CREAT | O_WRONLY | O_APPEND, 0644);
-                if (outfile_fd == -1)
+                file_fd = open(node->right->data, O_CREAT | O_WRONLY | O_APPEND, 0644);
+                if (file_fd == -1)
                 {
                     perror("open");
-                    return -1;
+                    exit(EXIT_FAILURE);
                 }
-                if (dup2(outfile_fd, STDOUT_FILENO) == -1 )
+                if (dup2(file_fd, STDOUT_FILENO) == -1)
                 {
                     perror("dup2");
-                    return -1;
+                    exit(EXIT_FAILURE);
                 }
-                close(outfile_fd);
+                close(file_fd);
                 exit(execute_command(node->left));       
             }
+            else if (node->type == INPUT_REDIRECTION)
+            {
+                file_fd = open(node->right->data, O_RDONLY);
+                if (file_fd == -1)
+                {
+                    perror("open");
+                    exit(EXIT_FAILURE);  
+                }
+                if (dup2(file_fd, STDIN_FILENO) == -1)
+                {
+                    perror("dup2");
+                    exit(EXIT_FAILURE); 
+                }
+                close(file_fd);
+                exit(execute_command(node->left));
+            }
+            else if (node->type == APP_INPUT_REDIRECTION)
+            {
+                file_fd = open(node->right->data, O_RDONLY);
+                if (file_fd == -1)
+                {
+                    perror("open");
+                    exit(EXIT_FAILURE);  
+                }
+                // TODO: how << works;
+                exit(execute_command(node->left));
+            }
+            exit(EXIT_FAILURE);
         }
         else if (child_pid == -1)
         {
             perror("fork");
             return -1;
         }
-        if (waitpid(child_pid, &status, 0) == -1)
+        else
         {
-            perror("waitpid");
-            return -1;
+            if (waitpid(child_pid, &status, 0) == -1)
+            {
+                perror("waitpid");
+                return -1;
+            }
+            if (WIFEXITED(status))
+                return WEXITSTATUS(status);
+            else
+                return -1;
         }
     }
     return 0;
 }
 
+
 int main(void)
 {
-    // Create the command node for "ls -l"
+    // Create the command node for "cat"
     t_tree *cmd = malloc(sizeof(t_tree));
     cmd->type = COMMAND;
-    cmd->data = "/bin/ls";  // Adjust path if necessary
-    cmd->args = malloc(3 * sizeof(char *));
-    cmd->args[0] = "ls";
-    cmd->args[1] = "-l";
-    cmd->args[2] = NULL;
+    cmd->data = "/bin/cat";  // Adjust path if necessary
+    cmd->args = malloc(2 * sizeof(char *));
+    cmd->args[0] = "cat";
+    cmd->args[1] = NULL;
     cmd->left = NULL;
     cmd->right = NULL;
     cmd->parent = NULL;
 
-    // Create the file node for "text.output"
+    // Create the file node for "ayman"
     t_tree *file = malloc(sizeof(t_tree));
-    file->type = FT_FILE;      // Assume FILE is defined in execution.h for file nodes
-    file->data = "out.text";  // The file where output will be redirected
+    file->type = FT_FILE;      // Assume FT_FILE is defined in execution.h for file nodes
+    file->data = "out.text";  // The file from which input will be redirected
     file->args = NULL;
     file->left = NULL;
     file->right = NULL;
     file->parent = NULL;
 
-    // Create the redirection node representing "ls -l > text.output"
+    // Create the redirection node representing "cat < ayman"
     t_tree *redir = malloc(sizeof(t_tree));
-    redir->type = APP_OUTPUT_REDIRECTION;  // Using this type for redirection (even though it's output redirection)
-    redir->data = ">>";
-    redir->left = cmd;    // The command whose output is to be redirected
-    redir->right = file;  // The file to which the output will be written
+    redir->type = INPUT_REDIRECTION;  // Using this type for input redirection
+    redir->data = "<";  // The file to read from
+    redir->left = cmd;    // The command to execute
+    redir->right = file;  // The file to read from
     redir->parent = NULL;
 
     // Set parent pointers so that the command knows it's part of a redirection
     cmd->parent = redir;
     file->parent = redir;
 
-    // Execute the AST; this should run "ls -l" with its output redirected to "text.output"
+    // Execute the AST; this should run "cat" with its input redirected from "ayman"
     int status = execute_ast(redir);
-    printf("Output redirection execution completed with status: %d\n", status);
+    printf("Input redirection execution completed with status: %d\n", status);
 
     // Clean up allocated memory
     free(cmd->args);
