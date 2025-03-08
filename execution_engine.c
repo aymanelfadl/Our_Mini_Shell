@@ -146,7 +146,7 @@ int execute_pipe(t_tree *node)
 int execute_redirection(t_tree *node)
 {
     // TODO: Implement redirection execution
-    if (!node->right)
+    if (!node->right || !node->left)
         return -1;
     
     int outfile_fd, child_pid, status;
