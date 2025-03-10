@@ -51,6 +51,7 @@ char *handle_heredoc(char *delimiter) {
     char *heredoc_content = NULL;
     char *temp = NULL;
     char *line_with_newline = NULL;
+    int first_line = 1;
 
     heredoc_content = ft_strdup("");
     if (!heredoc_content)
@@ -58,15 +59,20 @@ char *handle_heredoc(char *delimiter) {
     while (1) 
     {
         line = readline("heredoc> ");
-        if (!line) {
+        if (!line) 
             break;
-        }        
         if (!strcmp(line, delimiter)) 
         {
             free(line);
             break;
         }
-        line_with_newline = ft_strjoin(line, "\n");
+        if (!first_line) {
+            line_with_newline = ft_strjoin("\n", line);
+        } else {
+            line_with_newline = ft_strdup(line);
+            first_line = 0;
+        }
+
         if (!line_with_newline) {
             free(line);
             free(heredoc_content);
