@@ -1,11 +1,25 @@
 #include "execution.h"
 
+void process_heredocs(t_tree *node) {
+    if (!node)
+        return;
+
+    if (node->type == APP_INPUT_REDIRECTION) {
+        node->heredoc_content = handle_heredoc(node->right->data);
+        if (!node->heredoc_content) 
+        {
+            perror("Failed to read heredoc content");
+            exit(EXIT_FAILURE);
+        }
+    }
+    process_heredocs(node->left);
+    process_heredocs(node->right);
+}
 
 int execute_ast(t_tree *node)
 {
     if (node == NULL)
         return 0;
-
     if (node->type == COMMAND)
         return execute_command(node);
     else if (node->type == PIPE)
@@ -39,9 +53,9 @@ int execute_command(t_tree *node)
     {
         waitpid(pid, &status, 0);
         if (WIFEXITED(status))
-            printf("Child process exited with status: %d\n", WEXITSTATUS(status));
+            return WEXITSTATUS(status);
         else
-            printf("Child process did not exit normally\n");
+            return -1;
     }
     return 0;
 }
@@ -93,7 +107,6 @@ char *handle_heredoc(char *delimiter) {
     }
     return heredoc_content;
 }
-
 
 int execute_simple_pipe(t_tree *node)
 {
@@ -178,30 +191,24 @@ int execute_heredoc_pipe(t_tree *node)
     int pip_fd[2];
     int status1, status2;
     pid_t p_child_1, p_child_2;
-    char *heredoc_content = NULL;
 
     if (!node->left)
         return -1;
-    heredoc_content = handle_heredoc(node->right->data);
+        
+    // Use pre-read heredoc content
+    char *heredoc_content = node->heredoc_content;
     if (!heredoc_content) {
-        perror("handle_heredoc");
+        perror("heredoc content not found");
         return -1;
     }
+
     if (pipe(pip_fd) == -1)
     {
         perror("pipe");
-        free(heredoc_content);
         exit(EXIT_FAILURE); 
     }
+
     p_child_1 = fork();
-    if (p_child_1 == -1)
-    {
-        perror("fork");
-        close(pip_fd[0]);
-        close(pip_fd[1]);
-        free(heredoc_content); 
-        exit(EXIT_FAILURE); 
-    }
     if (p_child_1 == 0)
     {
         close(pip_fd[0]); 
@@ -229,18 +236,8 @@ int execute_heredoc_pipe(t_tree *node)
         
         exit(execute_ast(node->left));
     }
-    
-    free(heredoc_content);
 
     p_child_2 = fork();
-    if (p_child_2 == -1)
-    {
-        perror("fork");
-        close(pip_fd[0]);
-        close(pip_fd[1]);
-        exit(EXIT_FAILURE); 
-    }
-    
     if (p_child_2 == 0)
     {
         close(pip_fd[1]); 
@@ -399,12 +396,12 @@ int execute_append_input_redirection(t_tree *node)
     pid_t child_pid;
     int status;
     
-    char *heredoc_content = handle_heredoc(node->right->data);
-    if (!heredoc_content) 
-    {
-        perror("handle_heredoc");
+    // Use pre-read heredoc content
+    char *heredoc_content = node->heredoc_content;
+    if (!heredoc_content) {
+        perror("heredoc content missing");
         return -1;
-    }    
+    }
 
     child_pid = fork();
     if (child_pid == 0)
@@ -413,13 +410,11 @@ int execute_append_input_redirection(t_tree *node)
         if (pipe(pipefd) == -1)
         {
             perror("pipe");
-            free(heredoc_content);
             exit(EXIT_FAILURE);
         }  
 
         write(pipefd[1], heredoc_content, ft_strlen(heredoc_content));
         close(pipefd[1]);
-        free(heredoc_content);
             
         if (dup2(pipefd[0], STDIN_FILENO) == -1)
         {
@@ -434,11 +429,8 @@ int execute_append_input_redirection(t_tree *node)
     else if (child_pid == -1)
     {
         perror("fork");
-        free(heredoc_content);
         return -1;
     }
-    
-    free(heredoc_content);
     
     if (waitpid(child_pid, &status, 0) == -1)
     {
@@ -462,93 +454,59 @@ int execute_redirection(t_tree *node)
         return -1;
 }
 
-// Test program
-int main(void)
-{
-    // Create the command node for "cat"
-    t_tree *cat_cmd = malloc(sizeof(t_tree));
-    if (!cat_cmd)
-        exit(EXIT_FAILURE);
-    cat_cmd->type = COMMAND;
-    cat_cmd->data = "/bin/cat";
-    cat_cmd->args = malloc(2 * sizeof(char *));
-    if (!cat_cmd->args)
-        exit(EXIT_FAILURE);
-    cat_cmd->args[0] = "cat";
-    cat_cmd->args[1] = NULL;
-    cat_cmd->left = NULL;
-    cat_cmd->right = NULL;
-    cat_cmd->parent = NULL;
+// int main(void)
+// {
+//     /* Create command: ls | ls
+//      * This pipes the output of first ls to the second ls
+//      */
 
-    // Create a node for the delimiter
-    t_tree *delimiter_node = malloc(sizeof(t_tree));
-    if (!delimiter_node)
-        exit(EXIT_FAILURE);
-    delimiter_node->type = COMMAND;  // Type doesn't matter much here
-    delimiter_node->data = "EOF";    // This is the delimiter
-    delimiter_node->args = NULL;
-    delimiter_node->left = NULL;
-    delimiter_node->right = NULL;
-    delimiter_node->parent = NULL;
+//     // 1. Create the first "ls" command node
+//     t_tree *ls_cmd1 = malloc(sizeof(t_tree));
+//     if (!ls_cmd1) exit(EXIT_FAILURE);
+//     ls_cmd1->type = COMMAND;
+//     ls_cmd1->data = "/bin/ls";
+//     ls_cmd1->args = malloc(2 * sizeof(char *));
+//     if (!ls_cmd1->args) exit(EXIT_FAILURE);
+//     ls_cmd1->args[0] = "ls";
+//     ls_cmd1->args[1] = NULL;
+//     ls_cmd1->left = NULL;
+//     ls_cmd1->right = NULL;
+//     ls_cmd1->parent = NULL;
 
-    // Create the heredoc redirection node
-    t_tree *heredoc = malloc(sizeof(t_tree));
-    if (!heredoc)
-        exit(EXIT_FAILURE);
-    heredoc->type = APP_INPUT_REDIRECTION;
-    heredoc->data = NULL;
-    heredoc->args = NULL;
-    heredoc->left = cat_cmd;         // The command to execute
-    heredoc->right = delimiter_node; // The delimiter node
-    heredoc->parent = NULL;
+//     // 2. Create the second "ls" command node
+//     t_tree *ls_cmd2 = malloc(sizeof(t_tree));
+//     if (!ls_cmd2) exit(EXIT_FAILURE);
+//     ls_cmd2->type = COMMAND;
+//     ls_cmd2->data = "/bin/ls";
+//     ls_cmd2->args = malloc(2 * sizeof(char *));
+//     if (!ls_cmd2->args) exit(EXIT_FAILURE);
+//     ls_cmd2->args[0] = "ls";
+//     ls_cmd2->args[1] = NULL;
+//     ls_cmd2->left = NULL;
+//     ls_cmd2->right = NULL;
+//     ls_cmd2->parent = NULL;
 
-    // Set parent pointers for the heredoc part
-    cat_cmd->parent = heredoc;
-    delimiter_node->parent = heredoc;
+//     // 3. Create the pipe node connecting both ls commands
+//     t_tree *pipe_node = malloc(sizeof(t_tree));
+//     if (!pipe_node) exit(EXIT_FAILURE);
+//     pipe_node->type = PIPE;
+//     pipe_node->data = NULL;
+//     pipe_node->args = NULL;
+//     pipe_node->left = ls_cmd1;
+//     pipe_node->right = ls_cmd2;
+//     pipe_node->parent = NULL;
+//     ls_cmd1->parent = pipe_node;
+//     ls_cmd2->parent = pipe_node;
 
-    // Create the command node for "wc -l"
-    t_tree *wc_cmd = malloc(sizeof(t_tree));
-    if (!wc_cmd)
-        exit(EXIT_FAILURE);
-    wc_cmd->type = COMMAND;
-    wc_cmd->data = "/usr/bin/wc";
-    wc_cmd->args = malloc(3 * sizeof(char *));
-    if (!wc_cmd->args)
-        exit(EXIT_FAILURE);
-    wc_cmd->args[0] = "wc";
-    wc_cmd->args[1] = "-l";
-    wc_cmd->args[2] = NULL;
-    wc_cmd->left = NULL;
-    wc_cmd->right = NULL;
-    wc_cmd->parent = NULL;
+//     int status = execute_ast(pipe_node);
+//     printf("\nCommand execution completed with status: %d\n", status);
 
-    // Create the pipe node
-    t_tree *pipe_node = malloc(sizeof(t_tree));
-    if (!pipe_node)
-        exit(EXIT_FAILURE);
-    pipe_node->type = PIPE;
-    pipe_node->data = NULL;
-    pipe_node->args = NULL;
-    pipe_node->left = heredoc;    // Left side of the pipe (cat << EOF)
-    pipe_node->right = wc_cmd;    // Right side of the pipe (wc -l)
-    pipe_node->parent = NULL;
+//     // Clean up allocated memory
+//     free(ls_cmd1->args);
+//     free(ls_cmd1);
+//     free(ls_cmd2->args);
+//     free(ls_cmd2);
+//     free(pipe_node);
 
-    // Update parent pointers for the pipe
-    heredoc->parent = pipe_node;
-    wc_cmd->parent = pipe_node;
-
-    // Execute the AST. This will trigger your pipeline code.
-    int status = execute_ast(pipe_node);
-    printf("Pipeline execution completed with status: %d\n", status);
-
-    // Clean up allocated memory
-    free(cat_cmd->args);
-    free(cat_cmd);
-    free(delimiter_node);
-    free(heredoc);
-    free(wc_cmd->args);
-    free(wc_cmd);
-    free(pipe_node);
-
-    return 0;
-}
+//     return 0;
+// }
