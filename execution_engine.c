@@ -1,10 +1,5 @@
 #include "execution.h"
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <string.h>
+
 
 int execute_ast(t_tree *node)
 {
