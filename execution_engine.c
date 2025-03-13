@@ -4,7 +4,8 @@ void process_heredocs(t_tree *node) {
     if (!node)
         return;
 
-    if (node->type == APP_INPUT_REDIRECTION) {
+    if (node->type == APP_INPUT_REDIRECTION) 
+    {
         node->heredoc_content = handle_heredoc(node->right->data);
         if (!node->heredoc_content) 
         {
@@ -195,7 +196,6 @@ int execute_heredoc_pipe(t_tree *node)
     if (!node->left)
         return -1;
         
-    // Use pre-read heredoc content
     char *heredoc_content = node->heredoc_content;
     if (!heredoc_content) {
         perror("heredoc content not found");
@@ -276,7 +276,7 @@ int execute_pipe(t_tree *node)
     if (!node->left || !node->right)
         return -1;
 
-    if (node->left->type == APP_INPUT_REDIRECTION) {
+    if (node->left->type == APP_INPUT_REDIRECTION || node->right->type == APP_INPUT_REDIRECTION) {
         return execute_heredoc_pipe(node->left);
     } else {
         return execute_simple_pipe(node);
@@ -383,6 +383,7 @@ int execute_input_redirection(t_tree *node)
         perror("fork");
         exit(EXIT_FAILURE);
     }
+
     if (waitpid(child_pid, &status, 0) == -1)
     {
         perror("waitpid");
@@ -396,7 +397,6 @@ int execute_append_input_redirection(t_tree *node)
     pid_t child_pid;
     int status;
     
-    // Use pre-read heredoc content
     char *heredoc_content = node->heredoc_content;
     if (!heredoc_content) {
         perror("heredoc content missing");
@@ -431,7 +431,7 @@ int execute_append_input_redirection(t_tree *node)
         perror("fork");
         return -1;
     }
-    
+
     if (waitpid(child_pid, &status, 0) == -1)
     {
         perror("waitpid");
