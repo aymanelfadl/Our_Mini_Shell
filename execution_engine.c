@@ -21,6 +21,7 @@ int execute_ast(t_tree *node)
 {
     if (node == NULL)
         return 0;
+    process_heredocs(node);
     if (node->type == COMMAND)
         return execute_command(node);
     else if (node->type == PIPE)
@@ -39,7 +40,7 @@ int execute_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
-        if (execve(node->path, node->args, NULL) == -1) 
+        if (execve(node->path, node->args, get_envp(NULL)) == -1) 
         {
             perror(node->path);
             exit(EXIT_FAILURE);
@@ -398,10 +399,8 @@ int execute_append_input_redirection(t_tree *node)
     int status;
     
     char *heredoc_content = node->heredoc_content;
-    if (!heredoc_content) {
-        perror("APP_INPUT_REDIRECTION content missing");
-        return -1;
-    }
+    if (!heredoc_content)
+        return (perror("APP_INPUT_REDIRECTION content missing"), -1);
 
     child_pid = fork();
     if (child_pid == 0)

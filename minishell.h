@@ -57,6 +57,9 @@ int execute_append_input_redirection(t_tree *node);
 void process_heredocs(t_tree *node);
 char *handle_heredoc(char *delimiter);
 
+char **get_envp(char **envp);
+
+
 
 /*
     PARSING FUNS::
