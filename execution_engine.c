@@ -47,10 +47,7 @@ int execute_command(t_tree *node)
         }
     }
     else if (pid < 0)
-    {
-        perror("exec_command");
-        return -1;
-    }
+        return (perror("exec_command"),-1);
     else
     {
         waitpid(pid, &status, 0);
