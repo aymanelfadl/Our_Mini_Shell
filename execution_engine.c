@@ -60,49 +60,17 @@ int execute_command(t_tree *node)
 }
 
 char *handle_heredoc(char *delimiter) {
-    char *line = NULL;
     char *heredoc_content = NULL;
-    char *temp = NULL;
-    char *line_with_newline = NULL;
-    int first_line = 1;
-
-    heredoc_content = ft_strdup("");
-    if (!heredoc_content)
-        return NULL;        
-    while (1) 
+    char *line = NULL;
+    char *tmp = NULL;
+    while (1)
     {
-        line = readline("APP_INPUT_REDIRECTION> ");
-        if (!line) 
+        line = readline("herdoc> ");
+        if (!line || !ft_strcmp(line, delimiter))
             break;
-        if (!strcmp(line, delimiter)) 
-        {
-            free(line);
-            break;
-        }
-        if (!first_line) {
-            line_with_newline = ft_strjoin("\n", line);
-        } else {
-            line_with_newline = ft_strdup(line);
-            first_line = 0;
-        }
-
-        if (!line_with_newline) {
-            free(line);
-            free(heredoc_content);
-            return NULL;
-        }
-        free(line);
-
-        temp = ft_strjoin(heredoc_content, line_with_newline);
-        if (!temp) 
-        {
-            free(line_with_newline);
-            free(heredoc_content);
-            return NULL;
-        }    
-        free(heredoc_content);
-        free(line_with_newline);
-        heredoc_content = temp;
+        if (heredoc_content != NULL)
+            heredoc_content = ft_strjoin(heredoc_content, "\n");
+        heredoc_content = ft_strjoin(heredoc_content, line);        
     }
     return heredoc_content;
 }

@@ -58,7 +58,7 @@ void process_heredocs(t_tree *node);
 char *handle_heredoc(char *delimiter);
 
 char **get_envp(char **envp);
-
+int ft_strcmp(const char *str1, const char *str2);
 
 
 /*
