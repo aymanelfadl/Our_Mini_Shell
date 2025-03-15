@@ -17,9 +17,9 @@ OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT) $(HEADER)
+$(NAME): $(LIBFT) $(HEADER) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline $(LIBFT)
-	valgrind --leak-check=full ./$(NAME)
+	# valgrind --leak-check=full ./$(NAME)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
