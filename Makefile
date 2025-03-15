@@ -19,7 +19,7 @@ all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT) $(HEADER)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline $(LIBFT)
-	valgrind	./$(NAME)
+	valgrind --leak-check=full	./$(NAME)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
