@@ -21,7 +21,6 @@ int execute_ast(t_tree *node)
 {
     if (node == NULL)
         return 0;
-    process_heredocs(node);
     if (node->type == COMMAND)
         return execute_command(node);
     else if (node->type == PIPE)
@@ -62,7 +61,7 @@ int execute_command(t_tree *node)
 char *handle_heredoc(char *delimiter) {
     char *heredoc_content = NULL;
     char *line = NULL;
-    
+
     while (1)
     {
         line = readline("herdoc> ");
@@ -177,43 +176,24 @@ int execute_heredoc_pipe(t_tree *node)
     p_child_1 = fork();
     if (p_child_1 == 0)
     {
-        close(pip_fd[0]); 
-        if (dup2(pip_fd[1], STDOUT_FILENO) == -1)
-        {
-            perror("dup2");
-            exit(EXIT_FAILURE);
-        }
+        close(pip_fd[0]);
+        printf("%s", heredoc_content);
+        write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
         close(pip_fd[1]);
-
-        int input_pipe[2];
-        if (pipe(input_pipe) == -1) {
-            perror("pipe");
-            exit(EXIT_FAILURE);
-        }
-        
-        write(input_pipe[1], heredoc_content, ft_strlen(heredoc_content));
-        close(input_pipe[1]);
-        
-        if (dup2(input_pipe[0], STDIN_FILENO) == -1) {
-            perror("dup2");
-            exit(EXIT_FAILURE);
-        }
-        close(input_pipe[0]);
-        
-        exit(execute_ast(node->left));
+        exit(EXIT_SUCCESS);
     }
 
     p_child_2 = fork();
     if (p_child_2 == 0)
     {
-        close(pip_fd[1]); 
+        close(pip_fd[1]);
         if (dup2(pip_fd[0], STDIN_FILENO) == -1)
         {
             perror("dup2");
             exit(EXIT_FAILURE);
         }
         close(pip_fd[0]);
-        exit(execute_ast(node->parent->right));
+        exit(execute_ast(node->right)); 
     }
     
     close(pip_fd[0]);
@@ -236,6 +216,7 @@ int execute_heredoc_pipe(t_tree *node)
     else
         return -1;
 }
+
 
 int execute_pipe(t_tree *node)
 {
