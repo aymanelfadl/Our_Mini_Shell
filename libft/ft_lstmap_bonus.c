@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_lstmap_bonus.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 11:30:11 by aelfadl           #+#    #+#             */
-/*   Updated: 2024/11/05 11:30:12 by aelfadl          ###   ########.fr       */
+/*   Created: 2024/11/06 15:35:48 by ibennaje          #+#    #+#             */
+/*   Updated: 2024/11/07 18:34:43 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,28 @@
 
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
-	t_list	*new_list;
-	t_list	*new_node;
-	void	*new_content;
+	t_list	*head;
+	t_list	*newnode;
+	void	*content;
 
-	new_list = NULL;
-	while (lst && f && del)
+	head = NULL;
+	if (!lst || !f || !del)
+		return (NULL);
+	while (lst)
 	{
-		new_content = f(lst->content);
-		if (!new_content)
+		newnode = NULL;
+		content = f(lst->content);
+		if (content)
+			newnode = ft_lstnew(content);
+		if (!newnode)
 		{
-			ft_lstclear(&new_list, del);
+			if (content)
+				del(content);
+			ft_lstclear(&head, del);
 			return (NULL);
 		}
-		new_node = ft_lstnew(new_content);
-		if (!new_node)
-		{
-			del(new_content);
-			ft_lstclear(&new_list, del);
-			return (NULL);
-		}
-		ft_lstadd_back(&new_list, new_node);
+		ft_lstadd_back(&head, newnode);
 		lst = lst->next;
 	}
-	return (new_list);
+	return (head);
 }

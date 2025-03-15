@@ -1,4 +1,4 @@
-#include "execution.h"
+#include "minishell.h"
 
 void process_heredocs(t_tree *node) {
     if (!node)
@@ -9,7 +9,7 @@ void process_heredocs(t_tree *node) {
         node->heredoc_content = handle_heredoc(node->right->data);
         if (!node->heredoc_content) 
         {
-            perror("Failed to read heredoc content");
+            perror("Failed to read APP_INPUT_REDIRECTION content");
             exit(EXIT_FAILURE);
         }
     }
@@ -39,9 +39,9 @@ int execute_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
-        if (execve(node->data, node->args, NULL) == -1) 
+        if (execve(node->path, node->args, NULL) == -1) 
         {
-            perror(node->data);
+            perror(node->path);
             exit(EXIT_FAILURE);
         }
     }
@@ -73,7 +73,7 @@ char *handle_heredoc(char *delimiter) {
         return NULL;        
     while (1) 
     {
-        line = readline("heredoc> ");
+        line = readline("APP_INPUT_REDIRECTION> ");
         if (!line) 
             break;
         if (!strcmp(line, delimiter)) 
@@ -198,7 +198,7 @@ int execute_heredoc_pipe(t_tree *node)
         
     char *heredoc_content = node->heredoc_content;
     if (!heredoc_content) {
-        perror("heredoc content not found");
+        perror("APP_INPUT_REDIRECTION content not found");
         return -1;
     }
 
@@ -399,7 +399,7 @@ int execute_append_input_redirection(t_tree *node)
     
     char *heredoc_content = node->heredoc_content;
     if (!heredoc_content) {
-        perror("heredoc content missing");
+        perror("APP_INPUT_REDIRECTION content missing");
         return -1;
     }
 
@@ -456,11 +456,11 @@ int execute_redirection(t_tree *node)
 
 // int main(void)
 // {
-//     /* Create command: ls | ls
+//     /* Create COMMAND: ls | ls
 //      * This pipes the output of first ls to the second ls
 //      */
 
-//     // 1. Create the first "ls" command node
+//     // 1. Create the first "ls" COMMAND node
 //     t_tree *ls_cmd1 = malloc(sizeof(t_tree));
 //     if (!ls_cmd1) exit(EXIT_FAILURE);
 //     ls_cmd1->type = COMMAND;
@@ -473,7 +473,7 @@ int execute_redirection(t_tree *node)
 //     ls_cmd1->right = NULL;
 //     ls_cmd1->parent = NULL;
 
-//     // 2. Create the second "ls" command node
+//     // 2. Create the second "ls" COMMAND node
 //     t_tree *ls_cmd2 = malloc(sizeof(t_tree));
 //     if (!ls_cmd2) exit(EXIT_FAILURE);
 //     ls_cmd2->type = COMMAND;

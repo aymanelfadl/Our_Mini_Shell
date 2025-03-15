@@ -3,53 +3,59 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 11:27:27 by aelfadl           #+#    #+#             */
-/*   Updated: 2024/11/05 11:27:29 by aelfadl          ###   ########.fr       */
+/*   Created: 2024/11/06 15:37:06 by ibennaje          #+#    #+#             */
+/*   Updated: 2024/11/06 15:37:07 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static int	ft_hm(unsigned int nb)
+static size_t	nsize(int n)
 {
-	int	res;
+	size_t	i;
 
-	res = 1;
-	while (nb / 10 > 0)
+	i = 0;
+	if (n == 0)
+		return (2);
+	if (n < 0)
 	{
-		res++;
-		nb /= 10;
+		n = -n;
+		i++;
 	}
-	return (res);
+	while (n > 0)
+	{
+		i++;
+		n /= 10;
+	}
+	return (i + 1);
 }
 
 char	*ft_itoa(int n)
 {
-	unsigned int	nb;
-	char			*res;
-	int				isnegga;
-	int				t;
+	char	*num;
+	size_t	i;
+	size_t	isnega;
 
-	nb = (unsigned int)n;
-	isnegga = 0;
+	if (n == -2147483648)
+		return (ft_strdup("-2147483648"));
+	i = nsize(n);
+	isnega = 0;
+	num = (char *)ft_malloc(i);
+	if (!num)
+		return (NULL);
+	num[--i] = 0;
 	if (n < 0)
 	{
-		nb = -(unsigned int)n;
-		isnegga = 1;
+		isnega = 1;
+		num[0] = '-';
+		n = -n;
 	}
-	t = ft_hm(nb) + isnegga;
-	res = (char *)malloc((t + 1) * sizeof(char));
-	if (!res)
-		return (NULL);
-	res[t] = '\0';
-	while (t-- > isnegga)
+	while (i > isnega)
 	{
-		res[t] = (nb % 10) + '0';
-		nb /= 10;
+		num[--i] = (n % 10) + 48;
+		n /= 10;
 	}
-	if (isnegga)
-		res[0] = '-';
-	return (res);
+	return (num);
 }

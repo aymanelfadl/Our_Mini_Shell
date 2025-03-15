@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memmove.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 11:31:58 by aelfadl           #+#    #+#             */
-/*   Updated: 2024/11/05 13:09:03 by aelfadl          ###   ########.fr       */
+/*   Created: 2024/11/06 15:33:39 by ibennaje          #+#    #+#             */
+/*   Updated: 2024/11/06 15:33:41 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,24 @@
 
 void	*ft_memmove(void *dst, const void *src, size_t len)
 {
+	int		higheroverlap;
 	size_t	i;
 
-	if (!dst && !src)
+	i = 0;
+	if (!src && !dst)
 		return (NULL);
-	if (dst < src)
+	higheroverlap = dst > src;
+	while (len > 0)
 	{
-		i = 0;
-		while (i < len)
+		if (higheroverlap)
+			*((unsigned char *)dst + len - 1) = *((unsigned char *)src + len
+					- 1);
+		else
 		{
-			*(unsigned char *)(dst + i) = *(unsigned char *)(src + i);
+			*((unsigned char *)dst + i) = *((unsigned char *)src + i);
 			i++;
 		}
-		return (dst);
+		len--;
 	}
-	else
-	{
-		i = len;
-		while (i > 0)
-		{
-			i--;
-			*(unsigned char *)(dst + i) = *(unsigned char *)(src + i);
-		}
-		return (dst);
-	}
+	return (dst);
 }

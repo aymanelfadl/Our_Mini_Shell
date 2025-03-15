@@ -3,59 +3,76 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: aelfadl <marvin@42.fr>                     +#+  +:+       +#+        */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/05 11:37:26 by aelfadl           #+#    #+#             */
-/*   Updated: 2024/11/05 11:37:33 by aelfadl          ###   ########.fr       */
+/*   Created: 2024/11/06 15:15:22 by ibennaje          #+#    #+#             */
+/*   Updated: 2024/11/06 15:15:24 by ibennaje         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static size_t	ft_calstart(char const *s1, char const *set)
+static int	checksep(char sep, char *sets)
 {
-	size_t	start;
-
-	start = 0;
-	while (s1[start] && ft_strchr(set, s1[start]))
-		start++;
-	return (start);
+	while (*sets)
+	{
+		if (*sets == sep)
+			return (1);
+		sets++;
+	}
+	return (0);
 }
 
-static size_t	ft_calend(char const *s1, char const *set, size_t start)
+static unsigned int	ft_start(const char *s1, char *set)
 {
-	size_t	end;
-	size_t	res;
+	unsigned int	i;
 
-	end = ft_strlen(s1);
-	res = 0;
-	while (end > start && ft_strchr(set, s1[end - 1]))
+	i = 0;
+	while (s1[i] && checksep(s1[i], set))
+		i++;
+	return (i);
+}
+
+static unsigned int	ft_end(const char *s1, char *set)
+{
+	int	i;
+
+	i = ft_strlen(s1) - 1;
+	while (i >= 0 && checksep(s1[i], set))
+		i--;
+	return ((unsigned int)i);
+}
+
+static int	onlysep(const char *s1, const char *set)
+{
+	size_t	i;
+
+	i = 0;
+	while (s1[i])
 	{
-		res++;
-		end--;
+		if (!checksep((char)s1[i], (char *)set))
+			return (0);
+		i++;
 	}
-	return (res);
+	return (1);
 }
 
 char	*ft_strtrim(char const *s1, char const *set)
 {
-	size_t	i;
-	size_t	start;
-	size_t	end;
-	char	*ptr;
+	size_t			len;
+	unsigned int	start;
+	unsigned int	end;
+	char			*trimed;
 
 	if (!s1)
 		return (NULL);
 	if (!set)
-		return ((char *)s1);
-	start = ft_calstart(s1, set);
-	end = ft_calend(s1, set, start);
-	ptr = (char *)malloc((ft_strlen(s1) - start - end + 1) * sizeof(char));
-	if (!ptr)
-		return (NULL);
-	i = 0;
-	while (start < ft_strlen(s1) - end)
-		ptr[i++] = s1[start++];
-	ptr[i] = '\0';
-	return (ptr);
+		return (ft_strdup(s1));
+	if (onlysep(s1, set) || !*s1)
+		return (ft_strdup(""));
+	start = ft_start(s1, (char *)set);
+	end = ft_end(s1, (char *)set);
+	len = end - start + 1;
+	trimed = ft_substr(s1, start, len);
+	return (trimed);
 }

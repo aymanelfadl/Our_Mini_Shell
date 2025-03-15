@@ -1,25 +1,25 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror 
 
-NAME = mini-shell
+CFLAGS = #-Wall -Wextra -Werror 
 
-HEADER = execution.h
+NAME = minishell
+HEADER = minishell.h
 
 LIBFTDIR = libft
+LIBFT = $(LIBFTDIR)/libft.a
 
-SRCS = execution_engine.c main.c
+PARSING_FILES = parsing.c utils1.c utils2.c mylibft.c extract_path.c tree_ops.c utils3.c 
+EXECUTION_FILES = execution_engine.c main.c 
+
+SRCS = $(PARSING_FILES) $(EXECUTION_FILES) 
 
 OBJS = $(SRCS:.c=.o)
 
-LIBFT = $(LIBFTDIR)/libft.a
-
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT) $(GNL) $(MLX) 
-	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFTDIR) -lft -lreadline -o $(NAME)
-
-%.o: %.c $(HEADER)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(NAME): $(OBJS) $(LIBFT) $(HEADER)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline $(LIBFT)
+	valgrind	./$(NAME)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
@@ -33,5 +33,3 @@ fclean: clean
 	$(MAKE) -C $(LIBFTDIR) fclean
 
 re: fclean all
-
-.PHONY: all clean fclean re
