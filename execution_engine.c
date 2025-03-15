@@ -62,7 +62,7 @@ int execute_command(t_tree *node)
 char *handle_heredoc(char *delimiter) {
     char *heredoc_content = NULL;
     char *line = NULL;
-    char *tmp = NULL;
+    
     while (1)
     {
         line = readline("herdoc> ");
