@@ -12,8 +12,7 @@ char **get_envp(char **envp)
     return saved_envp;
 }
 
-void print_node(t_tree *node)
-{
+void print_node(t_tree *node) {
     if (node == NULL) {
         printf("Node is NULL\n");
         return;
@@ -48,8 +47,8 @@ void print_node(t_tree *node)
     }
 
     if (node->parent != NULL) {
-        printf("Parent:\n");
-        print_node(node->parent);
+        printf("Parent node path: %s\n", node->parent->path);
+        printf("Parent node data: %s\n", node->parent->data);
     } else {
         printf("Parent: NULL\n");
     }
@@ -59,15 +58,19 @@ void print_node(t_tree *node)
 
 int main(int ac, char **av, char **envp)
 {
+    t_tree *tree;
+    char **paths;
     while (1)
     {
         get_envp(envp);
-        char **paths = extract_paths(envp);
-        t_tree *tree = ilyas_parsing(1);
+        paths = extract_paths(envp);
+        tree = ilyas_parsing(1);
         split_tree(tree);
         add_paths_to_tree(tree, paths);
         process_heredocs(tree);
-        execute_ast(tree);
+        // execute_ast(tree);
+        break;
     }
+    print_node(tree);
     ft_free(garbage_collector);
 }

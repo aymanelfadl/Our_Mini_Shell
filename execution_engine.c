@@ -39,15 +39,10 @@ int execute_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
-        if (!node->path)
+        if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1)) 
         {
             printf("%s: command not found\n", node->args[0]);
             exit(127);
-        }
-        if (execve(node->path, node->args, get_envp(NULL)) == -1) 
-        {
-            perror(node->path);
-            exit(EXIT_FAILURE);
         }
     }
     else if (pid < 0)
@@ -157,10 +152,11 @@ int execute_simple_pipe(t_tree *node)
         return -1;
 }
 
-int execute_heredoc_pipe(t_tree *node) {
+int execute_heredoc_pipe(t_tree *node)
+{
     int pip_fd[2];
-    int status2;
-    pid_t p_child_1 ,p_child_2;
+    int status1, status2;
+    pid_t p_child_1, p_child_2;
     
     if (!node->left)
         return -1;
@@ -176,8 +172,7 @@ int execute_heredoc_pipe(t_tree *node) {
         exit(EXIT_FAILURE);
     }
     
-    write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
-    close(pip_fd[1]);
+    // write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
 
     p_child_1 = fork();
     if (p_child_1 == 0) 
@@ -187,19 +182,26 @@ int execute_heredoc_pipe(t_tree *node) {
         close(pip_fd[1]);    
         exit(EXIT_SUCCESS);
     }
+ 
     p_child_2 = fork();
     if (p_child_2 == 0) {
         dup2(pip_fd[0], STDIN_FILENO);
         close(pip_fd[0]);
         exit(execute_ast(node->parent->right));
     }
+
     close(pip_fd[0]);
-    
+    close(pip_fd[1]);
+
+    if (waitpid(p_child_1, &status1, 0) == -1) {
+        perror("waitpid");
+        exit(EXIT_FAILURE);
+    }
+
     if (waitpid(p_child_2, &status2, 0) == -1) {
         perror("waitpid");
         exit(EXIT_FAILURE);
     }
-    
     if (WIFEXITED(status2))
         return WEXITSTATUS(status2);
     else
