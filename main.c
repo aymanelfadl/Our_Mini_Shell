@@ -14,13 +14,16 @@ char **get_envp(char **envp)
 
 int main(int ac, char **av, char **envp)
 {
-    get_envp(envp);
-    char **paths = extract_paths(envp);
-    t_tree *tree = ilyas_parsing(1);
-    split_tree(tree);
-    add_paths_to_tree(tree, paths);
-    //  print_tree(tree);
-    process_heredocs(tree);
-    execute_ast(tree);
-    // ft_free(garbage_collector);
+    while (1)
+    {
+        get_envp(envp);
+        char **paths = extract_paths(envp);
+        t_tree *tree = ilyas_parsing(1);
+        split_tree(tree);
+        add_paths_to_tree(tree, paths);
+        print_tree(tree);
+        process_heredocs(tree);
+        execute_ast(tree);
+    }
+    ft_free(garbage_collector);
 }
