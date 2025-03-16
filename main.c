@@ -12,6 +12,51 @@ char **get_envp(char **envp)
     return saved_envp;
 }
 
+void print_node(t_tree *node)
+{
+    if (node == NULL) {
+        printf("Node is NULL\n");
+        return;
+    }
+
+    printf("Node path: %s\n", node->path);
+    printf("Node data: %s\n", node->data);
+
+    if (node->args != NULL) {
+        printf("Node args:\n");
+        for (char **arg = node->args; *arg != NULL; arg++) {
+            printf("  %s\n", *arg);
+        }
+    } else {
+        printf("Node args: NULL\n");
+    }
+
+    printf("Node heredoc_content: %s\n", node->heredoc_content);
+
+    if (node->left != NULL) {
+        printf("Left child:\n");
+        print_node(node->left);
+    } else {
+        printf("Left child: NULL\n");
+    }
+
+    if (node->right != NULL) {
+        printf("Right child:\n");
+        print_node(node->right);
+    } else {
+        printf("Right child: NULL\n");
+    }
+
+    if (node->parent != NULL) {
+        printf("Parent:\n");
+        print_node(node->parent);
+    } else {
+        printf("Parent: NULL\n");
+    }
+
+    printf("Node type: %d\n", node->type);
+}
+
 int main(int ac, char **av, char **envp)
 {
     while (1)
@@ -21,7 +66,6 @@ int main(int ac, char **av, char **envp)
         t_tree *tree = ilyas_parsing(1);
         split_tree(tree);
         add_paths_to_tree(tree, paths);
-        print_tree(tree);
         process_heredocs(tree);
         execute_ast(tree);
     }

@@ -35,10 +35,15 @@ int execute_command(t_tree *node)
 {
     pid_t pid;
     int status;
-
+    
     pid = fork();
     if (pid == 0)
     {
+        if (!node->path)
+        {
+            printf("%s: command not found\n", node->args[0]);
+            exit(127);
+        }
         if (execve(node->path, node->args, get_envp(NULL)) == -1) 
         {
             perror(node->path);
