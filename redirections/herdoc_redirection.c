@@ -1,5 +1,20 @@
 #include "minishell.h"
 
+char *handle_heredoc(char *delimiter) {
+    char *heredoc_content = NULL;
+    char *line = NULL;
+
+    while (1)
+    {
+        line = readline("herdoc> ");
+        if (!line || !ft_strcmp(line, delimiter))
+            break;
+        if (heredoc_content != NULL)
+            heredoc_content = ft_strjoin(heredoc_content, "\n");
+        heredoc_content = ft_strjoin(heredoc_content, line);        
+    }
+    return heredoc_content;
+}
 
 int execute_append_input_redirection(t_tree *node)
 {
