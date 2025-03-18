@@ -1,5 +1,24 @@
 #include "minishell.h"
 
+
+void process_heredocs(t_tree *node) {
+    if (!node)
+        return;
+
+    if (node->type == APP_INPUT_REDIRECTION) 
+    {
+        node->heredoc_content = handle_heredoc(node->right->data);
+        if (!node->heredoc_content) 
+        {
+            perror("Failed to read APP_INPUT_REDIRECTION content");
+            exit(EXIT_FAILURE);
+        }
+    }
+    process_heredocs(node->left);
+    process_heredocs(node->right);
+}
+
+
 char *handle_heredoc(char *delimiter) {
     char *heredoc_content = NULL;
     char *line = NULL;

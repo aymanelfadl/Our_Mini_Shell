@@ -14,6 +14,18 @@ int execute_ast(t_tree *node)
     return 0;
 }
 
+int execute_pipe(t_tree *node)
+{
+    if (!node->left || !node->right)
+        return -1;
+
+    if (node->left->type == APP_INPUT_REDIRECTION || node->right->type == APP_INPUT_REDIRECTION) {
+        return execute_heredoc_pipe(node->left);
+    } else {
+        return execute_simple_pipe(node);
+    }
+}
+
 int execute_command(t_tree *node)
 {
     pid_t pid;

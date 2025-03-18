@@ -47,16 +47,28 @@ typedef struct s_tree {
 int execute_ast(t_tree *node);
 int execute_command(t_tree *node);
 int execute_pipe(t_tree *node);
+int execute_redirection(t_tree *node);
+
+/*
+    Redirection functions::
+        Handle input/output redirection in the shell.
+*/
+
+// pipe::
 int execute_simple_pipe(t_tree *node);
 int execute_heredoc_pipe(t_tree *node);
-int execute_redirection(t_tree *node);
-int execute_output_redirection(t_tree *node);
-int execute_append_output_redirection(t_tree *node);
+
+// input::
 int execute_input_redirection(t_tree *node);
 int execute_append_input_redirection(t_tree *node);
-void process_heredocs(t_tree *node);
-char *handle_heredoc(char *delimiter);
 
+// output::
+int execute_output_redirection(t_tree *node);
+char *handle_heredoc(char *delimiter);
+void process_heredocs(t_tree *node);
+int execute_append_output_redirection(t_tree *node);
+
+// UTILs::
 char **get_envp(char **envp);
 int ft_strcmp(const char *str1, const char *str2);
 void print_node(t_tree *node);
