@@ -11,7 +11,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include "libft/libft.h"
+#include "../libft/libft.h"
 
 
 enum data_type

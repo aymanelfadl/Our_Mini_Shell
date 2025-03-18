@@ -1,25 +1,33 @@
 CC = cc
-
-CFLAGS = #-Wall -Wextra -Werror 
+CFLAGS = -Iincludes -Ilibft  
 
 NAME = minishell
-HEADER = minishell.h
+HEADER = includes/minishell.h 
 
 LIBFTDIR = libft
 LIBFT = $(LIBFTDIR)/libft.a
 
-PARSING_FILES = parsing.c utils1.c utils2.c mylibft.c extract_path.c tree_ops.c utils3.c 
-EXECUTION_FILES = execution_engine.c main.c 
+REDIRECTIONDIR = redirections
+PARSINGDIR = parsing
 
-SRCS = $(PARSING_FILES) $(EXECUTION_FILES) 
+REDIRECTIONFILES = $(REDIRECTIONDIR)/append_output_redirection.c $(REDIRECTIONDIR)/output_redirection.c \
+                   $(REDIRECTIONDIR)/input_redirection.c $(REDIRECTIONDIR)/herdoc_redirection.c \
+                   $(REDIRECTIONDIR)/pipe_redirection.c $(REDIRECTIONDIR)/execution_engine.c
 
+
+PARSING_FILES = $(PARSINGDIR)/parsing.c $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
+				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
+				$(PARSINGDIR)/utils3.c
+
+EXECUTION_FILES = $(REDIRECTIONFILES) main.c 
+
+SRCS = $(PARSING_FILES) $(EXECUTION_FILES)
 OBJS = $(SRCS:.c=.o)
 
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(HEADER) $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline $(LIBFT)
-	# valgrind --leak-check=full ./$(NAME)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
@@ -32,4 +40,4 @@ fclean: clean
 	rm -f $(NAME)
 	$(MAKE) -C $(LIBFTDIR) fclean
 
-re: fclean all
+re: fclean all 

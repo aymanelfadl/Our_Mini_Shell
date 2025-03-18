@@ -1,0 +1,75 @@
+#include "minishell.h"
+
+
+int execute_ast(t_tree *node)
+{
+    if (node == NULL)
+        return 0;
+    if (node->type == COMMAND)
+        return execute_command(node);
+    else if (node->type == PIPE)
+        return execute_pipe(node);
+    else
+        return execute_redirection(node);
+    
+    return 0;
+}
+
+int execute_command(t_tree *node)
+{
+    pid_t pid;
+    int status;
+    
+    pid = fork();
+    if (pid == 0)
+    {
+        if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1)) 
+        {
+            printf("%s: command not found\n", node->args[0]);
+            exit(127);
+        }
+    }
+    else if (pid < 0)
+        return (perror("exec_command"),-1);
+    else
+    {
+        waitpid(pid, &status, 0);
+        if (WIFEXITED(status))
+            return WEXITSTATUS(status);
+        else
+            return -1;
+    }
+    return 0;
+}
+
+char *handle_heredoc(char *delimiter) {
+    char *heredoc_content = NULL;
+    char *line = NULL;
+
+    while (1)
+    {
+        line = readline("herdoc> ");
+        if (!line || !ft_strcmp(line, delimiter))
+            break;
+        if (heredoc_content != NULL)
+            heredoc_content = ft_strjoin(heredoc_content, "\n");
+        heredoc_content = ft_strjoin(heredoc_content, line);        
+    }
+    return heredoc_content;
+}
+
+
+
+int execute_redirection(t_tree *node)
+{
+    if (node->type == OUTPUT_REDIRECTION)
+        return execute_output_redirection(node);
+    else if (node->type == INPUT_REDIRECTION)
+        return execute_input_redirection(node);
+    else if (node->type == APP_OUTPUT_REDIRECTION)
+        return execute_append_output_redirection(node);
+    else if (node->type == APP_INPUT_REDIRECTION)
+        return execute_append_input_redirection(node);
+    else
+        return -1;
+}

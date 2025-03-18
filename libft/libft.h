@@ -16,14 +16,14 @@
 # include <stdlib.h>
 # include <unistd.h>
 # include <stdint.h>
+
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
 }t_list;
-# include "../minishell.h"
 
-
+# include "../includes/minishell.h"
 
 
 
