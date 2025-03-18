@@ -1,6 +1,5 @@
 #include "minishell.h"
 
-
 int execute_input_redirection(t_tree *node)
 {
     pid_t child_pid;
