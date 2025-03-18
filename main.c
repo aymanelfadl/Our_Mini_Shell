@@ -68,8 +68,8 @@ int main(int ac, char **av, char **envp)
         split_tree(tree);
         add_paths_to_tree(tree, paths);
         process_heredocs(tree);
-        // execute_ast(tree);
-        break;
+        execute_ast(tree);
+        // break;
     }
     print_node(tree);
     ft_free(garbage_collector);

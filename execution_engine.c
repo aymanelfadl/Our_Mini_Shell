@@ -172,19 +172,11 @@ int execute_heredoc_pipe(t_tree *node)
         exit(EXIT_FAILURE);
     }
     
-    // write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
+    write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
 
-    p_child_1 = fork();
-    if (p_child_1 == 0) 
-    {
-        close(pip_fd[0]); 
-        write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content));
-        close(pip_fd[1]);    
-        exit(EXIT_SUCCESS);
-    }
- 
     p_child_2 = fork();
     if (p_child_2 == 0) {
+        close(pip_fd[1]);
         dup2(pip_fd[0], STDIN_FILENO);
         close(pip_fd[0]);
         exit(execute_ast(node->parent->right));
@@ -192,11 +184,6 @@ int execute_heredoc_pipe(t_tree *node)
 
     close(pip_fd[0]);
     close(pip_fd[1]);
-
-    if (waitpid(p_child_1, &status1, 0) == -1) {
-        perror("waitpid");
-        exit(EXIT_FAILURE);
-    }
 
     if (waitpid(p_child_2, &status2, 0) == -1) {
         perror("waitpid");
