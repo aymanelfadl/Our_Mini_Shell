@@ -8,9 +8,10 @@ int execute_ast(t_tree *node)
         return execute_command(node);
     else if (node->type == PIPE)
         return execute_pipe(node);
+    else if ((node->type == AND) || (node->type == OR))
+        return execute_logical_operators(node);
     else
         return execute_redirection(node);
-    
     return 0;
 }
 

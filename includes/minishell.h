@@ -31,7 +31,7 @@ enum data_type
 typedef struct s_tree {
     char *path;
     char *data;
-    char **args;         
+    char **args;
     char *heredoc_content;
     struct s_tree *left;
     struct s_tree *right;
@@ -44,10 +44,12 @@ typedef struct s_tree {
         execution engine in the context of a shell OR interpreter 
         is a component responsible for executing commands by managing processes.
 */
+
 int execute_ast(t_tree *node);
 int execute_command(t_tree *node);
 int execute_pipe(t_tree *node);
 int execute_redirection(t_tree *node);
+int execute_logical_operators(t_tree *node);
 
 /*
     Redirection functions::

@@ -60,6 +60,7 @@ int main(int ac, char **av, char **envp)
 {
     t_tree *tree;
     char **paths;
+    int status = -2;
     while (1)
     {
         get_envp(envp);
@@ -68,9 +69,9 @@ int main(int ac, char **av, char **envp)
         split_tree(tree);
         add_paths_to_tree(tree, paths);
         process_heredocs(tree);
-        execute_ast(tree);
-        // break;
+        status = execute_ast(tree);
+        print_node(tree);
+        printf("The Exit Status :: %d\n", status);
     }
-    print_node(tree);
     ft_free(garbage_collector);
 }
