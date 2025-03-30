@@ -70,7 +70,7 @@ int main(int ac, char **av, char **envp)
         add_paths_to_tree(tree, paths);
         process_heredocs(tree);
         status = execute_ast(tree);
-        print_node(tree);
+        // :print_node(tree);
         printf("The Exit Status :: %d\n", status);
     }
     ft_free(garbage_collector);
