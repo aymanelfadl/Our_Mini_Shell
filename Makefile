@@ -20,7 +20,7 @@ PARSING_FILES = $(PARSINGDIR)/parsing.c $(PARSINGDIR)/utils1.c $(PARSINGDIR)/uti
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
 				$(PARSINGDIR)/utils3.c
 
-BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c main.c 
+BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_utils.c $(BUILTINSDIR)/builtins_engine.c 
 
 EXECUTION_FILES = $(REDIRECTIONFILES) $(BUILTINS_FILES) 
 
@@ -30,7 +30,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(HEADER) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS)  -o $(NAME) -lreadline $(LIBFT)
+	$(CC) $(CFLAGS) $(OBJS) main.c -o $(NAME) -lreadline $(LIBFT)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
