@@ -70,6 +70,9 @@ char *handle_heredoc(char *delimiter);
 void process_heredocs(t_tree *node);
 int execute_append_output_redirection(t_tree *node);
 
+// Builtins::
+void builtins_engine(t_tree *node);
+
 // UTILs::
 char **get_envp(char **envp);
 int ft_strcmp(const char *str1, const char *str2);

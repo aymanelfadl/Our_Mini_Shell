@@ -56,22 +56,23 @@ void print_node(t_tree *node) {
     printf("Node type: %d\n", node->type);
 }
 
-int main(int ac, char **av, char **envp)
-{
-    t_tree *tree;
-    char **paths;
-    int status = -2;
-    while (1)
-    {
-        get_envp(envp);
-        paths = extract_paths(envp);
-        tree = ilyas_parsing(1);
-        split_tree(tree);
-        add_paths_to_tree(tree, paths);
-        process_heredocs(tree);
-        status = execute_ast(tree);
-        // :print_node(tree);
-        printf("The Exit Status :: %d\n", status);
-    }
-    ft_free(garbage_collector);
-}
+// int main(int ac, char **av, char **envp)
+// {
+//     t_tree *tree;
+//     char **paths;
+//     int status = -2;
+//     while (1)
+//     {
+//         get_envp(envp);
+//         paths = extract_paths(envp);
+//         tree = ilyas_parsing(1);
+//         split_tree(tree);
+//         add_paths_to_tree(tree, paths);
+//         // builtins_engine(tree);
+//         // process_heredocs(tree);   // dyali hadchi 
+//         // status = execute_ast(tree); // syali hadchi
+//         print_node(tree);
+//         printf("The Exit Status :: %d\n", status);
+//     }
+//     ft_free(garbage_collector);
+// }

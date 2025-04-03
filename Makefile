@@ -9,17 +9,20 @@ LIBFT = $(LIBFTDIR)/libft.a
 
 REDIRECTIONDIR = redirections
 PARSINGDIR = parsing
+BUILTINSDIR = builtins
 
 REDIRECTIONFILES = $(REDIRECTIONDIR)/append_output_redirection.c $(REDIRECTIONDIR)/output_redirection.c \
                    $(REDIRECTIONDIR)/input_redirection.c $(REDIRECTIONDIR)/herdoc_redirection.c \
                    $(REDIRECTIONDIR)/pipe_redirection.c $(REDIRECTIONDIR)/execution_engine.c \
-				   $(REDIRECTIONDIR)/logical_operators.c
+                   $(REDIRECTIONDIR)/logical_operators.c
 
 PARSING_FILES = $(PARSINGDIR)/parsing.c $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
 				$(PARSINGDIR)/utils3.c
 
-EXECUTION_FILES = $(REDIRECTIONFILES) main.c 
+BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c main.c 
+
+EXECUTION_FILES = $(REDIRECTIONFILES) $(BUILTINS_FILES) 
 
 SRCS = $(PARSING_FILES) $(EXECUTION_FILES)
 OBJS = $(SRCS:.c=.o)
@@ -27,7 +30,7 @@ OBJS = $(SRCS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(LIBFT) $(HEADER) $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline $(LIBFT)
+	$(CC) $(CFLAGS) $(OBJS)  -o $(NAME) -lreadline $(LIBFT)
 
 $(LIBFT):
 	$(MAKE) -C $(LIBFTDIR)
@@ -40,4 +43,4 @@ fclean: clean
 	rm -f $(NAME)
 	$(MAKE) -C $(LIBFTDIR) fclean
 
-re: fclean all 
+re: fclean all
