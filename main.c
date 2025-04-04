@@ -17,7 +17,7 @@ void print_node(t_tree *node) {
         printf("Node is NULL\n");
         return;
     }
-
+    printf("Node type: %d\n", node->type);
     printf("Node path: %s\n", node->path);
     printf("Node data: %s\n", node->data);
 
@@ -70,8 +70,8 @@ int main(int ac, char **av, char **envp)
         add_paths_to_tree(tree, paths);
         builtins_engine(tree);
         // process_heredocs(tree);   // dyali hadchi 
-        // status = execute_ast(tree); // syali hadchi
-        print_node(tree);
+        status = execute_ast(tree); // syali hadchi
+        // print_node(tree);
         printf("The Exit Status :: %d\n", status);
     }
     ft_free(garbage_collector);
