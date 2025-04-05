@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Iincludes -Ilibft  -g
+CFLAGS = -g -Iincludes -Ilibft
 
 NAME = minishell
 HEADER = includes/minishell.h 
