@@ -1,57 +1,45 @@
 #include "minishell.h"
 
-int is_first_call(void *arg)
+static int get_last_fd(t_tree *node)
 {
-    if (!arg)
-        return 1;
-    return 0;
+    return open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+}
+static char *open_files(t_tree *node)
+{
+    static char *fail;
+    int fd;
+    fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+    if (fd == -1)
+    {
+        // @TODO 7ma9e khaliha mara akhera mhm 
+        // you shoulkd satrt from doen to up 
+    }
+    close(fd);
+    return fail
 }
 
 int execute_output_redirection(t_tree *node)
 {
     pid_t child_pid;
-    int file_fd;
     int status;
-    static int first_fd;
-    static char *file_name;
-    static int fail;
+    static int last_fd;
+    static char *fail;
 
+    if (!last_fd)
+        last_fd = get_last_fd(node);
+    
     child_pid = fork();
+
     if (child_pid == 0)
     {
-        if (is_first_call(NULL))
+        if (last_fd != -1)
+            open_files(node);
+        if (dup2(last_fd, STDOUT_FILENO) == -1)
         {
-            first_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-            if (first_fd == -1)
-            {
-                file_name = node->right->data;
-                fail = 1;
-            }
+            perror("dup2");
+            exit(EXIT_FAILURE); 
         }
-        else
-        {
-            file_fd = open(node->right->data, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-            if (file_fd == -1)
-            {
-                perror(node->right->data);
-                exit(EXIT_FAILURE);
-            }
-            close(file_fd);
-        }
-        if (node->left->type != OUTPUT_REDIRECTION)
-        {
-            if (fail)
-            {
-                perror(file_name);
-                exit(EXIT_FAILURE);
-            }
-            if (dup2(first_fd, STDOUT_FILENO) == -1)
-            {
-                perror("dup2");
-                exit(EXIT_FAILURE); 
-            }
-            close(first_fd);
-        }
+        close(last_fd);
         exit(execute_ast(node->left));
     }
     else if (child_pid == -1)
