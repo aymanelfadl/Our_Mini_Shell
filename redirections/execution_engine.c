@@ -56,7 +56,7 @@ int execute_command(t_tree *node)
 
 int execute_redirection(t_tree *node)
 {
-    if (node->type == OUTPUT_REDIRECTION)
+    if (!node->parent || node->parent->type != OUTPUT_REDIRECTION)
         return execute_output_redirection(node);
     else if (node->type == INPUT_REDIRECTION)
         return execute_input_redirection(node);
