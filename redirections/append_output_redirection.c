@@ -1,20 +1,20 @@
 #include "minishell.h"
 
-static void create_append_redir_files_and_get_last(t_tree *node, int *last_fd)
+static t_tree *get_cmd(t_tree *node)
 {
-    int fd;
-
-    if (node->left && node->left->type == APP_OUTPUT_REDIRECTION)
-        create_append_redir_files_and_get_last(node->left, last_fd);
-    fd = open(node->right->data, O_WRONLY | O_CREAT | O_APPEND, 0644);
-    if (fd == -1)
+    t_tree *current = node;
+    
+    while (current && current->left)
     {
-        perror(node->right->data);
-        exit(EXIT_FAILURE);
+        if (current->left->type == COMMAND)
+            return current->left;
+        current = current->left;
     }
-    if (*last_fd != -1)
-        close(*last_fd);
-    *last_fd = fd;
+    
+    if (current && current->type == COMMAND)
+        return current;
+    
+    return NULL;
 }
 
 
@@ -27,8 +27,12 @@ int execute_append_output_redirection(t_tree *node)
     child_pid = fork();
     if (child_pid == 0)
     {
-        create_append_redir_files_and_get_last(node, &file_fd);
-
+        file_fd = open(node->right->data, O_WRONLY | O_CREAT | O_APPEND, 0644);
+        if (file_fd == -1)
+        {
+            perror(node->right->data);
+            exit(EXIT_FAILURE);
+        }
         if (dup2(file_fd, STDOUT_FILENO) == -1)
         {
             perror("dup2");
@@ -36,8 +40,7 @@ int execute_append_output_redirection(t_tree *node)
             exit(EXIT_FAILURE);
         }
         close(file_fd);
-        while (node->left && node->left->type == APP_OUTPUT_REDIRECTION)
-            node = node->left;
+        execute_command(get_cmd(node));
         exit(execute_ast(node->left));
     }
     else if (child_pid == -1)
