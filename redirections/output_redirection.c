@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-void create_redir_files_and_get_last(t_tree *node, int *last_fd)
+static void create_redir_files_and_get_last(t_tree *node, int *last_fd)
 {
     int fd;
 

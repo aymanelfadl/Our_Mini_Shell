@@ -56,11 +56,11 @@ int execute_command(t_tree *node)
 
 int execute_redirection(t_tree *node)
 {
-    if (!node->parent || node->parent->type != OUTPUT_REDIRECTION)
+    if ((!node->parent || node->parent->type != OUTPUT_REDIRECTION) && node->type == OUTPUT_REDIRECTION)
         return execute_output_redirection(node);
     else if (node->type == INPUT_REDIRECTION)
         return execute_input_redirection(node);
-    else if (node->type == APP_OUTPUT_REDIRECTION)
+    else if((!node->parent || node->parent->type != APP_OUTPUT_REDIRECTION) && node->type == APP_OUTPUT_REDIRECTION)
         return execute_append_output_redirection(node);
     else if (node->type == APP_INPUT_REDIRECTION)
         return execute_append_input_redirection(node);
