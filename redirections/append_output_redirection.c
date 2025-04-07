@@ -1,5 +1,15 @@
 #include "minishell.h"
 
+/*
+ ls >> 10 >> 20 >> 30
+ aelfadl@e1r3p11  ~/Desktop/Our_Mini_Shell   execution ±  ls >> 1 >> 2 >> 3   
+ aelfadl@e1r3p11  ~/Desktop/Our_Mini_Shell   execution ±  ls >> 1 > 2 > 3
+ aelfadl@e1r3p11  ~/Desktop/Our_Mini_Shell   execution ±  ls >> 1 > 2 > 3 > 100 > ll/l
+zsh: no such file or directory: ll/l
+ ✘ aelfadl@e1r3p11  ~/Desktop/Our_Mini_Shell   execution ±  ls >> 1 > 2 > 3 > 100     
+ waaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+*/
+
 static t_tree *get_cmd(t_tree *node)
 {
     t_tree *current = node;
@@ -40,7 +50,11 @@ int execute_append_output_redirection(t_tree *node)
             exit(EXIT_FAILURE);
         }
         close(file_fd);
-        execute_command(get_cmd(node));
+        if (node->left->type != COMMAND)
+        {
+            execute_command(get_cmd(node));
+            exit(execute_ast(node->left));
+        }
         exit(execute_ast(node->left));
     }
     else if (child_pid == -1)
