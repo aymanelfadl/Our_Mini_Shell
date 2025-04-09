@@ -60,7 +60,7 @@ int main(int ac, char **av, char **envp)
 {
     t_tree *tree;
     char **paths;
-    int status = -2;
+    int status = 1;
     while (1)
     {
         get_envp(envp);
