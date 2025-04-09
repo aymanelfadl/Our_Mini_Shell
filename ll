@@ -1,9 +1,7 @@
-1
-2
-3
 builtins
 includes
 libft
+ll
 main.c
 main.o
 Makefile

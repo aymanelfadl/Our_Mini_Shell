@@ -53,7 +53,7 @@ void print_node(t_tree *node) {
         printf("Parent: NULL\n");
     }
 
-    printf("Node type: %d\n", node->type);
+
 }
 
 int main(int ac, char **av, char **envp)
@@ -71,7 +71,7 @@ int main(int ac, char **av, char **envp)
         // builtins_engine(tree);
         // process_heredocs(tree);   // dyali hadchi 
         status = execute_ast(tree); // syali hadchi
-        // print_node(tree);
+        print_node(tree);
         printf("The Exit Status :: %d\n", status);
     }
     ft_free(garbage_collector);
