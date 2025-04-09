@@ -14,7 +14,7 @@
 #include "../libft/libft.h"
 
 
-enum data_type
+typedef enum data_type
 {
     PIPE,         //0
     INPUT_REDIRECTION,    //1
@@ -26,7 +26,7 @@ enum data_type
     COMMAND,         //7
     FT_FILE,            //8
     FT_EOF       //9
-};
+} e_type;
 
 typedef struct s_tree {
     char *path;
@@ -78,6 +78,8 @@ int ft_unset(t_tree *node);
 char **get_envp(char **envp);
 int ft_strcmp(const char *str1, const char *str2);
 void print_node(t_tree *node);
+// t_tree *find_leftmost_cmd(t_tree *node);
+void create_redir_files_and_get_last(t_tree *node, int *last_fd, e_type type);
 
 /*
     PARSING FUNS::
