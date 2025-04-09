@@ -36,7 +36,6 @@ static char **set_new_envp(char **old_envp, t_tree *node)
     new_envp = ft_malloc((count + 1) * sizeof(char *));
     if (!new_envp)
         return NULL;
-    printf("hahah");
     while (++i < count)
     {
         selected_arg = select_arg(old_envp[i], node);

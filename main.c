@@ -68,8 +68,8 @@ int main(int ac, char **av, char **envp)
         tree = ilyas_parsing(1);
         split_tree(tree);
         add_paths_to_tree(tree, paths);
-        if (builtins_engine(tree) != -1)
-            continue;
+        status = builtins_engine(tree);
+            // continue;
         // process_heredocs(tree);   // dyali hadchi 
         // status = execute_ast(tree); // syali hadchi
         // print_node(tree);
