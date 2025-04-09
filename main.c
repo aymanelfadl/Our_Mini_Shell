@@ -71,7 +71,7 @@ int main(int ac, char **av, char **envp)
         if (builtins_engine(tree) != -1)
             continue;
         // process_heredocs(tree);   // dyali hadchi 
-        status = execute_ast(tree); // syali hadchi
+        // status = execute_ast(tree); // syali hadchi
         // print_node(tree);
         printf("The Exit Status :: %d\n", status);
     }

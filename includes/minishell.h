@@ -74,6 +74,7 @@ int execute_append_output_redirection(t_tree *node);
 int builtins_engine(t_tree *node);
 int ft_unset(t_tree *node);
 void ft_exit(t_tree *node);
+int ft_env(t_tree *node);
 
 // UTILs::
 char **get_envp(char **envp);

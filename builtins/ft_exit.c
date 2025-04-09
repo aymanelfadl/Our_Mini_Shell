@@ -20,6 +20,7 @@ static int ft_count_args(t_tree *node)
         count++;
     return count;
 }
+
 void ft_exit(t_tree *node)
 {
     if (ft_count_args(node) > 2)

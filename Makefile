@@ -21,7 +21,7 @@ PARSING_FILES = $(PARSINGDIR)/parsing.c $(PARSINGDIR)/utils1.c $(PARSINGDIR)/uti
 				$(PARSINGDIR)/utils3.c
 
 BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_utils.c $(BUILTINSDIR)/builtins_engine.c \
-				$(BUILTINSDIR)/ft_exit.c
+				$(BUILTINSDIR)/ft_exit.c $(BUILTINSDIR)/ft_env.c
 
 
 
