@@ -52,28 +52,55 @@ void print_node(t_tree *node) {
     } else {
         printf("Parent: NULL\n");
     }
-
-
 }
+
+
+int *get_exit_status(void)
+{
+    static int exit_status;
+    return &exit_status;
+}
+
+
+void handle_sigint(int sig)
+{
+    (void)sig;
+    *get_exit_status() = 130;
+}
+
+
+void ft_handle_signals()
+{
+    if (signal(SIGINT, handle_sigint) == -1)
+        printf("Sig Err");
+}
+
 
 int main(int ac, char **av, char **envp)
 {
-    t_tree *tree;
+    (void)ac; (void)av;
     char **paths;
-    int status = 1;
+    t_tree *tree;
+
+    get_envp(envp);
     while (1)
     {
-        get_envp(envp);
-        paths = extract_paths(envp);
+        ft_handle_signals();
+
         tree = ilyas_parsing(1);
+        if (!tree)
+        {
+            *get_exit_status() = 130; 
+            continue;
+        }
+
+        paths = extract_paths(envp);
         split_tree(tree);
         add_paths_to_tree(tree, paths);
-        status = builtins_engine(tree);
-            // continue;
-        // process_heredocs(tree);   // dyali hadchi 
-        // status = execute_ast(tree); // syali hadchi
-        // print_node(tree);
-        printf("The Exit Status :: %d\n", status);
+
+        int status = builtins_engine(tree);
+        *get_exit_status() = status;
+
+        printf("The Exit Status :: %d\n", *get_exit_status());
     }
-    ft_free(garbage_collector);
 }
