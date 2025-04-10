@@ -37,7 +37,8 @@ int execute_command(t_tree *node)
     {
         if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1)) 
         {
-            printf("%s: command not found\n", node->args[0]);
+            write(2, node->args[0], strlen(node->args[0]));
+            write(2, ": command not found\n", 21);
             exit(127);
         }
     }

@@ -61,20 +61,36 @@ int *get_exit_status(void)
     return &exit_status;
 }
 
-
 void handle_sigint(int sig)
 {
     (void)sig;
+    rl_replace_line("", 0);
+    write(1, "\n", 1);            
+    rl_on_new_line();
+    rl_redisplay();
     *get_exit_status() = 130;
+
 }
+
 
 
 void ft_handle_signals()
 {
-    if (signal(SIGINT, handle_sigint) == -1)
+
+    if (signal(SIGINT, handle_sigint) == (sig_t) -1)
         printf("Sig Err");
 }
 
+int main_engine(t_tree *node)
+{
+    int status;
+
+    status = builtins_engine(node);
+    if (status != -1)
+        return status;
+    else 
+        return execute_ast(node);
+}
 
 int main(int ac, char **av, char **envp)
 {
@@ -98,9 +114,9 @@ int main(int ac, char **av, char **envp)
         split_tree(tree);
         add_paths_to_tree(tree, paths);
 
-        int status = builtins_engine(tree);
-        *get_exit_status() = status;
+        // print_node(tree);
 
-        printf("The Exit Status :: %d\n", *get_exit_status());
+        *get_exit_status() = main_engine(tree);
+        printf ("the exit status is :: %d\n", *get_exit_status());
     }
 }
