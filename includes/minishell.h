@@ -81,6 +81,14 @@ int ft_env(t_tree *node);
 char **get_envp(char **envp);
 int ft_strcmp(const char *str1, const char *str2);
 void print_node(t_tree *node);
+int *get_exit_status(void);
+
+
+
+//SIGNALS::
+void ft_handle_signals();
+
+
 // t_tree *find_leftmost_cmd(t_tree *node);
 void create_redir_files_and_get_last(t_tree *node, int *last_fd, e_type type);
 
