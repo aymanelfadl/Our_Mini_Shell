@@ -28,8 +28,6 @@ void remove_from_env(const char *key)
     get_envp(new_env);
 }
 
-
-
 int ft_unset(t_tree *node)
 {
     int i;

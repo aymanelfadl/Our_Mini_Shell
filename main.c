@@ -12,7 +12,6 @@ void print_strings(char **strs)
     }
 }
 
-
 char **get_envp(char **envp)
 {
     static char **saved_envp;

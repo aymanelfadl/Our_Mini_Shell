@@ -1,8 +1,5 @@
 #include "minishell.h"
 
-
-
-
 int ft_env(t_tree *node)
 {
     char **env = get_envp(NULL);
