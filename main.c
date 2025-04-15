@@ -2,6 +2,17 @@
 
 t_list *garbage_collector = NULL;
 
+void print_strings(char **strs)
+{
+    int i = 0;
+    while (strs[i])
+    {
+        printf("%s\n", strs[i]);
+        i++;
+    }
+}
+
+
 char **get_envp(char **envp)
 {
     static char **saved_envp;

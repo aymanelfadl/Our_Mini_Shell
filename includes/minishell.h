@@ -10,7 +10,7 @@
 #include <fcntl.h>
 #include <readline/readline.h>
 #include <sys/stat.h>
-#include <sys/types.h>gine(tree);
+#include <sys/types.h>
 #include <sys/wait.h>
 #include "../libft/libft.h"
 
@@ -85,6 +85,7 @@ int ft_pwd(void);
 char **get_envp(char **envp);
 void print_node(t_tree *node);
 int *get_exit_status(void);
+void print_strings(char **strs);
 
 
 

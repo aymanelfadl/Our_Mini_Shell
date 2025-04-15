@@ -1,54 +1,49 @@
 #include "minishell.h"
 
-static char *select_arg(char *old_envp, t_tree *node)
+void remove_from_env(const char *key)
 {
-    int  i;
-    int count; 
+    int i = 0;
+    int j = 0;
+    char **old_env = get_envp(NULL);
+    char **new_env;
 
-    count = 0;
+    while (old_env[i])
+        i++;
+
+    new_env = ft_malloc(sizeof(char *) * (i + 1));
+    if (!new_env)
+        return;
     i = 0;
-    while (node->args[count])
-        count++;
-    while (i < count)
+    while (old_env[i])
     {
-        if (!ft_strcmp(old_envp, node->args[i]))
-            return NULL;
+        if (ft_strncmp(old_env[i], key, ft_strlen(key)) == 0 && old_env[i][ft_strlen(key)] == '=')
+        {
+            i++;
+            continue;
+        }
+        new_env[j++] = ft_strdup(old_env[i]);
         i++;
     }
-    return old_envp;
+    new_env[j] = NULL;
+    get_envp(new_env);
 }
 
 
-static char **set_new_envp(char **old_envp, t_tree *node)
-{
-    int count;
-    int new_index;
-    int i;
-    char **new_envp;
-    char *selected_arg;
-
-    i = -1;
-    new_index = 0;
-    count = 0;
-
-    while (old_envp[count])
-        count++;
-    new_envp = ft_malloc((count + 1) * sizeof(char *));
-    if (!new_envp)
-        return NULL;
-    while (++i < count)
-    {
-        selected_arg = select_arg(old_envp[i], node);
-        if (!selected_arg)
-            new_envp[new_index++] = old_envp[i];
-    }
-    new_envp[new_index] = NULL;
-    return new_envp;
-}
 
 int ft_unset(t_tree *node)
 {
-    char **res = set_new_envp(get_envp(NULL), node);
-    get_envp(res);
+    int i;
+    char *value;
+ 
+    if (!node->args || !node->args[1])
+        return 1;
+    i = 1;
+    while (node->args[i])
+    {
+        value = getenv(node->args[i]);
+        if (value) 
+            remove_from_env(node->args[i]);
+        i++;
+    }
     return 0;
 }
