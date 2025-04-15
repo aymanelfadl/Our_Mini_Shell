@@ -1,36 +1,37 @@
 #include "minishell.h"
 
-int     is_path(char *COMMAND)
+int     is_path(char *command)
 {
         int     i;
 
         i = 0;
-        if (COMMAND == NULL)
+        if (command == NULL)
             return (0);
-        while (COMMAND[i])
+        while (command[i])
         {
-                if (COMMAND[i++] == '/')
+                if (command[i++] == '/')
                         return (1);
         }
         return (0);
 }
 
-char     *check_paths(char **paths, char **COMMAND)
+char     *check_paths(char **paths, char **command)
 {
         int             i;
         char    *path;
-        char    *FT_FILE;
+        char    *file;
 
         i = -1;
-
-        if (is_path(*COMMAND))
-            return ((access(*COMMAND , X_OK) == 0) ? ft_strdup(*COMMAND) : NULL);
+        if (!command || !(*command))
+                return (NULL); 
+        if (is_path(*command))
+            return ((access(*command , X_OK) == 0) ? ft_strdup(*command) : NULL);
         while (paths && paths[++i])
         {
                 path = ft_strjoin(paths[i], "/");
-                FT_FILE = ft_strjoin(path, *COMMAND);
-                if (access(FT_FILE, X_OK) == 0)
-                        return (FT_FILE);
+                file = ft_strjoin(path, *command);
+                if (access(file, X_OK) == 0)
+                        return (file);
         }
         return (NULL);
 }

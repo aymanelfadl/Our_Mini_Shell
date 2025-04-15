@@ -12,7 +12,7 @@ char	*my_strnstr(const char *haystack, const char *needle, size_t len)
 	if (ft_strlen(needle) > ft_strlen(haystack))
 		return (NULL);
 	i = 0;
-	while (haystack[i] && i < len)  
+	while (haystack[i] && i < len)
 	{
 		if (haystack[i] == needle[i - i])
 		{
@@ -37,9 +37,10 @@ static int incleded_in_char (char s , char * target)
 	}
 	return (0);
 }
+
 char *my_strchr(char *s, char *target)
 {
-;
+
 	while (*s)
 	{
 		if (incleded_in_char(*s , target))

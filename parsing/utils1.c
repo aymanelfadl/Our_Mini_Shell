@@ -26,9 +26,9 @@ void *ft_malloc(size_t size)
 int extract_ops_helper(char *s, char **ops)
 {
     int i;
-
+    
     i = 0;
-    while (*ops)
+    while (ops && *ops)
     {
         if (my_strnstr(s, *ops, ft_strlen(*ops)))
             return (i);
@@ -46,6 +46,8 @@ char **extract_ops(char *s)
     int size;
 
     size = ops_size(s , all_ops);
+    if (size == 0)
+        return (NULL);
     op_found = 0;
     i = 0;
     ops = ft_malloc((sizeof(char **) * size));
@@ -68,7 +70,8 @@ char **extract_ops(char *s)
 
 void put_to_tree(t_tree **node, char **commands_files, int index, int one_node , t_tree * last_node_parent)
 {
-
+    if (index < 0)
+        return;
     if (one_node)
     {
         (*node)->right = NULL;
@@ -80,6 +83,8 @@ void put_to_tree(t_tree **node, char **commands_files, int index, int one_node ,
     {
         put_to_tree(&((*node)->left), commands_files, index - 1, one_node, last_node_parent);
         (*node)->right = ft_malloc(sizeof(t_tree));
+        if (!commands_files[index])
+            (*node)->right = NULL;
         (*node)->right->parent = (*node);
         (*node)->right->data = commands_files[index];
         (*node)->right->type = (is_file((*node)->type) ? FT_FILE : COMMAND);
@@ -93,14 +98,14 @@ void put_to_tree(t_tree **node, char **commands_files, int index, int one_node ,
         (*node) = ft_malloc(sizeof(t_tree));
         (*node)->data = commands_files[index];
         (*node)->parent = last_node_parent;
-        (*node)->type =((*node)->parent->type == INPUT_REDIRECTION) ? FT_FILE : COMMAND;
+        (*node)->type = COMMAND;
         (*node)->left = NULL;
         (*node)->right = NULL;
         return;
     }
 }
 
-static int double_char_size(char **s)
+int double_char_size(char **s)
 {
     int i;
     i = 0;
@@ -117,8 +122,10 @@ void print_double_pointer(char **s)
         printf("double pointer is NULL\n");
     while (s && *s)
     {
-        printf("%s ", *s);
+        printf("%s", *s);
         s++;
+        if(*s)
+            printf(",");
     }
     printf("\n");
 }
@@ -143,6 +150,7 @@ t_tree *make_tree(char ***data)
         tree->parent = parent;
         parent = tree;
         tree->data = ops[last_word--];
+        printf("tree->data = %s \n", tree->data);
         tree->type = get_data_type(tree->data);
         if (last_word != -1)
         {
@@ -150,6 +158,8 @@ t_tree *make_tree(char ***data)
             tree = tree->left;
         }
     }
+    // print_double_pointer(ops);
+    // print_double_pointer(commands_files);
     tree->left = NULL;
     put_to_tree(&head, commands_files, double_char_size(commands_files) - 1, (double_char_size(commands_files) - 1 == 0) && (ops == NULL), tree);
     return (head);

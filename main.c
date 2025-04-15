@@ -83,17 +83,12 @@ int main(int ac, char **av, char **envp)
     {
         ft_handle_signals();
 
-        tree = ilyas_parsing(1);
+        tree = ilyas_parsing(envp);
         if (!tree)
         {
             *get_exit_status() = 130; 
             continue;
         }
-
-        paths = extract_paths(envp);
-        split_tree(tree);
-        add_paths_to_tree(tree, paths);
-
         // print_node(tree);
 
         *get_exit_status() = main_engine(tree);
