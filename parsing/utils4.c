@@ -39,3 +39,14 @@ char* handle_commandes_quoets(t_tree *tree)
     command[i] = 0;
     return(ft_strjoin(command_with_no_quotes , rest));
 }
+t_list *strings_to_list(char **strings)
+{
+    t_list *head;
+    head = NULL;
+    while (strings && *strings)
+    {
+        ft_lstadd_back(&head, ft_lstnew(*strings));
+        strings++;
+    }
+    return (head);
+}

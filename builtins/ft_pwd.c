@@ -1,8 +1,9 @@
-#include "minishell.h"
+#include "../parsing.h"
 
-int ft_pwd(void)
+char* ft_pwd(void)
 {
-    char buffer[1024];
-    printf("%s\n", getcwd(buffer , 1000));
-    return (0);
+    char * buffer = malloc (1000);
+    //printf("%s\n",getcwd(buffer , 1000));
+    getcwd(buffer , 1000);
+    return (buffer);
 }

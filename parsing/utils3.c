@@ -1,4 +1,5 @@
 #include "minishell.h"
+#include "minishell.h"
 
 int ops_size(char *s, char **all_ops)
 {
@@ -16,16 +17,6 @@ int ops_size(char *s, char **all_ops)
             s++;
     }
     return (i + 1);
-}
-
-int ft_strcmp(char *s1, char *s2)
-{
-    while (*s1 && *s2 && *s1 == *s2)
-    {
-        s1++;
-        s2++;
-    }
-    return (*s1 - *s2);
 }
 
 char *replace_strin_in_string(char *s, int start_string, int end_string, char *inserted_string)
@@ -66,22 +57,35 @@ enum inside_what string_is_inside(char *s, int start)
     return (DOUBLE_QUOTES);
 }
 
+char *get_value(t_list *envp, char *key)
+{
+    t_list *value_node;
+    char *content;
 
-
-
-char *parse_env(char *s)
+    if (key_is_already_exist(envp, key))
+    {
+        value_node = key_is_already_exist(envp , key);
+        content = value_node->content;
+        if (ft_strchr(content, '=') && *(ft_strchr(content, '=') + 1))
+            return (ft_strdup(ft_strchr(content, '=') + 1));
+        else
+            return (NULL);
+    }
+    return (NULL);
+}
+char *parse_env(char *s, t_list *envp)
 {
     char *dollr_sign;
     int i = 1;
 
     dollr_sign = ft_strchr(s, '$');
-    while (dollr_sign && ((ft_isalpha(*(dollr_sign + 1))) || (*(dollr_sign + 1 ) == '_')))
+    while (dollr_sign && ((ft_isalpha(*(dollr_sign + 1))) || (*(dollr_sign + 1) == '_')))
     {
         if (string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING)
         {
-            while (ft_isalpha(dollr_sign[i]))
+            while (ft_isalnum(dollr_sign[i]))
                 i++;
-            char *to_replace = getenv(ft_substr(dollr_sign + 1, 0, i - 1));
+            char *to_replace = get_value(envp, ft_substr(dollr_sign + 1, 0, i - 1));
             s = replace_strin_in_string(s, (int)(dollr_sign - s), (dollr_sign - s + i), to_replace);
         }
         dollr_sign = ft_strchr(dollr_sign + 1, '$');

@@ -8,12 +8,10 @@ void handle_sigint(int sig)
     rl_on_new_line();
     rl_redisplay();
     *get_exit_status() = 130;
-
 }
 
 void ft_handle_signals()
 {
-
     if (signal(SIGINT, handle_sigint) == (sig_t) -1)
         printf("Sig Err");
 }

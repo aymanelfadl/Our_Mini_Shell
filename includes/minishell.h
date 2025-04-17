@@ -9,6 +9,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -73,13 +74,22 @@ int execute_append_output_redirection(t_tree *node);
 
 // Builtins::
 int builtins_engine(t_tree *node);
-int ft_unset(t_tree *node);
-void ft_exit(t_tree *node);
-int ft_env(t_tree *node);
 int ft_echo(t_tree *node);
-int ft_cd(t_tree *node);
+int ft_cd(t_tree *node , t_list * envp);
 int ft_export(t_tree *node, t_list **export_envp);
 int ft_pwd(void);
+void ft_exit(t_tree *node);
+int ft_unset(t_tree *node);
+int ft_env(t_tree *node);
+
+
+char *remove_quotes(char *string);
+char *extract_key_from_string(char *content);
+int export_operator(char *explited_sport);
+t_list *key_is_already_exist(t_list *envp, char *key);
+int is_valid_key(char *s);
+void push_back(t_list **export_envp, char *splited_export);
+char *get_key(char *splited_export);
 
 // UTILs::
 char **get_envp(char **envp);
@@ -109,7 +119,6 @@ enum inside_what
 void *ft_malloc(size_t size);
 int ft_free(t_list *lst);
 char **extract_ops(char *s);
-void print_tree(t_tree *tree);
 t_tree *make_tree(char ***data);
 enum data_type get_data_type(char *s);
 int commas_ops_check(char *s);
@@ -120,7 +129,7 @@ t_tree *ilyas_parsing(char **envp);
 int is_file(enum data_type type);
 int is_path(char *command);
 char *check_paths(char **paths, char **command);
-char **extract_paths(char **envp);
+char **extract_paths(t_list *envp);
 void split_tree(t_tree *tree);
 void add_paths_to_tree(t_tree *tree, char **paths);
 char *my_strchr(char *s, char *target);
@@ -129,7 +138,7 @@ int extract_ops_helper(char *s, char **ops);
 int ft_strcmp(char *s1, char *s2);
 char *replace_strin_in_string(char *s, int start_string, int end_string, char *inserted_string);
 enum inside_what string_is_inside(char *s, int start);
-char *parse_env(char *s);
+char *parse_env(char *s , t_list *envp);
 int double_char_size(char **s);
 char *skip_spaces(char *s);
 char *handle_commandes_quoets(t_tree *tree);
@@ -137,5 +146,6 @@ int there_is_something_between_2_adresses(char *s1, char *s2);
 char *skip_ops(char *command);
 int find_next_ops(char *command);
 int check_unexpected_token(char *command);
+t_list *strings_to_list(char **strings);
 
 #endif

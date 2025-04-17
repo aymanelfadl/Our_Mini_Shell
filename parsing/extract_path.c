@@ -1,12 +1,12 @@
 #include "minishell.h"
 
-int     is_path(char *command)
+int is_path(char *command)
 {
-        int     i;
+        int i;
 
         i = 0;
         if (command == NULL)
-            return (0);
+                return (0);
         while (command[i])
         {
                 if (command[i++] == '/')
@@ -15,17 +15,17 @@ int     is_path(char *command)
         return (0);
 }
 
-char     *check_paths(char **paths, char **command)
+char *check_paths(char **paths, char **command)
 {
-        int             i;
-        char    *path;
-        char    *file;
+        int i;
+        char *path;
+        char *file;
 
         i = -1;
         if (!command || !(*command))
-                return (NULL); 
+                return (NULL);
         if (is_path(*command))
-            return ((access(*command , X_OK) == 0) ? ft_strdup(*command) : NULL);
+                return ((access(*command, X_OK) == 0) ? ft_strdup(*command) : NULL);
         while (paths && paths[++i])
         {
                 path = ft_strjoin(paths[i], "/");
@@ -35,19 +35,13 @@ char     *check_paths(char **paths, char **command)
         }
         return (NULL);
 }
-char    **extract_paths(char **envp)
+char **extract_paths(t_list *envp)
 {
-        int     i;
-
-        i = 0;
-        while (envp && envp[i])
+        while (envp)
         {
-                if (ft_strnstr(envp[i], "PATH=", 5))
-                        return (ft_split(envp[i] + 5, ":"));
-                i++;
+                if (ft_strnstr(envp->content, "PATH=", 5))
+                        return (ft_split(envp->content + 5, ":"));
+                envp = envp->next;
         }
         return (NULL);
 }
-
-
-

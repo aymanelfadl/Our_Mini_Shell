@@ -2,19 +2,19 @@
 
 enum data_type get_data_type(char *s)
 {
-    if (!strncmp(s, "||", 2))
+    if (!ft_strncmp(s, "||", 2))
         return (OR);
-    if (!strncmp(s, "&&", 2))
+    if (!ft_strncmp(s, "&&", 2))
         return (AND);
-    if (!strncmp(s, ">>", 2))
+    if (!ft_strncmp(s, ">>", 2))
         return (APP_OUTPUT_REDIRECTION);
-    if (!strncmp(s, "<<", 2))
+    if (!ft_strncmp(s, "<<", 2))
         return (APP_INPUT_REDIRECTION);
-    if (!strncmp(s, "|", 1))
+    if (!ft_strncmp(s, "|", 1))
         return (PIPE);
-    if (!strncmp(s, ">", 1))
+    if (!ft_strncmp(s, ">", 1))
         return (OUTPUT_REDIRECTION);
-    if (!strncmp(s, "<", 1))
+    if (!ft_strncmp(s, "<", 1))
         return (INPUT_REDIRECTION);
 
     return (-1);

@@ -1,26 +1,7 @@
 #include "minishell.h"
-
-int is_valid_key(char *s)
-{
-    char *key;
-
-    if (!ft_strchr(s, '=') && s[0] != '=')
-        key = s;
-    else if (ft_strchr(s, '='), s[0] != '=')
-        key = ft_substr(s, 0, ft_strchr(s, '=') - s);
-    else
-        return (0);
-    if (ft_isdigit(*key))
-        return (0);
-    while (*key)
-    {
-        if (ft_isalnum(*key) || *key == '_')
-            key++;
-        else
-            return (0);
-    }
-    return (1);
-}
+// concatinate [ ]
+// oan exesting key accept new value
+//
 
 static void sort_envp(t_list *export_envp)
 {
@@ -42,8 +23,7 @@ static void sort_envp(t_list *export_envp)
                 (export_envp)->content = temp->content;
                 temp->content = helper;
             }
-            export_envp = temp;
-            temp = (export_envp)->next;
+            temp = temp->next;
         }
         export_envp = remmember_me;
     }
@@ -51,40 +31,42 @@ static void sort_envp(t_list *export_envp)
 
 static void write_expoert_envp(t_list *export_envp)
 {
-    int keylen;
-    int valuelen;
+    char *content;
+    int equal_found;
+
+    equal_found = 0;
     while (export_envp)
     {
-        printf("declare -x %s\n", (char *)export_envp->content);
+        content = export_envp->content;
+        ft_putstr_fd("declare -x ", 1);
+        while (*content)
+        {
+            ft_putchar_fd(*content, 1);
+            if (*content == '=')
+            {
+                ft_putchar_fd('\x22', 1);
+                equal_found = 1;
+            }
+            content++;
+        }
+        if (equal_found)
+            ft_putchar_fd('\x22', 1);
         export_envp = export_envp->next;
+        ft_putchar_fd('\n', 1);
     }
 }
-
-static void push_back(t_list **export_envp, char *splited_export)
+char *get_key(char *splited_export)
 {
-    char *key;
-    char *value;
-
-    key = ft_substr(splited_export, 0, ft_strchr(splited_export, '=') - splited_export);
-    if (!(*(ft_strchr(splited_export, '=') + 1)))
-        value = ft_strdup("=\x22\x22");
+    char *equale_adresse;
+    char *add_aquale_adresse;
+    char *adresse;
+    equale_adresse = ft_strchr(splited_export, '=');
+    add_aquale_adresse = ft_strnstr(splited_export, "+=", ft_strlen(splited_export));
+    if (add_aquale_adresse && (add_aquale_adresse < equale_adresse))
+        adresse = add_aquale_adresse;
     else
-    {
-        value =  ft_strdup(ft_strchr(splited_export, '=') + 1);
-        if (*value != 34 && *value != 39)
-        {
-            value = ft_strjoin(value, "\x22");
-            value = ft_strjoin("=\x22", value);
-        }
-        else if (*value  == 39)
-        {
-            value = ft_strjoin(ft_substr(value + 1 , 0 , ft_strlen(value + 1) -1), "\x22");
-            value = ft_strjoin("=\x22", value);
-        }
-        else 
-            value = ft_strjoin("=", value);
-    }
-    ft_lstadd_back(export_envp, ft_lstnew(ft_strjoin(key, value)));
+        adresse = equale_adresse;
+    return (ft_substr(splited_export, 0, adresse - splited_export));
 }
 
 int ft_export(t_tree *node, t_list **export_envp)
@@ -100,13 +82,14 @@ int ft_export(t_tree *node, t_list **export_envp)
     else
     {
         splited_export++;
+        *splited_export = remove_quotes(*splited_export);
         while (splited_export && *splited_export)
         {
-            if (!ft_strchr(*splited_export, '=') && is_valid_key(*splited_export))
+            if (!ft_strchr(*splited_export, '=') && is_valid_key(*splited_export) && !key_is_already_exist(*export_envp, *splited_export))
                 ft_lstadd_back(export_envp, ft_lstnew(*splited_export));
-            else if (ft_strchr(*splited_export, '=') && is_valid_key(*splited_export))
+            else if ((ft_strnstr(*splited_export, "=", ft_strlen(*splited_export)) || ft_strnstr(*splited_export, "+=", ft_strlen(*splited_export))) && is_valid_key(*splited_export)) // 1 -> "="
                 push_back(export_envp, *splited_export);
-            else
+            else if (!is_valid_key(*splited_export))
                 printf("export : %s : not a valid identifier\n", *splited_export);
             splited_export++;
         }

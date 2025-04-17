@@ -88,20 +88,20 @@ int main(int ac, char **av, char **envp)
     char **paths;
     t_tree *tree;
 
-    get_envp(envp);
     while (1)
     {
         ft_handle_signals();
 
-        tree = ilyas_parsing(envp);
+        tree = ilyas_parsing(get_envp(envp));
         if (!tree)
         {
-            *get_exit_status() = 130; 
+            // ft_free(garbage_collector); 
             continue;
         }
         // print_node(tree);
 
         *get_exit_status() = main_engine(tree);
+        
         printf ("the exit status is :: %d\n", *get_exit_status());
     }
 }

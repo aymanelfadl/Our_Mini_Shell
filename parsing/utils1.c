@@ -116,19 +116,6 @@ int double_char_size(char **s)
     }
     return (i);
 }
-void print_double_pointer(char **s)
-{
-    if (s == NULL)
-        printf("double pointer is NULL\n");
-    while (s && *s)
-    {
-        printf("%s", *s);
-        s++;
-        if(*s)
-            printf(",");
-    }
-    printf("\n");
-}
 
 t_tree *make_tree(char ***data)
 {
@@ -150,7 +137,6 @@ t_tree *make_tree(char ***data)
         tree->parent = parent;
         parent = tree;
         tree->data = ops[last_word--];
-        printf("tree->data = %s \n", tree->data);
         tree->type = get_data_type(tree->data);
         if (last_word != -1)
         {
@@ -158,8 +144,6 @@ t_tree *make_tree(char ***data)
             tree = tree->left;
         }
     }
-    // print_double_pointer(ops);
-    // print_double_pointer(commands_files);
     tree->left = NULL;
     put_to_tree(&head, commands_files, double_char_size(commands_files) - 1, (double_char_size(commands_files) - 1 == 0) && (ops == NULL), tree);
     return (head);

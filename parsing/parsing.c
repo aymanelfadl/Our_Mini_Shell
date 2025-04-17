@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+
+
 // void INThandler(int sig)
 // {
 //     char c;
@@ -10,17 +12,17 @@
 
 t_tree *ilyas_parsing(char **envp)
 {
-    char **paths = extract_paths(envp);
+    char **paths = extract_paths(strings_to_list(envp));
     t_list *lst;
     int i;
     i = 0;
     lst = NULL;
     char *phrase;
     phrase = readline("$>");
-    // add_history(phrase);
-    phrase = parse_env(phrase);
+    add_history(phrase);
+    phrase = parse_env(phrase, strings_to_list(envp));
     if (!check_unexpected_token(phrase))
-        return ( printf("unexpexted token \n"),NULL);
+        return (printf("unexpexted token \n"), NULL);
     char **cc = extract_ops(phrase);
     char ***s;
     s = ft_malloc(sizeof(char **) * 2);
@@ -30,8 +32,6 @@ t_tree *ilyas_parsing(char **envp)
     t_tree *tree = make_tree(s);
     split_tree(tree);
     add_paths_to_tree(tree, paths);
-    // printf("***************** tree ********************** \n\n");
-    // print_tree(tree);
     return (tree);
 }
 
@@ -40,7 +40,8 @@ t_tree *ilyas_parsing(char **envp)
 
 //     int i = 0;
 //     t_tree *tree;
-//     while ((tree = ilyas_parsing(envp)))
+//     t_list *envp_list = strings_to_list(envp);
+//     while ((tree = ilyas_parsing(envp_list)))
 //     {
 //         i++;
 //     }
@@ -76,27 +77,17 @@ t_tree *ilyas_parsing(char **envp)
 //     ft_pwd();
 // }
 
-//EXPORT
-// t_list *strings_to_list(char **strings)
-// {
-//     t_list *head;
-//     head = NULL;
-//     while (strings && *strings)
-//     {
-//         ft_lstadd_back(&head, ft_lstnew(*strings));
-//         strings++;
-//     }
-//     return (head);
-// }
+// EXPORT
+
 // int main(int ac, char **av, char **envp)
 // {
 //     t_tree node;
 //     t_list *env;
-//     env = strings_to_list(envp);
-//     while (1)
-//     {
-//         node.data = readline("$>");
-//         node.s = ft_split(node.data, " \t");
-//         ft_export(&node, &env);
-//     }
+    // env = strings_to_list(envp);
+//     node.data = readline("$>");
+//     node.args = ft_split(node.data, " \t");
+//     ft_cd(&node, env);
+//     node.data = readline("$>");
+//     node.args = ft_split(node.data, " \t");
+//     ft_export(&node, &env);
 // }
