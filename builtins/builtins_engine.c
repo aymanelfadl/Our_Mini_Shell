@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+// should some commands fork and oters no
+
+
 int builtins_engine(t_tree *node)
 {
     t_list *envp;

@@ -84,11 +84,10 @@ int main(int ac, char **av, char **envp)
         tree = ilyas_parsing(get_envp(envp));
         if (!tree)
         {
-            // ft_free(garbage_collector); 
             continue;
         }
         // print_node(tree);
-
+        process_heredocs(tree);
         *get_exit_status() = execute_ast(tree);
         
         printf ("the exit status is :: %d\n", *get_exit_status());

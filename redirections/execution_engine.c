@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+// should re handle everthing here 
+
 int execute_ast(t_tree *node)
 {
     if (node == NULL)
