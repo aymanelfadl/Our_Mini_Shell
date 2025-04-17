@@ -27,8 +27,9 @@ typedef enum data_type
     OR,              //6 
     COMMAND,         //7
     FT_FILE,            //8
-    FT_EOF       //9
-} e_type;
+    FT_EOF,     //9
+    BUILTIN,  //10
+ } e_type;
 
 typedef struct s_tree {
     char *path;
@@ -77,7 +78,7 @@ int builtins_engine(t_tree *node);
 int ft_echo(t_tree *node);
 int ft_cd(t_tree *node , t_list * envp);
 int ft_export(t_tree *node, t_list **export_envp);
-int ft_pwd(void);
+char* ft_pwd(void);
 void ft_exit(t_tree *node);
 int ft_unset(t_tree *node);
 int ft_env(t_tree *node);

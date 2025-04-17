@@ -71,17 +71,6 @@ int *get_exit_status(void)
     return &exit_status;
 }
 
-int main_engine(t_tree *node)
-{
-    int status;
-
-    status = builtins_engine(node);
-    if (status != -1)
-        return status;
-    else 
-        return execute_ast(node);
-}
-
 int main(int ac, char **av, char **envp)
 {
     (void)ac; (void)av;
@@ -100,7 +89,7 @@ int main(int ac, char **av, char **envp)
         }
         // print_node(tree);
 
-        *get_exit_status() = main_engine(tree);
+        *get_exit_status() = execute_ast(tree);
         
         printf ("the exit status is :: %d\n", *get_exit_status());
     }
