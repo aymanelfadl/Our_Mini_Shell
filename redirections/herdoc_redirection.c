@@ -1,38 +1,76 @@
 #include "minishell.h"
 
+int should_expand(char *delimiter)
+{
+    return (ft_strchr(delimiter, '$') != NULL);
+}
 
-void process_heredocs(t_tree *node) {
+char *expand_line(char *line)
+{
+    char *expanded_line;
+
+    expanded_line = parse_env(line, strings_to_list(get_envp(NULL)));
+    free(line);
+    return (expanded_line);
+}
+
+char *append_to_content(char *content, char *line)
+{
+    char *new_content;
+
+    if (!content)
+        return ft_strdup(line);
+    
+    new_content = ft_strjoin(content, "\n");
+    new_content = ft_strjoin(content, line);
+    return new_content;
+}
+
+char *handle_single_heredoc(char *delimiter, int expand)
+{
+    char *content = NULL;
+    char *line = NULL;
+
+    while ((line = readline("> ")))
+    {
+        if (!ft_strcmp(line, delimiter))
+        {   
+            free(line);
+            content = append_to_content(content, "\n");
+            break;
+        }
+        if (expand && ft_strchr(line, '$'))
+            line = expand_line(line);
+        content = append_to_content(content, line);
+        free(line);
+    }
+    return content;
+}
+
+void process_all_heredocs(t_tree *node)
+{
     if (!node)
         return;
 
-    if (node->type == APP_INPUT_REDIRECTION) 
+    if ((node->left && node->left->type == APP_INPUT_REDIRECTION) ||
+        (node->right && node->right->type == APP_INPUT_REDIRECTION))
     {
-        node->heredoc_content = handle_heredoc(node->right->data);
-        if (!node->heredoc_content) 
-        {
-            perror("Failed to read APP_INPUT_REDIRECTION content");
-            exit(EXIT_FAILURE);
-        }
+        process_all_heredocs(node->left);
+        process_all_heredocs(node->right);
     }
-    process_heredocs(node->left);
-    process_heredocs(node->right);
+    if (node->type == APP_INPUT_REDIRECTION)
+    {
+        int expand = should_expand(node->right->data);
+        char *heredoc_content = handle_single_heredoc(
+            ft_strtrim(node->right->data, " "), expand);
+        node->heredoc_content = heredoc_content;
+    }
 }
-
-
-char *handle_heredoc(char *delimiter) {
-    char *heredoc_content = NULL;
-    char *line = NULL;
-
-    while (1)
-    {
-        line = readline("herdoc> ");
-        if (!line || !ft_strcmp(line, delimiter))
-            break;
-        if (heredoc_content != NULL)
-            heredoc_content = ft_strjoin(heredoc_content, "\n");
-        heredoc_content = ft_strjoin(heredoc_content, line);        
-    }
-    return heredoc_content;
+t_tree *find_most_left_cmd(t_tree *node)
+{
+    while (node && node->left)
+        node = node->left;
+    return node;
 }
 
 int execute_append_input_redirection(t_tree *node)
@@ -65,7 +103,7 @@ int execute_append_input_redirection(t_tree *node)
         }
         close(pipefd[0]);
             
-        exit(execute_ast(node->left));
+        exit(execute_ast(find_most_left_cmd(node->left)));
     }
     else if (child_pid == -1)
     {

@@ -3,12 +3,11 @@
 int ft_env(t_tree *node)
 {
     char **env = get_envp(NULL);
-    
-    int i = 0;
-    while (env[i])
+
+    while (env && *env)
     {
-        printf("%s\n", env[i]);
-        i++;
+        printf("%s\n", *env);
+        env++;
     }
     return 0;
 }

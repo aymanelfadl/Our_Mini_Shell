@@ -13,9 +13,8 @@ static int ft_isnumber(char *str)
 
 static int ft_count_args(t_tree *node)
 {
-    int count;
+    int count = 0;
 
-    count = 0;
     while (node && node->args[count])
         count++;
     return count;
@@ -23,18 +22,24 @@ static int ft_count_args(t_tree *node)
 
 void ft_exit(t_tree *node)
 {
+    int exit_code = 0;
+
     if (ft_count_args(node) > 2)
+    {
         printf("exit: too many arguments\n");
-    else if (ft_count_args(node) == 1)
-    {
-        printf("exit\n");
-        exit(EXIT_SUCCESS);
-    }  
-    else if (!ft_isnumber(node->args[1]))
-        printf("exit: %s: numeric argument required\n", node->args[1]);
-    else
-    {
-        printf("exit\n");
-        exit(ft_atoi(node->args[1]));
+        *get_exit_status() = 1; 
+        return;
     }
+    if (ft_count_args(node) == 2 && !ft_isnumber(node->args[1]))
+    {
+        printf("exit: %s: numeric argument required\n", node->args[1]);
+        exit(255);
+    }
+    if (ft_count_args(node) == 2)
+        exit_code = ft_atoi(node->args[1]);
+
+    if (!node->parent)
+        printf("exit\n");
+
+    exit(exit_code);
 }

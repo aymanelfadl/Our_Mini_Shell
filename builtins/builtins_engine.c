@@ -2,30 +2,29 @@
 
 // should some commands fork and oters no
 
-
-int builtins_engine(t_tree *node)
+static int handle_builtin(t_tree *node, t_list *envp)
 {
-    t_list *envp;
-
-    envp = strings_to_list(get_envp(NULL));
-    if (!ft_strcmp(node->args[0], (char *)"exit"))
-        return (ft_exit(node), 0);    
-    else if (!ft_strcmp(node->args[0], (char *)"env"))
-        return (ft_env(node));
-    else if (!ft_strcmp(node->args[0], (char *)"unset"))
-        return (ft_unset(node));
-    else if (!ft_strcmp(node->args[0], (char *)"cd"))
+    if (!ft_strcmp(node->args[0], "exit"))
+        ft_exit(node);
+    if (!ft_strcmp(node->args[0], "env"))
+        return ft_env(node);
+    if (!ft_strcmp(node->args[0], "unset"))
+        return ft_unset(node);
+    if (!ft_strcmp(node->args[0], "cd"))
         return ft_cd(node, envp);
-    else if (!ft_strcmp(node->args[0], (char *)"echo"))
-        return (ft_echo(node));
-    else if (!ft_strcmp(node->args[0], (char *)"pwd"))
-    {
-        if (ft_pwd() != NULL)
-            return 0;
-        else 
-            return 1;
-    }
-    else if (!ft_strcmp(node->args[0], (char *)"export"))
-        return (ft_export(node, &envp)); 
-    return -1;   
+    if (!ft_strcmp(node->args[0], "echo"))
+        return ft_echo(node);
+    if (!ft_strcmp(node->args[0], "pwd"))
+        return ft_pwd() ? 0 : 1;
+    if (!ft_strcmp(node->args[0], "export"))
+        return ft_export(node, &envp);
+    return -1;
+}
+
+int builtins_engine(t_tree *node, t_list *envp)
+{
+    if (!node || !node->args || !node->args[0])
+        return -1;
+
+    return handle_builtin(node, envp);
 }

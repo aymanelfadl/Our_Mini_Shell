@@ -6,15 +6,15 @@ void handle_sigs(int sig)
     if (sig == SIGINT)
     {
         rl_replace_line("", 0);
-        write(1, "\n", 1);            
+        write(1, "\n", 1);
         rl_on_new_line();
         rl_redisplay();
-        *get_exit_status() = 130;
+        *get_exit_status() = 130; // Set exit status to 130 for SIGINT
     }
     else if (sig == SIGQUIT)
     {
-        rl_replace_line("", 0); 
-        rl_on_new_line();        
+        rl_replace_line("", 0);
+        rl_on_new_line();
         rl_redisplay();
     }
 }

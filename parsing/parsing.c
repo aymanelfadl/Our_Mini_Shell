@@ -10,9 +10,9 @@
 //     ilyas_parsing(0);
 // }
 
-t_tree *ilyas_parsing(char **envp)
+t_tree *ilyas_parsing(t_list *envp)
 {
-    char **paths = extract_paths(strings_to_list(envp));
+    char **paths = extract_paths(envp);
     t_list *lst;
     int i;
     i = 0;
@@ -20,7 +20,7 @@ t_tree *ilyas_parsing(char **envp)
     char *phrase;
     phrase = readline("$>");
     add_history(phrase);
-    phrase = parse_env(phrase, strings_to_list(envp));
+    phrase = parse_env(phrase, envp);
     if (!check_unexpected_token(phrase))
         return (printf("unexpexted token \n"), NULL);
     char **cc = extract_ops(phrase);
@@ -34,7 +34,6 @@ t_tree *ilyas_parsing(char **envp)
     add_paths_to_tree(tree, paths);
     return (tree);
 }
-
 // int main(int ac, char **av, char **envp)
 // {
 
