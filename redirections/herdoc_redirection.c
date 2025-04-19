@@ -83,7 +83,7 @@ int execute_append_input_redirection(t_tree *node)
     
     char *heredoc_content = node->heredoc_content;
     if (!heredoc_content)
-        return (perror("APP_INPUT_REDIRECTION content missing"), -1);
+        return (printf("here-document delimited by end-of-file (wanted `%s')\n", node->right->args[0]), 0);
 
     child_pid = fork();
     if (child_pid == 0)

@@ -24,7 +24,7 @@ void ft_handle_signals()
 {
     if (signal(SIGINT, handle_sigs) == (sig_t) -1)
         printf("Sig Err");
-    else if (signal(SIGQUIT, handle_sigs) == (sig_t) -1)
+    if (signal(SIGQUIT, handle_sigs) == (sig_t) -1)
         printf("Sig Err");
 }
 

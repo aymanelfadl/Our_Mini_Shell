@@ -34,6 +34,7 @@ int execute_external_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
+        signal(SIGINT, SIG_DFL);
         if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1))
         {
             write(2, node->args[0], strlen(node->args[0]));
@@ -45,6 +46,7 @@ int execute_external_command(t_tree *node)
         return (perror("exec_command"), -1);
     else
     {
+        signal(SIGINT, SIG_IGN);
         waitpid(pid, &status, 0);
         if (WIFSIGNALED(status))
         {
