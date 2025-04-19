@@ -1,14 +1,5 @@
 #include "minishell.h"
 
-int create_pipe(int pip_fd[2])
-{
-    if (pipe(pip_fd) == -1)
-    {
-        perror("pipe");
-        return -1;
-    }
-    return 0;
-}
 
 pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd)
 {
@@ -36,7 +27,6 @@ pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd)
             }
             close(input_fd);
         }
-
         if (output_fd != -1)
         {
             if (dup2(output_fd, STDOUT_FILENO) == -1)
@@ -47,9 +37,7 @@ pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd)
             }
             close(output_fd);
         }
-
         exit_status = execute_ast(node_to_exec);
-        
         exit(exit_status);
     }
     return child_pid;
