@@ -10,7 +10,6 @@ char *expand_line(char *line)
     char *expanded_line;
 
     expanded_line = parse_env(line, strings_to_list(get_envp(NULL)));
-    free(line);
     return (expanded_line);
 }
 
@@ -23,9 +22,7 @@ char *append_to_content(char *content, char *line)
         return ft_strdup(line);
     
     temp = ft_strjoin(content, "\n");
-    free(content); 
     new_content = ft_strjoin(temp, line);
-    free(temp);
     return new_content;
 }
 

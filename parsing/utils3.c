@@ -112,7 +112,13 @@ char *parse_env(char *s, t_list *envp)
     while (dollr_sign)
     {
         i = 1;
-        if (((ft_isalnum(*(dollr_sign + 1))) || (*(dollr_sign + 1) == '_')))
+        if (*(dollr_sign + 1) == '?')
+        {
+            s = replace_strin_in_string(s, (int)(dollr_sign - s), (dollr_sign - s + 2), ft_itoa(*get_exit_status()));
+            dollr_sign = ft_strchr(s, '$');
+
+        }
+        else if (((ft_isalnum(*(dollr_sign + 1))) || (*(dollr_sign + 1) == '_')))
         {
             if (string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING)
             {

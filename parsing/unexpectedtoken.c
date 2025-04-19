@@ -1,7 +1,17 @@
 #include <minishell.h>
 
-static int there_is_only_op(char *command)
+static int there_is_only_op_and__checklast_op(char *command)
 {
+    char *head_command ;
+    head_command = command;
+
+    while (find_next_ops(head_command) != -1)
+    {
+        head_command+= find_next_ops(head_command);
+        head_command = skip_ops(head_command);
+    }
+    if (*head_command == 0)
+        return (1);
     command = skip_spaces(command);
     while (*command)
     {
@@ -30,7 +40,7 @@ int check_unexpected_token(char *command)
     int first_loop;
 
     first_loop = 1;
-    if (!commas_ops_check(command) || there_is_only_op(command))
+    if (!commas_ops_check(command) || there_is_only_op_and__checklast_op(command))
         return (0);
     command = skip_spaces(command);
     while (*command)
