@@ -1,4 +1,4 @@
-#include"minishell.h"
+#include <minishell.h>
 
 char *skip_spaces(char *s)
 {
@@ -85,7 +85,7 @@ static void ft_echo_write(char *to_write, int n_option)
         ft_putchar_fd('\n', 1);
 }
 
-int ft_echo(t_tree *node)
+void ft_echo(t_tree *node)
 {
     int n_option;
     char **check_n_option;
@@ -105,5 +105,4 @@ int ft_echo(t_tree *node)
     if (n_option)
         to_write = skip_all_n_options(to_write);
     ft_echo_write(to_write, n_option);
-    return 0;
 }

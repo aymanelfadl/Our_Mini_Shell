@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include <minishell.h>
 
 char *my_strnstr(const char *haystack, const char *needle, size_t len)
 {

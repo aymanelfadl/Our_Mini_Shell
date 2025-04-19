@@ -45,6 +45,7 @@ typedef struct s_tree {
     struct s_tree *right;
     struct s_tree *parent;
     enum data_type type;
+    int to_skip;
 } t_tree;
 
 enum inside_what
@@ -93,9 +94,9 @@ void create_redir_files_and_get_last(t_tree *node, int *last_fd, e_type type);
 // ==========================================================================
 
 int builtins_engine(t_tree *node, t_list *envp);
-int ft_echo(t_tree *node);
+void ft_echo(t_tree *node);
 int ft_cd(t_tree *node , t_list * envp);
-int ft_export(t_tree *node, t_list **export_envp);
+void ft_export(t_tree *node, t_list **export_envp);
 char* ft_pwd(void);
 void ft_exit(t_tree *node);
 int ft_unset(t_tree *node);
@@ -114,8 +115,8 @@ char *get_key(char *splited_export);
 //                                 PARSING
 // ==========================================================================
 
-t_tree *ilyas_parsing(t_list *envp);
-t_tree *make_tree(char ***data);
+t_tree *ilyas_parsing(char * command , t_list *envp);
+t_tree *make_tree(char ***data , int * to_skip);
 void split_tree(t_tree *tree);
 void add_paths_to_tree(t_tree *tree, char **paths);
 
@@ -182,6 +183,7 @@ int double_char_size(char **s);
 // ==========================================================================
 
 void ft_handle_signals();
+void ctrl_d_handle();
 
 // ==========================================================================
 //                                  MISC

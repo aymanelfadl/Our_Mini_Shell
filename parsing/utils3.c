@@ -1,5 +1,4 @@
-#include "minishell.h"
-#include "minishell.h"
+#include <minishell.h>
 
 int ops_size(char *s, char **all_ops)
 {
@@ -64,7 +63,7 @@ char *get_value(t_list *envp, char *key)
 
     if (key_is_already_exist(envp, key))
     {
-        value_node = key_is_already_exist(envp , key);
+        value_node = key_is_already_exist(envp, key);
         content = value_node->content;
         if (ft_strchr(content, '=') && *(ft_strchr(content, '=') + 1))
             return (ft_strdup(ft_strchr(content, '=') + 1));
@@ -73,22 +72,61 @@ char *get_value(t_list *envp, char *key)
     }
     return (NULL);
 }
+
+char *handle_ted(t_list *envp, char *command)
+{
+    char *command_head = command;
+    char *ted_adresse;
+
+    ted_adresse = ft_strchr(command, '~');
+    while (ted_adresse)
+    {
+        if (string_is_inside(command, ted_adresse - command) == INSIDE_NOTHING)
+        {
+            if ((ted_adresse == command_head) && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
+            {
+                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
+                ted_adresse = ft_strchr(command, '~');
+            }
+            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
+            {
+                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
+                ted_adresse = ft_strchr(command, '~');
+            }
+            else
+                ted_adresse = ft_strchr(ted_adresse + 1, '~');
+        }
+        else
+            ted_adresse = ft_strchr(ted_adresse + 1, '~');
+    }
+    return (command);
+}
 char *parse_env(char *s, t_list *envp)
 {
     char *dollr_sign;
     int i = 1;
+    int j = 1;
 
+    s = handle_ted(envp, s);
     dollr_sign = ft_strchr(s, '$');
-    while (dollr_sign && ((ft_isalpha(*(dollr_sign + 1))) || (*(dollr_sign + 1) == '_')))
+    while (dollr_sign)
     {
-        if (string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING)
+        i = 1;
+        if (((ft_isalnum(*(dollr_sign + 1))) || (*(dollr_sign + 1) == '_')))
         {
-            while (ft_isalnum(dollr_sign[i]))
-                i++;
-            char *to_replace = get_value(envp, ft_substr(dollr_sign + 1, 0, i - 1));
-            s = replace_strin_in_string(s, (int)(dollr_sign - s), (dollr_sign - s + i), to_replace);
+            if (string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING)
+            {
+                while (ft_isalnum(dollr_sign[i]))
+                    i++;
+                char *to_replace = get_value(envp, ft_substr(dollr_sign + 1, 0, i - 1));
+                s = replace_strin_in_string(s, (int)(dollr_sign - s), (dollr_sign - s + i), to_replace);
+                dollr_sign = ft_strchr(s, '$');
+            }
+            else
+                dollr_sign = ft_strchr(dollr_sign + 1, '$');
         }
-        dollr_sign = ft_strchr(dollr_sign + 1, '$');
+        else
+            dollr_sign = ft_strchr(dollr_sign + 1, '$');
     }
     return (s);
 }

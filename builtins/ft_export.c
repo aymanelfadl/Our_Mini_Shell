@@ -1,4 +1,5 @@
 #include "minishell.h"
+
 // concatinate [ ]
 // oan exesting key accept new value
 //
@@ -69,7 +70,7 @@ char *get_key(char *splited_export)
     return (ft_substr(splited_export, 0, adresse - splited_export));
 }
 
-int ft_export(t_tree *node, t_list **export_envp)
+void ft_export(t_tree *node, t_list **export_envp)
 {
     char **splited_export;
     char *key;
@@ -94,5 +95,4 @@ int ft_export(t_tree *node, t_list **export_envp)
             splited_export++;
         }
     }
-    return 0;
 }

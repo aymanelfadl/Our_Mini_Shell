@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include <minishell.h>
 
 int ft_free(t_list *lst)
 {
@@ -26,7 +26,7 @@ void *ft_malloc(size_t size)
 int extract_ops_helper(char *s, char **ops)
 {
     int i;
-    
+
     i = 0;
     while (ops && *ops)
     {
@@ -45,7 +45,7 @@ char **extract_ops(char *s)
     int op_found;
     int size;
 
-    size = ops_size(s , all_ops);
+    size = ops_size(s, all_ops);
     if (size == 0)
         return (NULL);
     op_found = 0;
@@ -68,8 +68,13 @@ char **extract_ops(char *s)
     return (ops);
 }
 
-void put_to_tree(t_tree **node, char **commands_files, int index, int one_node , t_tree * last_node_parent)
+void put_to_tree(t_tree **node, char **commands_files, int index, int one_node, t_tree *last_node_parent)
 {
+    t_tree *node_assign;
+
+    int index_shift;
+
+    index_shift = 1;
     if (index < 0)
         return;
     if (one_node)
@@ -80,24 +85,29 @@ void put_to_tree(t_tree **node, char **commands_files, int index, int one_node ,
         return;
     }
     if ((*node) != NULL)
-    {
-        put_to_tree(&((*node)->left), commands_files, index - 1, one_node, last_node_parent);
-        (*node)->right = ft_malloc(sizeof(t_tree));
-        if (!commands_files[index])
-            (*node)->right = NULL;
-        (*node)->right->parent = (*node);
-        (*node)->right->data = commands_files[index];
-        (*node)->right->type = (is_file((*node)->type) ? FT_FILE : COMMAND);
-        if ((*node)->type == APP_INPUT_REDIRECTION)
-            (*node)->right->type = FT_EOF;
-        (*node)->right->left = NULL;
-        (*node)->right->right = NULL;
+    { // here u need to assign to the left node
+        if ((*node)->to_skip == 0)
+        {
+            node_assign = ft_malloc(sizeof(t_tree));
+            if (!commands_files[index])
+                node_assign = NULL;
+            node_assign->parent = (*node);
+            node_assign->data = commands_files[index];
+            node_assign->type = (is_file((*node)->type) ? FT_FILE : COMMAND);
+            if ((*node)->type == APP_INPUT_REDIRECTION)
+                node_assign->type = FT_EOF;
+            node_assign->left = NULL;
+            node_assign->right = NULL;
+            (*node)->right = node_assign;
+            put_to_tree(&((*node)->left), commands_files, index - 1, one_node, last_node_parent);
+        }
+        else
+            put_to_tree(&((*node)->left), commands_files, index, one_node, last_node_parent);
     }
     if ((*node) == NULL)
     {
         (*node) = ft_malloc(sizeof(t_tree));
         (*node)->data = commands_files[index];
-        (*node)->parent = last_node_parent;
         (*node)->type = COMMAND;
         (*node)->left = NULL;
         (*node)->right = NULL;
@@ -116,8 +126,21 @@ int double_char_size(char **s)
     }
     return (i);
 }
+void print_double_pointer(char **s)
+{
+    if (s == NULL)
+        printf("double pointer is NULL\n");
+    while (s && *s)
+    {
+        printf("%s", *s);
+        s++;
+        if (*s)
+            printf(",");
+    }
+    printf("\n");
+}
 
-t_tree *make_tree(char ***data)
+t_tree *make_tree(char ***data, int *to_skip)
 {
     char **commands_files;
     char **ops;
@@ -136,8 +159,10 @@ t_tree *make_tree(char ***data)
     {
         tree->parent = parent;
         parent = tree;
+        tree->to_skip = to_skip[last_word];
         tree->data = ops[last_word--];
         tree->type = get_data_type(tree->data);
+        tree->right = NULL;
         if (last_word != -1)
         {
             tree->left = ft_malloc(sizeof(t_tree));

@@ -1,4 +1,4 @@
-#include "minishell.h"
+#include <minishell.h>
 
 static int there_is_only_op(char *command)
 {
@@ -18,9 +18,9 @@ static int check_two_ops(enum data_type op1, enum data_type op2)
 
     if (op1 == op2)
         return (0);
-    if ((op1 == OR|| op1 == AND|| op1 == PIPE) && (op2 == OR|| op2 == AND|| op2 == PIPE))
+    if ((op1 == OR || op1 == AND || op1 == PIPE) && (op2 == OR || op2 == AND || op2 == PIPE))
         return (0);
-    if ((op1 == INPUT_REDIRECTION || op1 == OUTPUT_REDIRECTION || op1 == APP_OUTPUT_REDIRECTION || op1 == APP_INPUT_REDIRECTION) && (op2 == OR|| op2 == AND|| op2 == PIPE))
+    if ((op1 == INPUT_REDIRECTION || op1 == OUTPUT_REDIRECTION || op1 == APP_OUTPUT_REDIRECTION || op1 == APP_INPUT_REDIRECTION) && (op2 == OR || op2 == AND || op2 == PIPE))
         return (0);
     return (1);
 }
