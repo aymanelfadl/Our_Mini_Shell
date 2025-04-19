@@ -63,13 +63,7 @@ int execute_external_command(t_tree *node)
 }
 
 int execute_pipe(t_tree *node)
-{
-    if (!node || !node->left || !node->right)
-    {
-        fprintf(stderr, "Error: Invalid pipe node structure.\n");
-        return (EXIT_FAILURE);
-    }
-    
+{    
     if (node->left && node->left->heredoc_content)
         return execute_with_pipe(node, node->left->heredoc_content);
     return execute_with_pipe(node, NULL);

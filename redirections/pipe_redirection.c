@@ -8,7 +8,7 @@ int execute_with_pipe(t_tree *node, char *heredoc_content)
     int heredoc_pipe_fd[2]; 
     int input_for_left = -1;
 
-    if (heredoc_content)
+    if (heredoc_content) 
     {
         if (pipe(heredoc_pipe_fd) == -1) {
             perror("pipe (heredoc)");
@@ -23,6 +23,7 @@ int execute_with_pipe(t_tree *node, char *heredoc_content)
         close(heredoc_pipe_fd[1]);
         input_for_left = heredoc_pipe_fd[0];
     }
+
     if (pipe(pip_fd) == -1) {
         perror("pipe (main)");
         if (heredoc_content) 

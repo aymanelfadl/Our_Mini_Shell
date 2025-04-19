@@ -24,7 +24,8 @@ pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd)
 
     if (child_pid == 0)
     {
-        if (input_fd != -1) {
+        if (input_fd != -1)
+        {
             if (dup2(input_fd, STDIN_FILENO) == -1)
             {
                 perror("dup2 input");
