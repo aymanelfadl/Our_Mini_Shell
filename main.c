@@ -107,16 +107,16 @@ int main(int ac, char **av, char **envp)
     (void)av;
     t_list *env_list;
 
+    // Initialize environment variables and signal handling
     initialize_shell(&env_list, envp);
-
-    while (1)
-    {
-        t_tree *tree = parse_input(env_list); 
-        if (!tree)
-            continue;
-
-        execute_tree(tree);
+    
+    // Main shell loop
+    while (1) {
+        // Parse user input into a syntax tree
+        t_tree *tree = parse_input(env_list);
+        
+        // Execute the command tree if valid
+        if (tree)
+            execute_tree(tree);
     }
-
-    return 0;
 }

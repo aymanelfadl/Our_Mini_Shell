@@ -17,12 +17,15 @@ char *expand_line(char *line)
 char *append_to_content(char *content, char *line)
 {
     char *new_content;
+    char *temp;
 
     if (!content)
         return ft_strdup(line);
     
-    new_content = ft_strjoin(content, "\n");
-    new_content = ft_strjoin(content, line);
+    temp = ft_strjoin(content, "\n");
+    free(content); 
+    new_content = ft_strjoin(temp, line);
+    free(temp);
     return new_content;
 }
 

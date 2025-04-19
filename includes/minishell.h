@@ -41,7 +41,6 @@ typedef struct s_tree {
     char *data;
     char **args;
     char *heredoc_content;
-    char *output_file;
     struct s_tree *left;
     struct s_tree *right;
     struct s_tree *parent;
@@ -71,9 +70,8 @@ int execute_external_command(t_tree *node);
 // ==========================================================================
 
 // Pipe
-int execute_simple_pipe(t_tree *node);
-int execute_heredoc_pipe(t_tree *node);
-
+int execute_with_pipe(t_tree *node, char *content);
+pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd);
 // Input
 int execute_input_redirection(t_tree *node);
 int execute_append_input_redirection(t_tree *node);
@@ -163,7 +161,6 @@ t_list *strings_to_list(char **strings);
 
 // Process Management
 int wait_for_child(pid_t child_pid);
-pid_t fork_and_execute(t_tree *node, int input_fd, int output_fd, int execute_left);
 int create_pipe(int pip_fd[2]);
 
 // Memory Management

@@ -1,56 +1,52 @@
 #include "minishell.h"
 
-static int execute_with_pipe(t_tree *node, char *heredoc_content)
+int execute_with_pipe(t_tree *node, char *heredoc_content)
 {
     int pip_fd[2];
     pid_t left_pid, right_pid;
     int status;
+    int heredoc_pipe_fd[2]; 
+    int input_for_left = -1;
 
-    if (create_pipe(pip_fd) == -1)
-        return -1;
     if (heredoc_content)
     {
-        if (write(pip_fd[1], heredoc_content, ft_strlen(heredoc_content)) == -1)
-        {
-            perror("write");
-            close(pip_fd[0]);
-            close(pip_fd[1]);
+        if (pipe(heredoc_pipe_fd) == -1) {
+            perror("pipe (heredoc)");
             return -1;
         }
-        close(pip_fd[1]);
-    }
-    left_pid = fork_and_execute(node, heredoc_content ? pip_fd[0] : -1, pip_fd[1], 1);
-    close(pip_fd[0]);
-    close(pip_fd[1]);
-    if (left_pid == -1)
-        return -1;
-    if (!heredoc_content)
-    {
-        right_pid = fork_and_execute(node, pip_fd[0], -1, 0);
-        if (right_pid == -1)
+        if (write(heredoc_pipe_fd[1], heredoc_content, ft_strlen(heredoc_content)) == -1) {
+            perror("write (heredoc)");
+            close(heredoc_pipe_fd[0]);
+            close(heredoc_pipe_fd[1]);
             return -1;
-        return wait_for_child(right_pid);
+        }
+        close(heredoc_pipe_fd[1]);
+        input_for_left = heredoc_pipe_fd[0];
     }
-    return wait_for_child(left_pid);
-}
-
-
-int execute_simple_pipe(t_tree *node)
-{
-    if (!node->left || !node->right)
-    {
-        printf("Error: Invalid pipe node.\n");
+    if (pipe(pip_fd) == -1) {
+        perror("pipe (main)");
+        if (heredoc_content) 
+            close(heredoc_pipe_fd[0]);
         return -1;
     }
-    return execute_with_pipe(node, NULL);
-}
 
-int execute_heredoc_pipe(t_tree *node)
-{
-    if (!node->left || !node->heredoc_content)
-    {
-        printf("Error: Invalid heredoc node.\n");
+    left_pid = fork_and_execute(node->left, input_for_left, pip_fd[1]);
+    if (heredoc_content)
+        close(heredoc_pipe_fd[0]);
+    close(pip_fd[1]);
+
+    if (left_pid == -1) {
+        close(pip_fd[0]);
         return -1;
     }
-    return execute_with_pipe(node, node->heredoc_content);
+
+    right_pid = fork_and_execute(node->right, pip_fd[0], -1); 
+    close(pip_fd[0]);
+
+    if (right_pid == -1) {
+        waitpid(left_pid, &status, 0);
+        return -1;
+    }
+    waitpid(left_pid, &status, 0);
+    return wait_for_child(right_pid);
 }

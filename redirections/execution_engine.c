@@ -69,7 +69,10 @@ int execute_pipe(t_tree *node)
         fprintf(stderr, "Error: Invalid pipe node structure.\n");
         return (EXIT_FAILURE);
     }
-    return execute_simple_pipe(node);
+    
+    if (node->left && node->left->heredoc_content)
+        return execute_with_pipe(node, node->left->heredoc_content);
+    return execute_with_pipe(node, NULL);
 }
 
 int execute_redirection(t_tree *node)
