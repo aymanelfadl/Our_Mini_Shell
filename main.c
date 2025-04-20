@@ -92,7 +92,6 @@ void execute_tree(t_tree *tree)
     *get_exit_status() = execute_ast(tree);
 }
 
-
 int main(int ac, char **av, char **envp)
 {
     (void)ac;

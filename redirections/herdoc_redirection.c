@@ -1,15 +1,15 @@
 #include "minishell.h"
 
+// still need expend of the herdoc still crt +c in herdoc i hope that's all
 int should_expand(char *delimiter)
 {
     return (ft_strchr(delimiter, '$') != NULL);
 }
-
 char *expand_line(char *line)
 {
     char *expanded_line;
 
-    expanded_line = parse_env(line, strings_to_list(get_envp(NULL)));
+    expanded_line = getenv(line+1);
     return (expanded_line);
 }
 
