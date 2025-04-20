@@ -53,14 +53,12 @@ int ft_unset(t_tree *node)
 {
     t_list *old_env = initialize_env_list(NULL);
     t_list *new_env = NULL;
-    t_list *temp = old_env;
     char **envp;
-    while (temp)
+    while (old_env)
     {
-        char *entry = (char *)temp->content;
-        if (!is_unset_target(entry, node->args))
-            ft_lstadd_back(&new_env, ft_lstnew(ft_strdup(entry)));
-        temp = temp->next;
+        if (!is_unset_target((char *)old_env->content, node->args))
+            ft_lstadd_back(&new_env, ft_lstnew(ft_strdup((char *)old_env->content)));
+        old_env = old_env->next;
     }
     envp = list_to_char_array(new_env);
     initialize_env_list(envp);
