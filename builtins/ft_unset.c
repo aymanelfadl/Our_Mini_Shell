@@ -1,47 +1,68 @@
 #include "minishell.h"
 
-void remove_from_env(const char *key)
+char **list_to_char_array(t_list *list)
 {
+    int size = ft_lstsize(list);
+    char **array = ft_malloc(sizeof(char *) * (size + 1));
+
+    if (!array)
+        return NULL;
+
     int i = 0;
-    int j = 0;
-    char **old_env = get_envp(NULL);
-    char **new_env;
-
-    while (old_env[i])
-        i++;
-
-    new_env = ft_malloc(sizeof(char *) * (i + 1));
-    if (!new_env)
-        return;
-    i = 0;
-    while (old_env[i])
+    while (list)
     {
-        if (ft_strncmp(old_env[i], key, ft_strlen(key)) == 0 && old_env[i][ft_strlen(key)] == '=')
-        {
-            i++;
-            continue;
-        }
-        new_env[j++] = ft_strdup(old_env[i]);
+        array[i] = ft_strdup((char *)list->content);
+        list = list->next;
         i++;
     }
-    new_env[j] = NULL;
-    get_envp(new_env);
+    array[i] = NULL;
+
+    return array;
+}
+
+size_t get_key_len(char *str)
+{
+    size_t i;
+    
+    i = 0;
+    while (str[i])
+    {
+        if (str[i] == '=')
+            return i;
+        i++;
+    }
+    return i;
+}
+
+int is_unset_target(char *str, char **args)
+{
+    int i = 1;
+    size_t len;
+
+    while (args[i])
+    {
+        len = get_key_len(str);
+        if (ft_strncmp(str, args[i], len) == 0 && str[len] == '=' && !ft_strchr(args[i], '='))
+            return 1; 
+        i++;
+    }
+    return 0;
 }
 
 int ft_unset(t_tree *node)
 {
-    int i;
-    char *value;
- 
-    if (!node->args || !node->args[1])
-        return 1;
-    i = 1;
-    while (node->args[i])
+    t_list *old_env = initialize_env_list(NULL);
+    t_list *new_env = NULL;
+    t_list *temp = old_env;
+    char **envp;
+    while (temp)
     {
-        value = getenv(node->args[i]);
-        if (value) 
-            remove_from_env(node->args[i]);
-        i++;
+        char *entry = (char *)temp->content;
+        if (!is_unset_target(entry, node->args))
+            ft_lstadd_back(&new_env, ft_lstnew(ft_strdup(entry)));
+        temp = temp->next;
     }
-    return 0;
+    envp = list_to_char_array(new_env);
+    initialize_env_list(envp);
+    return 0;    
 }

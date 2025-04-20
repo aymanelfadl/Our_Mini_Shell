@@ -17,9 +17,7 @@ int execute_ast(t_tree *node)
 
 int execute_command_or_builtin(t_tree *node)
 {
-    t_list *envp = strings_to_list(get_envp(NULL));
-
-    int builtin_status = builtins_engine(node, envp);
+    int builtin_status = builtins_engine(node, initialize_env_list(NULL));
     if (builtin_status != -1)
         return builtin_status;
 
@@ -34,9 +32,8 @@ int execute_external_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
-        // Child process should use default signal handling
         ft_set_default_signals();
-        if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1))
+        if ((node->path == NULL) || (execve(node->path, node->args, list_to_char_array(initialize_env_list(NULL))) == -1))
         {
             write(2, node->args[0], strlen(node->args[0]));
             write(2, ": command not found\n", 21);

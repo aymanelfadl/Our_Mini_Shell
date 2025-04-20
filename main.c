@@ -12,16 +12,6 @@ void print_strings(char **strs)
     }
 }
 
-char **get_envp(char **envp)
-{
-    static char **saved_envp;
-    
-    if (envp != NULL) {
-        saved_envp = envp;
-    }
-    return saved_envp;
-}
-
 void print_node(t_tree *node) {
     if (node == NULL) {
         printf("Node is NULL\n");
@@ -70,9 +60,22 @@ int *get_exit_status(void)
     return &exit_status;
 }
 
+char **get_envp(char **envp)
+{
+    static char **saved_envp;
+    
+    if (envp != NULL) {
+        saved_envp = envp;
+    }
+    return saved_envp;
+}
+
 t_list *initialize_env_list(char **envp)
 {
-    return strings_to_list(envp);
+    static t_list *head;
+    if (envp != NULL)
+        head = strings_to_list(envp);
+    return head;
 }
 
 void initialize_shell(t_list **env_list, char **envp)

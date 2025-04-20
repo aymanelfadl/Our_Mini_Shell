@@ -110,6 +110,8 @@ t_list *key_is_already_exist(t_list *envp, char *key);
 int is_valid_key(char *s);
 void push_back(t_list **export_envp, char *splited_export);
 char *get_key(char *splited_export);
+t_list *initialize_env_list(char **envp);
+char **list_to_char_array(t_list *list);
 
 // ==========================================================================
 //                                 PARSING
@@ -162,7 +164,6 @@ t_list *strings_to_list(char **strings);
 
 // Process Management
 int wait_for_child(pid_t child_pid);
-int create_pipe(int pip_fd[2]);
 
 // Memory Management
 void *ft_malloc(size_t size);
