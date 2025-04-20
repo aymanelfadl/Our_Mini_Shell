@@ -16,25 +16,27 @@ char *expand_line(char *line)
 char *append_to_content(char *content, char *line)
 {
     char *new_content;
-    char *temp;
-
+    
     if (!content)
         return ft_strdup(line);
-    
-    temp = ft_strjoin(content, "\n");
-    new_content = ft_strjoin(temp, line);
-    return new_content;
+    new_content = ft_strjoin(content, "\n");
+    return ft_strjoin(new_content, line);
 }
-
 char *handle_single_heredoc(char *delimiter, int expand)
 {
     char *content = NULL;
     char *line = NULL;
 
-    while ((line = readline("> ")))
+    while (1)
     {
+        line = readline("> ");
+        if (!line)
+        {
+            free(content);
+            return NULL;
+        }
         if (!ft_strcmp(line, delimiter))
-        {   
+        {
             free(line);
             content = append_to_content(content, "\n");
             break;
@@ -61,8 +63,7 @@ void process_all_heredocs(t_tree *node)
     if (node->type == APP_INPUT_REDIRECTION)
     {
         int expand = should_expand(node->right->data);
-        char *heredoc_content = handle_single_heredoc(
-            ft_strtrim(node->right->data, " "), expand);
+        char *heredoc_content = handle_single_heredoc(ft_strtrim(node->right->data, " "), expand);
         node->heredoc_content = heredoc_content;
     }
 }

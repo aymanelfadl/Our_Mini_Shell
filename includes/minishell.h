@@ -182,8 +182,10 @@ int double_char_size(char **s);
 //                                 SIGNALS
 // ==========================================================================
 
-void ft_handle_signals();
+void ft_set_interactive_signals();
 void ctrl_d_handle();
+void ft_set_default_signals();
+void ft_set_wait_signals();
 
 // ==========================================================================
 //                                  MISC

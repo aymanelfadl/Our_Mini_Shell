@@ -34,7 +34,8 @@ int execute_external_command(t_tree *node)
     pid = fork();
     if (pid == 0)
     {
-        signal(SIGINT, SIG_DFL);
+        // Child process should use default signal handling
+        ft_set_default_signals();
         if ((node->path == NULL) || (execve(node->path, node->args, get_envp(NULL)) == -1))
         {
             write(2, node->args[0], strlen(node->args[0]));
@@ -46,8 +47,9 @@ int execute_external_command(t_tree *node)
         return (perror("exec_command"), -1);
     else
     {
-        signal(SIGINT, SIG_IGN);
+        ft_set_wait_signals();
         waitpid(pid, &status, 0);
+        ft_set_interactive_signals();
         if (WIFSIGNALED(status))
         {
             *get_exit_status() = 128 + WTERMSIG(status);
