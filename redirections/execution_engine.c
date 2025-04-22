@@ -13,15 +13,15 @@ t_tree *find_most_left_cmd(t_tree *node)
 }
 int execute_ast(t_tree *node)
 {
-    t_tree *mst_left = find_most_left_cmd(node);
+    t_tree *cur = find_most_left_cmd(node);
 
-    // print_node(mst_left);
-    if (mst_left->parent && mst_left->parent->type == PIPE)
-        return execute_pipe(mst_left->parent, 0);
-    // if (mst_left->type == COMMAND)
-    //     return execute_command_or_builtin(mst_left);
+    while (cur->parent && cur->parent->type == PIPE)
+        cur = cur->parent;
 
-    return 0;
+    if (cur->type == PIPE)
+        return execute_pipe(cur, STDIN_FILENO);
+    else
+        return execute_command_or_builtin(cur);
 }
 
 
