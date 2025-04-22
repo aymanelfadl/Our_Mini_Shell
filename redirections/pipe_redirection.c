@@ -1,53 +1,52 @@
 #include "minishell.h"
 
-int execute_with_pipe(t_tree *node, char *heredoc_content)
+int execute_pipe(t_tree *node, int input_fd)
 {
-    int pip_fd[2];
-    pid_t left_pid, right_pid;
-    int status;
-    int heredoc_pipe_fd[2]; 
-    int input_for_left = -1;
+    int pipe_fd[2];
+    pid_t pid;
 
-    if (heredoc_content) 
+    // Base case: node is a COMMAND (last in pipeline)
+    if (node->type == COMMAND)
     {
-        if (pipe(heredoc_pipe_fd) == -1) {
-            perror("pipe (heredoc)");
-            return -1;
+        pid = fork();
+        if (pid == 0)
+        {
+            if (input_fd != STDIN_FILENO)
+            {
+                dup2(input_fd, STDIN_FILENO);
+                close(input_fd);
+            }
+            execute_command_or_builtin(node);
+            exit(0);
         }
-        if (write(heredoc_pipe_fd[1], heredoc_content, ft_strlen(heredoc_content)) == -1) {
-            perror("write (heredoc)");
-            close(heredoc_pipe_fd[0]);
-            close(heredoc_pipe_fd[1]);
-            return -1;
-        }
-        close(heredoc_pipe_fd[1]);
-        input_for_left = heredoc_pipe_fd[0];
+        if (input_fd != STDIN_FILENO)
+            close(input_fd);
+        return 0;
     }
 
-    if (pipe(pip_fd) == -1) {
-        perror("pipe (main)");
-        if (heredoc_content) 
-            close(heredoc_pipe_fd[0]);
-        return -1;
+    // node is PIPE: create pipe and handle left & right
+    if (pipe(pipe_fd) == -1)
+        return (perror("pipe"), -1);
+
+    // Left child: write to pipe
+    pid = fork();
+    if (pid == 0)
+    {
+        dup2(input_fd, STDIN_FILENO);
+        dup2(pipe_fd[1], STDOUT_FILENO);
+        close(pipe_fd[0]);
+        close(pipe_fd[1]);
+        if (input_fd != STDIN_FILENO)
+            close(input_fd);
+        execute_command_or_builtin(node->left);
+        exit(0);
     }
 
-    left_pid = fork_and_execute(node->left, input_for_left, pip_fd[1]);
-    if (heredoc_content)
-        close(heredoc_pipe_fd[0]);
-    close(pip_fd[1]);
+    // Parent: close write, continue with right child
+    close(pipe_fd[1]);
+    if (input_fd != STDIN_FILENO)
+        close(input_fd);
 
-    if (left_pid == -1) {
-        close(pip_fd[0]);
-        return -1;
-    }
-
-    right_pid = fork_and_execute(node->right, pip_fd[0], -1); 
-    close(pip_fd[0]);
-
-    if (right_pid == -1) {
-        waitpid(left_pid, &status, 0);
-        return -1;
-    }
-    waitpid(left_pid, &status, 0);
-    return wait_for_child(right_pid);
+    // Recurse on right
+    return execute_pipe(node->right, pipe_fd[0]);
 }

@@ -41,6 +41,7 @@ typedef struct s_tree {
     char *data;
     char **args;
     char *heredoc_content;
+    char **ops;
     struct s_tree *left;
     struct s_tree *right;
     struct s_tree *parent;
@@ -61,7 +62,7 @@ enum inside_what
 
 int execute_ast(t_tree *node);
 int execute_command_or_builtin(t_tree *node);
-int execute_pipe(t_tree *node);
+int execute_pipe(t_tree *node, int input_fd);
 int execute_redirection(t_tree *node);
 int execute_logical_operators(t_tree *node);
 int execute_external_command(t_tree *node);
@@ -78,7 +79,6 @@ int execute_input_redirection(t_tree *node);
 int execute_append_input_redirection(t_tree *node);
 
 // Output
-int execute_output_redirection(t_tree *node);
 int execute_append_output_redirection(t_tree *node);
 
 // Heredoc
@@ -88,6 +88,7 @@ char *handle_single_heredoc(char *delimiter, int expand);
 
 // Redirection Utils
 void create_redir_files_and_get_last(t_tree *node, int *last_fd, e_type type);
+t_tree *find_most_left_cmd(t_tree *node);
 
 // ==========================================================================
 //                                BUILTINS
@@ -170,7 +171,7 @@ void *ft_malloc(size_t size);
 int ft_free(t_list *lst);
 
 // Debugging / Printing
-void print_node(t_tree *node);
+void print_node(t_tree *node, int depth);
 void print_strings(char **strs);
 
 // Exit Status

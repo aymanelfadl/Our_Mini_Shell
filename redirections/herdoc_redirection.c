@@ -67,12 +67,7 @@ void process_all_heredocs(t_tree *node)
         node->heredoc_content = heredoc_content;
     }
 }
-t_tree *find_most_left_cmd(t_tree *node)
-{
-    while (node && node->left)
-        node = node->left;
-    return node;
-}
+
 
 int execute_append_input_redirection(t_tree *node)
 {

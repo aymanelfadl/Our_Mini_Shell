@@ -1,0 +1,12 @@
+builtins
+in
+includes
+libft
+main.c
+main.o
+Makefile
+minishell
+parsing
+README.md
+redirections
+signals

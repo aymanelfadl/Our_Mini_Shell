@@ -1,19 +1,29 @@
 #include "minishell.h"
 
+t_tree *find_most_left_cmd(t_tree *node)
+{
+    char **ops;
+    while (node && node->left)
+    {
+        if (node->type != COMMAND)
+            node->ops = &node->data;
+        node = node->left;
+    }
+    return node;
+}
 int execute_ast(t_tree *node)
 {
-    if (!node)
-        return 0;
+    t_tree *mst_left = find_most_left_cmd(node);
 
-    if (node->type == COMMAND)
-        return execute_command_or_builtin(node);
-    else if (node->type == PIPE)
-        return execute_pipe(node);
-    else if (node->type == AND || node->type == OR)
-        return execute_logical_operators(node);
-    else
-        return execute_redirection(node);
+    // print_node(mst_left);
+    if (mst_left->parent && mst_left->parent->type == PIPE)
+        return execute_pipe(mst_left->parent, 0);
+    // if (mst_left->type == COMMAND)
+    //     return execute_command_or_builtin(mst_left);
+
+    return 0;
 }
+
 
 int execute_command_or_builtin(t_tree *node)
 {
@@ -61,13 +71,6 @@ int execute_external_command(t_tree *node)
             return -1;
     }
     return 0;
-}
-
-int execute_pipe(t_tree *node)
-{    
-    if (node->left && node->left->heredoc_content)
-        return execute_with_pipe(node, node->left->heredoc_content);
-    return execute_with_pipe(node, NULL);
 }
 
 int execute_redirection(t_tree *node)

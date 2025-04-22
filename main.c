@@ -11,47 +11,56 @@ void print_strings(char **strs)
         i++;
     }
 }
-
-void print_node(t_tree *node) {
-    if (node == NULL) {
-        printf("Node is NULL\n");
+void print_node(t_tree *node, int depth)
+{
+    if (!node)
         return;
-    }
-    printf("Node type: %d\n", node->type);
-    printf("Node path: %s\n", node->path);
-    printf("Node data: %s\n", node->data);
 
-    if (node->args != NULL) {
-        printf("Node args:\n");
-        for (char **arg = node->args; *arg != NULL; arg++) {
-            printf("  %s\n", *arg);
-        }
-    } else {
-        printf("Node args: NULL\n");
+    // Indent based on depth
+    for (int i = 0; i < depth; i++)
+        printf("  ");
+
+    // Print node type
+    if (node->type == PIPE)
+        printf("PIPE");
+    else if (node->type == COMMAND)
+        printf("COMMAND");
+    else if (node->type == INPUT_REDIRECTION)
+        printf("REDIRECT_IN");
+    else if (node->type == OUTPUT_REDIRECTION)
+        printf("REDIRECT_OUT");
+    else
+        printf("UNKNOWN");
+
+    // Print command if available
+    if (node->args && node->args[0])
+        printf(" | cmd: %s", node->args[0]);
+
+    // Print parent info
+    if (node->parent)
+    {
+        printf(" | parent: ");
+        if (node->parent->type == PIPE)
+            printf("PIPE");
+        else if (node->parent->type == COMMAND)
+            printf("COMMAND");
+        else if (node->parent->type == INPUT_REDIRECTION)
+            printf("REDIRECT_IN");
+        else if (node->parent->type == OUTPUT_REDIRECTION)
+            printf("REDIRECT_OUT");
+        else
+            printf("UNKNOWN");
     }
 
-    printf("Node heredoc_content: %s\n", node->heredoc_content);
+    printf("\n"); // <<< Main new line here
 
-    if (node->left != NULL) {
-        printf("Left child:\n");
-        print_node(node->left);
-    } else {
-        printf("Left child: NULL\n");
-    }
+    // Recursive calls
+    print_node(node->left, depth + 1);
+    print_node(node->right, depth + 1);
 
-    if (node->right != NULL) {
-        printf("Right child:\n");
-        print_node(node->right);
-    } else {
-        printf("Right child: NULL\n");
-    }
-
-    if (node->parent != NULL) {
-        printf("Parent node path: %s\n", node->parent->path);
-        printf("Parent node data: %s\n", node->parent->data);
-    } else {
-        printf("Parent: NULL\n");
-    }
+    // Optional: Add empty line between subtrees (helps with visual separation)
+    if (depth == 0)
+        printf("\n");
 }
 
 int *get_exit_status(void)
@@ -111,7 +120,7 @@ int main(int ac, char **av, char **envp)
         while(commands && *commands)
         {
             tree = ilyas_parsing(*commands , env_list);
-            //tree = parse_input(env_list);
+            print_node(tree, 0);
             if (tree)
                 execute_tree(tree);
             commands++;
