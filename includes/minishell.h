@@ -64,36 +64,10 @@ enum inside_what
 //                           EXECUTION ENGINE
 // ==========================================================================
 
-int execute_ast(t_tree *node);
-int execute_command_or_builtin(t_tree *node);
-int execute_pipe(t_tree *node, int input_fd);
-int execute_redirection(t_tree *node);
-int execute_logical_operators(t_tree *node);
-int execute_external_command(t_tree *node);
- int execute_output_redirection(t_tree *node);
 
 // ==========================================================================
 //                              REDIRECTIONS
 // ==========================================================================
-
-// Pipe
-int execute_with_pipe(t_tree *node, char *content);
-pid_t fork_and_execute(t_tree *node_to_exec, int input_fd, int output_fd);
-// Input
-int execute_input_redirection(t_tree *node);
-int execute_append_input_redirection(t_tree *node);
-
-// Output
-int execute_append_output_redirection(t_tree *node);
-
-// Heredoc
-void process_all_heredocs(t_tree *node);
-int should_expand(char *delimiter);
-char *handle_single_heredoc(char *delimiter, int expand);
-
-// Redirection Utils
-void create_redir_files_and_get_last(t_tree *node, int *last_fd, e_type type);
-t_tree *find_most_left_cmd(t_tree *node);
 
 // ==========================================================================
 //                                BUILTINS
