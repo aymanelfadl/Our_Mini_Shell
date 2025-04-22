@@ -16,9 +16,11 @@ REDIRECTIONFILES = $(REDIRECTIONDIR)/append_output_redirection.c $(REDIRECTIONDI
                    $(REDIRECTIONDIR)/pipe_redirection.c $(REDIRECTIONDIR)/execution_engine.c \
                    $(REDIRECTIONDIR)/logical_operators.c $(REDIRECTIONDIR)/redirection_utils.c \
 
-PARSING_FILES = $(PARSINGDIR)/parsing.c $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
+PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
-				$(PARSINGDIR)/utils3.c $(PARSINGDIR)/unexpectedtoken.c $(PARSINGDIR)/utils4.c
+				$(PARSINGDIR)/utils3.c $(PARSINGDIR)/unexpectedtoken.c $(PARSINGDIR)/utils4.c \
+				$(PARSINGDIR)/operators_tools.c $(PARSINGDIR)/operators_tools2.c $(PARSINGDIR)/ft_split_files.c \
+				$(PARSINGDIR)/create_tree.c
 
 BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_utils.c $(BUILTINSDIR)/builtins_engine.c \
 				$(BUILTINSDIR)/ft_exit.c $(BUILTINSDIR)/ft_env.c $(BUILTINSDIR)/ft_cd.c $(BUILTINSDIR)/ft_echo.c \

@@ -1,15 +1,5 @@
 #include <minishell.h>
 
-//t_list *garbage_collector = NULL;
-
-// void INThandler(int sig)
-// {
-//     char c;
-//     signal(sig, SIG_IGN);
-//     signal(SIGINT, INThandler);
-//     ilyas_parsing(0);
-// }
-
 void ctrl_d_handle()
 {
     printf("exit\n");
@@ -78,69 +68,3 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
     add_paths_to_tree(tree, paths);
     return (tree);
 }
-
-// int main(int ac, char **av, char **envp)
-// {
-
-//     int i = 0;
-//     t_tree *tree;
-//     t_list *envp_list = strings_to_list(envp);
-//     while (1)
-//     {
-//         char *phrase;
-//         phrase = readline("$>");
-//         if (!phrase)
-//             ctrl_d_handle();
-//         char **commands = ft_split(phrase , "\n");
-//         while(commands && *commands)
-//         {
-//             tree = ilyas_parsing(*commands , envp_list);
-//             commands++;
-//         }
-//     }
-//     return (0);
-// }
-
-// // built ins tests
-
-// int main(int ac, char **av)
-// {
-//     t_tree node;
-//     while (1)
-//     {
-//         node.data = readline("$>");
-//         if (!commas_ops_check(node.data))
-//             return (printf("syntax error near unexpected token \n"), 1);
-//         node.s = ft_split(node.data, " \t");
-//         ft_echo(&node);
-//     }
-// }
-
-// int main(int ac , char **av)
-// {
-//     t_tree node;
-//     node.data =  readline("$>");
-//     node.s = ft_split(node.data , " \t");
-//     ft_cd(&node);
-
-// }
-
-// int main(int ac , char **av)
-// {
-//     ft_pwd();
-// }
-
-// EXPORT
-
-// int main(int ac, char **av, char **envp)
-// {
-//     t_tree node;
-//     t_list *env;
-//     env = strings_to_list(envp);
-//     node.data = readline("$>");
-//     node.args = ft_split(node.data, " \t");
-//     ft_cd(&node, env);
-//     node.data = readline("$>");
-//     node.args = ft_split(node.data, " \t");
-//     ft_export(&node, &env);
-// }

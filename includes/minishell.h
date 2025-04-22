@@ -56,6 +56,10 @@ enum inside_what
     INSIDE_NOTHING, //    2
 };
 
+
+
+
+
 // ==========================================================================
 //                           EXECUTION ENGINE
 // ==========================================================================
@@ -66,6 +70,7 @@ int execute_pipe(t_tree *node, int input_fd);
 int execute_redirection(t_tree *node);
 int execute_logical_operators(t_tree *node);
 int execute_external_command(t_tree *node);
+ int execute_output_redirection(t_tree *node);
 
 // ==========================================================================
 //                              REDIRECTIONS
@@ -122,6 +127,8 @@ t_tree *ilyas_parsing(char * command , t_list *envp);
 t_tree *make_tree(char ***data , int * to_skip);
 void split_tree(t_tree *tree);
 void add_paths_to_tree(t_tree *tree, char **paths);
+char **ft_split_files(char *files);
+
 
 // Token Extraction & Handling
 char **extract_ops(char *s);

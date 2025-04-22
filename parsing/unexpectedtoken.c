@@ -45,7 +45,9 @@ int check_unexpected_token(char *command)
     command = skip_spaces(command);
     while (*command)
     {
-        if (first_loop && ((get_data_type(command) == 6) || (get_data_type(command) == 5) || get_data_type(command) == 0))
+        if (first_loop && ((get_data_type(command) == OR) || (get_data_type(command) == AND) || get_data_type(command) == PIPE))
+            return (0);
+        else if (get_data_type(command) == -2)
             return (0);
         else if (get_data_type(command) != -1 && get_data_type(skip_ops(command)) != -1)
         {

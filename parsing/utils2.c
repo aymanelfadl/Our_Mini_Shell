@@ -1,57 +1,6 @@
 #include <minishell.h>
 
-enum data_type get_data_type(char *s)
-{
-    if (!ft_strncmp(s, "||", 2))
-        return (OR);
-    if (!ft_strncmp(s, "&&", 2))
-        return (AND);
-    if (!ft_strncmp(s, ">>", 2))
-        return (APP_OUTPUT_REDIRECTION);
-    if (!ft_strncmp(s, "<<", 2))
-        return (APP_INPUT_REDIRECTION);
-    if (!ft_strncmp(s, "|", 1))
-        return (PIPE);
-    if (!ft_strncmp(s, ">", 1))
-        return (OUTPUT_REDIRECTION);
-    if (!ft_strncmp(s, "<", 1))
-        return (INPUT_REDIRECTION);
 
-    return (-1);
-}
-
-int commas_ops_check(char *s)
-{
-    int commas;
-    if (!s)
-        return (0);
-    while (*s)
-    {
-        if (*s == 34 | *s == 39)
-        {
-            if (ft_strchr(s + 1, *s))
-                s = ft_strchr(s + 1, *s) + 1;
-            else
-                return (0);
-        }
-        else
-            s++;
-    }
-    return (1);
-}
-
-int find_next_ops(char *command)
-{
-    int i = 0;
-
-    while (command[i])
-    {
-        if (get_data_type(&command[i]) != -1 && commas_ops_check(&command[i]))
-            return (i);
-        i++;
-    }
-    return (-1);
-}
 int there_is_something_between_2_adresses(char *s1, char *s2)
 {
     while (s1 != s2)
@@ -63,16 +12,7 @@ int there_is_something_between_2_adresses(char *s1, char *s2)
     return (1);
 }
 
-char *skip_ops(char *command)
-{
-    command = skip_spaces(command);
-    if (!get_data_type(command) || get_data_type(command) == 1 || get_data_type(command) == 3)
-        command++;
-    else if (get_data_type(command) != -1)
-        command += 2;
-    command = skip_spaces(command);
-    return (command);
-}
+
 
 int check_file_before_command_irederection(char *command)
 {
