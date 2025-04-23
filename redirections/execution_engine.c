@@ -2,16 +2,15 @@
 
 int *get_last_in(void)
 {
-    static int fd_in;
+    static int fd_in = 0;
     return &fd_in;
 }
 
 int *get_last_out(void)
 {
-    static int fd_out;
+    static int fd_out = 1;
     return &fd_out;
 }
-
 
 t_tree *find_most_left_op(t_tree *node)
 {
@@ -77,13 +76,29 @@ void execute_redirection_cmd(t_tree *cmd, int fd_in, int fd_out)
     pid = fork();
     if (pid == 0)
     {
-        dup2(fd_in, STDIN_FILENO);
-        dup2(fd_out , STDOUT_FILENO);
-        close(fd_in);
-        close(fd_out);
+        if (fd_in != STDIN_FILENO)
+        {
+            dup2(fd_in, STDIN_FILENO);
+            close(fd_in);
+        }
+        
+        if (fd_out != STDOUT_FILENO)
+        {
+            dup2(fd_out, STDOUT_FILENO);
+            close(fd_out);
+        }
+        
         execute_command(cmd);
+        exit(0);
     }
+    
     *get_exit_status() = wait_for_child(pid);
+    
+    if (fd_in != STDIN_FILENO)
+    {
+        close(*get_last_in());
+        *get_last_in() = STDIN_FILENO;
+    }
 }
 
 void set_fd_in(t_tree *op)
@@ -94,8 +109,9 @@ void set_fd_in(t_tree *op)
     {
         perror(op->right->args[0]);
         *get_exit_status() = -1;
+        return; 
     }
-    if (*get_last_in())
+    if (*get_last_in() > 0)
         close(*get_last_in());
     *get_last_in() = fd;
 }
@@ -121,7 +137,7 @@ void set_fd_out(t_tree *op)
             *get_exit_status() = -1;
         }
     }
-    if (*get_last_out())
+    if (*get_last_out() > 1)
         close(*get_last_out());
     *get_last_out() = fd;
 }
@@ -167,16 +183,16 @@ int execute_sub_tree(t_tree *op)
         set_fd_out(op);
         if (*get_exit_status() == -1)
             return 1;
-        printf("out :: %d\n", *get_last_out());
         if (!op->parent || (op->parent->type != APP_OUTPUT_REDIRECTION && op->parent->type != OUTPUT_REDIRECTION))
             execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
     }
     else if (op->type == INPUT_REDIRECTION)
     {
+        *get_last_out() = STDOUT_FILENO;
         set_fd_in(op);
         if (*get_exit_status() == -1)
             return 1;
-        if (!op->parent && (op->parent->type != APP_OUTPUT_REDIRECTION 
+        if (!op->parent || (op->parent->type != APP_OUTPUT_REDIRECTION 
              && op->parent->type != OUTPUT_REDIRECTION && op->parent->type != INPUT_REDIRECTION))
             execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
     }
@@ -196,4 +212,4 @@ int execute_ast(t_tree *node)
         mst_lft_op = mst_lft_op->parent;
     }
     return 0;
-} 
+}
