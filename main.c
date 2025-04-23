@@ -29,6 +29,12 @@ void print_node(t_tree *node, int depth)
         printf("REDIRECT_IN");
     else if (node->type == OUTPUT_REDIRECTION)
         printf("REDIRECT_OUT");
+    else if (node->type == APP_OUTPUT_REDIRECTION)
+        printf("APPEND OUT");
+    else if (node->type == APP_INPUT_REDIRECTION)
+        printf("HERDOC");
+    else if (node->type == FT_FILE) 
+        printf("FILE");
     else
         printf("UNKNOWN");
 
@@ -122,7 +128,7 @@ int main(int ac, char **av, char **envp)
             tree = ilyas_parsing(*commands , env_list);
             print_node(tree, 0);
             if (tree)
-                execute_tree(tree);
+               execute_tree(tree);
             commands++;
         }
     }

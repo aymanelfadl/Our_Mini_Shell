@@ -11,7 +11,7 @@ REDIRECTIONDIR = redirections
 PARSINGDIR = parsing
 BUILTINSDIR = builtins
 
-REDIRECTIONFILES = $(REDIRECTIONDIR)/execution_engine.c 
+REDIRECTIONFILES = $(REDIRECTIONDIR)/execution_engine.c $(REDIRECTIONDIR)/redirection_utils.c
 
 PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \

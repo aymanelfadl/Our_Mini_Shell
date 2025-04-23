@@ -1,5 +1,18 @@
 #include "minishell.h"
 
+int *get_last_in(void)
+{
+    static int fd_in;
+    return &fd_in;
+}
+
+int *get_last_out(void)
+{
+    static int fd_out;
+    return &fd_out;
+}
+
+
 t_tree *find_most_left_op(t_tree *node)
 {
     while (node && node->left && node->left->type != COMMAND)
@@ -49,37 +62,79 @@ void execute_pipe(t_tree *cmd)
     }
 }
 
-int get_fd(t_tree *op)
-{
-    int fd;
-    while (op)
-    {
-        if (op->type == OUTPUT_REDIRECTION)
-            fd = open(op->right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);
-        else if (op->type == APP_OUTPUT_REDIRECTION)
-            fd = open(op->right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
-        op = op->parent;
-    }
-    return fd;
-} 
-
-void execute_out_redirection(t_tree *cmd, int fd_out)
+void execute_redirection_cmd(t_tree *cmd, int fd_in, int fd_out)
 {
     int pid;
-    if (cmd->type == COMMAND)
+    pid = fork();
+    if (pid == 0)
     {
-        pid = fork();
-        if (pid == 0)
-        {
-            dup2(fd_out , STDOUT_FILENO);
-            close(fd_out);
-            execute_command(cmd);
-        }
+        dup2(fd_in, STDIN_FILENO);
+        dup2(fd_out , STDOUT_FILENO);
+        close(fd_in);
+        close(fd_out);
+        execute_command(cmd);
     }
+    *get_exit_status() = wait_for_child(pid);
 }
 
-void execute_sub_tree(t_tree *op)
+void set_fd_in(t_tree *op)
 {
+    int fd;
+    fd = open(op->right->args[0],  O_RDONLY);
+    if (fd == -1)
+    {
+        perror(op->right->args[0]);
+        *get_exit_status() = -1;
+    }
+    if (*get_last_in())
+        close(*get_last_in());
+    *get_last_in() = fd;
+}
+
+void set_fd_out(t_tree *op)
+{
+    int fd;
+    if (op->type == OUTPUT_REDIRECTION)
+    {
+        fd = open(op->right->args[0], O_WRONLY | O_CREAT | O_TRUNC, 0644);   
+        if (fd == -1)
+        {
+            perror(op->right->args[0]);
+            *get_exit_status() = -1;
+        }
+    }
+    else if (op->type == APP_OUTPUT_REDIRECTION)
+    {
+        fd = open(op->right->args[0], O_WRONLY | O_CREAT | O_APPEND, 0644);
+        if (fd == -1)
+        {
+            perror(op->right->args[0]);
+            *get_exit_status() = -1;
+        }
+    }
+    if (*get_last_out())
+        close(*get_last_out());
+    *get_last_out() = fd;
+}
+
+t_tree *get_most_left_cmd(t_tree *op)
+{
+    while (op && op->left)
+        op = op->left;
+    return op;
+}
+
+int execute_sub_tree(t_tree *op)
+{
+    if (op->type == COMMAND)
+    {
+        pid_t pid = fork();
+        if (pid == 0)
+        {
+            execute_command(op);
+        }
+        *get_exit_status() = wait_for_child(pid);
+    }
     if (op->type == PIPE)
     {
         execute_pipe(op->left);
@@ -103,22 +158,37 @@ void execute_sub_tree(t_tree *op)
             execute_command(op->right);
         }
     }
-    else if (op->type == OUTPUT_REDIRECTION || op->type == APP_OUTPUT_REDIRECTION )
+    else if (op->type == OUTPUT_REDIRECTION || op->type == APP_OUTPUT_REDIRECTION)
     {
-        int fd_out = get_fd(op);
-        execute_out_redirection(op->left, fd_out);
+        set_fd_out(op);
+        if (*get_exit_status() == -1)
+            return 1;
+        printf("out :: %d\n", *get_last_out());
+        if (!op->parent || (op->parent->type != APP_OUTPUT_REDIRECTION && op->parent->type != OUTPUT_REDIRECTION))
+            execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
     }
-
+    else if (op->type == INPUT_REDIRECTION)
+    {
+        set_fd_in(op);
+        if (*get_exit_status() == -1)
+            return 1;
+        if (!op->parent && (op->parent->type != APP_OUTPUT_REDIRECTION 
+             && op->parent->type != OUTPUT_REDIRECTION && op->parent->type != INPUT_REDIRECTION))
+            execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
+    }
+    return 0;
 }
 
 int execute_ast(t_tree *node)
 {
     t_tree *mst_lft_op;
-
+    int err = 0;
     mst_lft_op = find_most_left_op(node);
     while (mst_lft_op)
     {
-        execute_sub_tree(mst_lft_op);
+        err = execute_sub_tree(mst_lft_op);
+        if (err == 1)
+            return err;
         mst_lft_op = mst_lft_op->parent;
     }
     return 0;
