@@ -97,7 +97,7 @@ void execute_tree(t_tree *tree)
     if (!tree)
         return;
 
-    process_all_heredocs(tree);
+    // process_all_heredocs(tree);
     *get_exit_status() = execute_ast(tree);
 }
 
