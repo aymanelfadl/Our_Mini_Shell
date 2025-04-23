@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "../libft/libft.h"
+#include <linux/limits.h>
 
 // ==========================================================================
 //                              DATA STRUCTURES
@@ -118,6 +119,7 @@ void push_back(t_list **export_envp, char *splited_export);
 char *get_key(char *splited_export);
 t_list *initialize_env_list(char **envp);
 char **list_to_char_array(t_list *list);
+int is_n_option(char *n_option, int wanna_skip);
 
 // ==========================================================================
 //                                 PARSING

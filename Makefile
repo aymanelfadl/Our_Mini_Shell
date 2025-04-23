@@ -24,7 +24,8 @@ PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/ut
 
 BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_utils.c $(BUILTINSDIR)/builtins_engine.c \
 				$(BUILTINSDIR)/ft_exit.c $(BUILTINSDIR)/ft_env.c $(BUILTINSDIR)/ft_cd.c $(BUILTINSDIR)/ft_echo.c \
-				$(BUILTINSDIR)/ft_export.c $(BUILTINSDIR)/ft_pwd.c $(BUILTINSDIR)/ft_export_helper.c $(BUILTINSDIR)/ft_export_push_back.c
+				$(BUILTINSDIR)/ft_export.c $(BUILTINSDIR)/ft_pwd.c $(BUILTINSDIR)/ft_export_helper.c $(BUILTINSDIR)/ft_export_push_back.c \
+				$(BUILTINSDIR)/ft_echo_helpers.c
 
 
 

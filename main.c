@@ -120,9 +120,9 @@ int main(int ac, char **av, char **envp)
         while(commands && *commands)
         {
             tree = ilyas_parsing(*commands , env_list);
-            print_node(tree, 0);
+           // print_node(tree, 0);
             if (tree)
-                execute_tree(tree);
+                ft_echo(tree);
             commands++;
         }
     }
