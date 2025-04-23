@@ -34,8 +34,17 @@ void execute_command(t_tree *cmd)
     int builtin_status = builtins_engine(cmd, initialize_env_list(NULL));
     if (builtin_status != -1)
         return ;
-
-    execute_external_command(cmd);
+    if (!cmd->parent)
+    {
+        pid_t p = fork();
+        if (p == 0)
+        {
+            execute_external_command(cmd);
+        }
+        *get_exit_status() = wait_for_child(p);
+    }
+    else
+        execute_external_command(cmd);
 }
 
 void execute_pipe(t_tree *cmd)
@@ -128,12 +137,7 @@ int execute_sub_tree(t_tree *op)
 {
     if (op->type == COMMAND)
     {
-        pid_t pid = fork();
-        if (pid == 0)
-        {
-            execute_command(op);
-        }
-        *get_exit_status() = wait_for_child(pid);
+        execute_command(op);
     }
     if (op->type == PIPE)
     {
