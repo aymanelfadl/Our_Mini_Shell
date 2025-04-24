@@ -49,25 +49,34 @@ void execute_command(t_tree *cmd)
 void execute_pipe(t_tree *cmd)
 {
     int p_fd[2];
-    pid_t pid;
+    int status;
+    pid_t pid_left;
 
-    if (cmd->type == COMMAND)
-    {    
-        if (pipe(p_fd) == -1)
-            perror("pipe");
-    
-        pid = fork();
-        if (pid == 0)
-        {
-            close(p_fd[0]);
-            dup2(p_fd[1], STDOUT_FILENO);
-            close(p_fd[1]);
-            execute_command(cmd);
-        }
-        close(p_fd[1]);
-        dup2(p_fd[0], STDIN_FILENO);
-        close(p_fd[0]);
+    if (pipe(p_fd) == -1)
+    {
+        perror("pipe");
+        return;
     }
+    
+    pid_left = fork();
+    if (pid_left == 0)
+    {
+        close(p_fd[0]); 
+        dup2(p_fd[1], STDOUT_FILENO);
+        close(p_fd[1]);
+        if (*get_last_in() != STDIN_FILENO)
+        {
+            dup2(*get_last_in(), STDIN_FILENO);
+            close(*get_last_in());
+        }
+        execute_command(cmd);
+        exit(0);
+    }
+    close(p_fd[1]); 
+    dup2(p_fd[0], STDIN_FILENO);
+    close(p_fd[0]);
+    // waitpid(pid_left, &status, 0);
+    // *get_exit_status() = WEXITSTATUS(status);
 }
 
 void execute_redirection_cmd(t_tree *cmd, int fd_in, int fd_out)
@@ -157,7 +166,8 @@ int execute_sub_tree(t_tree *op)
     }
     if (op->type == PIPE)
     {
-        execute_pipe(op->left);
+        if (op->left->type == COMMAND)
+            execute_pipe(op->left);
         if (op->parent && op->parent->type == PIPE)
         {
             execute_pipe(op->right);
@@ -192,9 +202,10 @@ int execute_sub_tree(t_tree *op)
         set_fd_in(op);
         if (*get_exit_status() == -1)
             return 1;
-        if (!op->parent || (op->parent->type != APP_OUTPUT_REDIRECTION 
-             && op->parent->type != OUTPUT_REDIRECTION && op->parent->type != INPUT_REDIRECTION))
+        if (!op->parent)
             execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
+        if (op->parent && op->parent->type == PIPE)
+            execute_pipe(get_most_left_cmd(op));
     }
     return 0;
 }
