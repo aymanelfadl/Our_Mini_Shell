@@ -12,6 +12,12 @@ int *get_last_out(void)
     return &fd_out;
 }
 
+pid_t *get_last_pipe_pid(void)
+{
+    static pid_t pipe_pid = 0;
+    return &pipe_pid;
+}
+
 t_tree *find_most_left_op(t_tree *node)
 {
     while (node && node->left && node->left->type != COMMAND)
@@ -55,6 +61,7 @@ void execute_pipe(t_tree *cmd)
     if (pipe(p_fd) == -1)
     {
         perror("pipe");
+        *get_exit_status() = 1;
         return;
     }
     
@@ -75,8 +82,11 @@ void execute_pipe(t_tree *cmd)
     close(p_fd[1]); 
     dup2(p_fd[0], STDIN_FILENO);
     close(p_fd[0]);
-    // waitpid(pid_left, &status, 0);
-    // *get_exit_status() = WEXITSTATUS(status);
+    
+    // Store the child PID for later collection
+    // We don't wait here as this would block the pipeline,
+    // but we'll collect the exit status later
+    *get_last_pipe_pid() = pid_left;
 }
 
 void execute_redirection_cmd(t_tree *cmd, int fd_in, int fd_out)
@@ -113,11 +123,11 @@ void execute_redirection_cmd(t_tree *cmd, int fd_in, int fd_out)
 void set_fd_in(t_tree *op)
 {
     int fd;
-    fd = open(op->right->args[0],  O_RDONLY);
+    fd = open(op->right->args[0], O_RDONLY);
     if (fd == -1)
     {
         perror(op->right->args[0]);
-        *get_exit_status() = -1;
+        *get_exit_status() = 1; // Standard error code instead of -1
         return; 
     }
     if (*get_last_in() > 0)
@@ -134,7 +144,8 @@ void set_fd_out(t_tree *op)
         if (fd == -1)
         {
             perror(op->right->args[0]);
-            *get_exit_status() = -1;
+            *get_exit_status() = 1; // Standard error code instead of -1
+            return;
         }
     }
     else if (op->type == APP_OUTPUT_REDIRECTION)
@@ -143,7 +154,8 @@ void set_fd_out(t_tree *op)
         if (fd == -1)
         {
             perror(op->right->args[0]);
-            *get_exit_status() = -1;
+            *get_exit_status() = 1; // Standard error code instead of -1
+            return;
         }
     }
     if (*get_last_out() > 1)
@@ -174,24 +186,53 @@ int execute_sub_tree(t_tree *op)
         }
         else
         {
-            execute_command(op->right);
+            pid_t pid = fork();
+            if (pid == 0) execute_command(op->right);
+            *get_exit_status() = wait_for_child(pid);       
+            if (*get_last_pipe_pid() > 0)
+            {
+                int status;
+                waitpid(*get_last_pipe_pid(), &status, 0);
+                if (WIFEXITED(status))
+                    *get_exit_status() = WEXITSTATUS(status);
+                else if (WIFSIGNALED(status))
+                    *get_exit_status() = 128 + WTERMSIG(status);
+                *get_last_pipe_pid() = 0;
+            }
         }
     }
     else if (op->type == AND)
     {
-        if (op->parent && op->parent->type == PIPE)
+        if (*get_exit_status() == 0) 
         {
-            execute_pipe(op->right);
+            if (op->parent && op->parent->type == PIPE)
+            {
+                execute_pipe(op->right);
+            }
+            else
+            {
+                execute_command(op->right);
+            }
         }
-        else
+    }
+    else if (op->type == OR)
+    {
+        if (*get_exit_status() != 0) 
         {
-            execute_command(op->right);
+            if (op->parent && op->parent->type == PIPE)
+            {
+                execute_pipe(op->right);
+            }
+            else
+            {
+                execute_command(op->right);
+            }
         }
     }
     else if (op->type == OUTPUT_REDIRECTION || op->type == APP_OUTPUT_REDIRECTION)
     {
         set_fd_out(op);
-        if (*get_exit_status() == -1)
+        if (*get_exit_status() != 0) 
             return 1;
         if (!op->parent || (op->parent->type != APP_OUTPUT_REDIRECTION && op->parent->type != OUTPUT_REDIRECTION))
             execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
@@ -200,7 +241,7 @@ int execute_sub_tree(t_tree *op)
     {
         *get_last_out() = STDOUT_FILENO;
         set_fd_in(op);
-        if (*get_exit_status() == -1)
+        if (*get_exit_status() != 0)
             return 1;
         if (!op->parent)
             execute_redirection_cmd(get_most_left_cmd(op), *get_last_in(), *get_last_out());
