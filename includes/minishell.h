@@ -97,6 +97,7 @@ void apply_redirections(t_redirection *rlist);
 void restore_redirections(t_redirection *rlist);
 void free_redirections(t_redirection *rlist);
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
+t_redirection *reverse_redirections(t_redirection *head);
 
 // ==========================================================================
 //                                BUILTINS
