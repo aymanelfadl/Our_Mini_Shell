@@ -61,7 +61,6 @@ int main(int ac, char **av, char **envp)
     t_list *env_list;
 
     ft_set_interactive_signals();
-    get_envp(envp);
     env_list = initialize_env_list(envp);
     while (1) {
         char *input = readline("$> ");

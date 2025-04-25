@@ -178,6 +178,7 @@ int ft_strcmp(char *s1, char *s2); // Already in libft?
 // Environment
 char **get_envp(char **envp);
 t_list *strings_to_list(char **strings);
+char **list_to_strings(t_list *list);
 
 // Process Management
 int wait_for_child(pid_t child_pid);
