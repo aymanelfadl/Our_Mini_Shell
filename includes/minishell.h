@@ -22,53 +22,81 @@
 //                              DATA STRUCTURES
 // ==========================================================================
 
-typedef enum data_type
-{
-    PIPE,                   // 0
-    INPUT_REDIRECTION,      // 1
-    APP_OUTPUT_REDIRECTION, // 2
-    OUTPUT_REDIRECTION,     // 3
-    APP_INPUT_REDIRECTION,  // 4
-    AND,                    // 5
-    OR,                     // 6
-    COMMAND,                // 7
-    FT_FILE,                // 8
-    FT_EOF,                 // 9
+
+// Redirection types
+typedef enum e_redir_type {
+    REDIR_NONE,
+    REDIR_INPUT,    // <
+    REDIR_OUTPUT,   // >
+    REDIR_APPEND,   // >>
+    REDIR_HEREDOC   // <<
+} t_redir_type;
+
+// Redirection linked-list
+typedef struct s_redirection {
+    t_redir_type          type;
+    char                 *file;          // filename or heredoc delimiter
+    int                   fd_src;        // source fd (0 for stdin, 1 for stdout)
+    int                   fd_dst;        // dup2 dest fd
+    int                   origin_fd;     // original fd before redirection
+    struct s_redirection *next;
+} t_redirection;
+
+// AST node type
+typedef enum data_type {
+    PIPE,                   // |
+    INPUT_REDIRECTION,      // <
+    APP_OUTPUT_REDIRECTION, // >>
+    OUTPUT_REDIRECTION,     // >
+    APP_INPUT_REDIRECTION,  // <<
+    AND,                    // &&
+    OR,                     // ||
+    COMMAND,                // simple command
+    FT_FILE,                // filename token
+    FT_EOF                  // end of input
 } e_type;
 
+// Quote context
+typedef enum inside_what {
+    DOUBLE_QUOTES,
+    ONE_QUOTE,
+    INSIDE_NOTHING
+} e_inside_what;
+
+// AST node
 typedef struct s_tree {
-    char *path;
-    char *data;
-    char **args;
-    char *heredoc_content;
-    char **ops;
-    struct s_tree *left;
-    struct s_tree *right;
-    struct s_tree *parent;
-    enum data_type type;
-    int to_skip;
+    char               *path;              // full path for exec
+    char               *data;              // raw token data
+    char              **args;              // argv for COMMAND
+    char               *heredoc_content;   // content for heredoc
+    char              **ops;               // operators between children
+    struct s_tree      *left;
+    struct s_tree      *right;
+    struct s_tree      *parent;
+    e_type              type;
+    int                 to_skip;           // for &&/||
+    // redirection list and pipe fds
+    t_redirection      *redirects;
+    int                 pipe_fds[2];
 } t_tree;
-
-enum inside_what
-{
-    DOUBLE_QUOTES,  // "" 0
-    ONE_QUOTE,      // '' 1
-    INSIDE_NOTHING, //    2
-};
-
-
-
-
 
 // ==========================================================================
 //                           EXECUTION ENGINE
 // ==========================================================================
 
-int execute_ast(t_tree *node);
+int execute_node(t_tree *node);
+void free_tree(t_tree *node);
+void ft_free_split(char **split);
 
 // ==========================================================================
 //                              REDIRECTIONS
 // ==========================================================================
+
+void add_redirection(t_redir_type type, char *file, t_redirection **list);
+void apply_redirections(t_redirection *rlist);
+void restore_redirections(t_redirection *rlist);
+void free_redirections(t_redirection *rlist);
+t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
 
 // ==========================================================================
 //                                BUILTINS
