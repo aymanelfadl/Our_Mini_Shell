@@ -51,12 +51,11 @@ int execute_command(t_tree *node)
 
 int execute_and(t_tree *node)
 {
-    int status;
-
-    status = execute_node(node->left);
-    if (!status)
-        return status;
-    return execute_node(node->right);
+    if (node->left->type == COMMAND)
+        *get_exit_status() = execute_node(node->left);
+    if (!*get_exit_status())
+        return execute_node(node->right);
+    return *get_exit_status();
 }
 
 int execute_or(t_tree *node)

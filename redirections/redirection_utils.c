@@ -119,7 +119,7 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
     if (node->type == INPUT_REDIRECTION || node->type == OUTPUT_REDIRECTION || 
         node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION) 
     {
-        if (node->right && node->right->data)
+        if (node->right && node->right->args)
         {
             rtype = REDIR_NONE;
             if (node->type == INPUT_REDIRECTION) 
@@ -130,7 +130,7 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
                 rtype = REDIR_APPEND;
             else if (node->type == APP_INPUT_REDIRECTION) 
                 rtype = REDIR_HEREDOC;
-            add_redirection(rtype, ft_strtrim(node->right->data, " \t\n") , redir_list);
+            add_redirection(rtype, ft_strtrim(node->right->args[0], " \t\n") , redir_list);
         }
         return extract_redirections(node->left, redir_list);
     }
