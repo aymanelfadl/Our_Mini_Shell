@@ -92,12 +92,17 @@ void ft_free_split(char **split);
 //                              REDIRECTIONS
 // ==========================================================================
 
+// PIPE
+int execute_pipe(t_tree *node);
+
+
 void add_redirection(t_redir_type type, char *file, t_redirection **list);
-void apply_redirections(t_redirection *rlist);
+int apply_redirections(t_redirection *rlist);
 void restore_redirections(t_redirection *rlist);
 void free_redirections(t_redirection *rlist);
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
-t_redirection *reverse_redirections(t_redirection *head);
+void attach_all_redirections(t_tree *node);
+
 
 // ==========================================================================
 //                                BUILTINS
