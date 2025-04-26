@@ -37,7 +37,6 @@ typedef struct s_redirection {
     t_redir_type          type;
     char                 *file;          // filename or heredoc delimiter
     int                   fd_src;        // source fd (0 for stdin, 1 for stdout)
-    int                   fd_dst;        // dup2 dest fd
     int                   origin_fd;     // original fd before redirection
     struct s_redirection *next;
 } t_redirection;
