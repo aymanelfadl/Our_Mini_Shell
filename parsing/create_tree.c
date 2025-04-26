@@ -1,6 +1,6 @@
 #include <minishell.h>
 
-static t_tree *create_one_node(char *command)
+t_tree *create_one_node(char *command)
 {
     t_tree *node = ft_malloc(sizeof(t_tree));
     node->path = NULL;

@@ -128,6 +128,7 @@ int is_n_option(char *n_option, int wanna_skip);
 t_tree *ilyas_parsing(char * command , t_list *envp);
 t_tree *make_tree(char ***data , int * to_skip);
 void split_tree(t_tree *tree);
+t_tree *create_one_node(char *command);
 void add_paths_to_tree(t_tree *tree, char **paths);
 char **ft_split_files(char *files);
 

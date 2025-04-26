@@ -40,14 +40,15 @@ static int incleded_in_char(char s, char *target)
 
 char *my_strchr(char *s, char *target)
 {
-
+	if (!s)
+		return (NULL);
 	while (*s)
 	{
 		if (incleded_in_char(*s, target))
 			return (s);
 		s++;
 	}
-	return (s);
+	return (NULL);
 }
 
 int ft_strcmp(char *s1, char *s2)

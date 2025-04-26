@@ -11,6 +11,30 @@ void print_strings(char **strs)
         i++;
     }
 }
+void print_double_pointer(char ** s)
+{
+    while (s && *s)
+    {
+        printf ("'%s' ",*s);
+        s++;
+        if (*s)
+            printf(",");
+    }
+    printf("\n");
+
+}
+void print_tree(t_tree *tree)
+{
+    if (tree == NULL)
+        return;
+    print_tree(tree->left);
+    printf("%s %d        double :", tree->data, tree->type);
+    print_double_pointer(tree->args);
+    if (tree->type == COMMAND)
+        printf("      path : %s", tree->path);
+    printf("\nnext\n");
+    print_tree(tree->right);
+}
 void print_node(t_tree *node, int depth)
 {
     if (!node)
@@ -122,7 +146,7 @@ int main(int ac, char **av, char **envp)
             tree = ilyas_parsing(*commands , env_list);
            // print_node(tree, 0);
             if (tree)
-                ft_echo(tree);
+                print_tree(tree);
             commands++;
         }
     }
