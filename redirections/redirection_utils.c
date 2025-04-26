@@ -130,6 +130,7 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
                 rtype = REDIR_APPEND;
             else if (node->type == APP_INPUT_REDIRECTION) 
                 rtype = REDIR_HEREDOC;
+            printf("Adding redirection: type=%d, file=%s\n", rtype, node->right->args[0]);
             add_redirection(rtype, ft_strtrim(node->right->args[0], " \t\n") , redir_list);
         }
         return extract_redirections(node->left, redir_list);
@@ -150,10 +151,13 @@ void attach_all_redirections(t_tree *node)
     {    
         cmd_node = extract_redirections(node, &redir_list);
 		if (cmd_node && cmd_node->type == PIPE)
+        {
 			cmd_node->right->redirects = redir_list;
+    	    attach_all_redirections(node->left);
+        }
         else if (cmd_node && cmd_node->type == COMMAND)
             cmd_node->redirects = redir_list;
-		
     }
-	attach_all_redirections(node->left);
+    else
+	    attach_all_redirections(node->left);
 }
