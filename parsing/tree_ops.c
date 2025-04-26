@@ -13,7 +13,7 @@ void add_files_to_args(t_tree *node)
         while (node->args[i])
         {
             if (my_strchr(node->args[i], " \t"))
-                node->parent->left->data = ft_strjoin(node->parent->left->data , "'");
+                node->parent->left->data = ft_strjoin(node->parent->left->data, "'");
             node->parent->left->data = ft_strjoin(node->parent->left->data, node->args[i]);
             if (my_strchr(node->args[i], " \t"))
                 node->parent->left->data = ft_strjoin(node->parent->left->data, "'");
@@ -28,7 +28,12 @@ void split_tree(t_tree *tree)
     if (tree == NULL)
         return;
     if (tree->type == COMMAND)
+    {
+        printf("tree->data = %s\n", tree->data);
         tree->data = handle_commandes_quoets(tree);
+        printf("tree->data = %s\n", tree->data);
+
+    }
     if (tree->type == FT_FILE)
     {
         tree->args = ft_split_files(tree->data);

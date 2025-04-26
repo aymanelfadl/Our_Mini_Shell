@@ -153,6 +153,7 @@ enum inside_what string_is_inside(char *s, int start);
 int there_is_something_between_2_adresses(char *s1, char *s2);
 
 // Parsing Helpers
+char *get_value(t_list *envp, char *key);
 char *skip_spaces(char *s);
 char *skip_ops(char *command);
 int find_next_ops(char *command);
