@@ -28,12 +28,7 @@ void split_tree(t_tree *tree)
     if (tree == NULL)
         return;
     if (tree->type == COMMAND)
-    {
-        printf("tree->data = %s\n", tree->data);
         tree->data = handle_commandes_quoets(tree);
-        printf("tree->data = %s\n", tree->data);
-
-    }
     if (tree->type == FT_FILE)
     {
         tree->args = ft_split_files(tree->data);

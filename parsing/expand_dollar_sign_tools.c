@@ -4,11 +4,8 @@ char *replace_strin_in_string(char *s, int start_string, int end_string, char *i
 {
     char *new_s;
     new_s = ft_substr(s, 0, start_string);
-    printf("new_s = %s \n",new_s);
     new_s = ft_strjoin(new_s, inserted_string);
-    printf("new_s = %s \n",new_s);
     new_s = ft_strjoin(new_s, s + end_string);
-    printf("new_s = %s \n",new_s);
     return (new_s);
 }
 

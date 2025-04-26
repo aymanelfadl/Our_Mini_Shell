@@ -61,10 +61,8 @@ static void if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)
 
     start_end_shift = 0;
     i = 1;
-    printf("dollar_sign = '%s' \n", *dollr_sign);
     while (ft_isalnum(dollr_sign[0][i]) || dollr_sign[0][i] == '_')
         i++;
-    printf("i = %d\n", i);
     to_replace = get_value(envp, ft_substr(*dollr_sign + 1, 0, i - 1));
     if ((string_is_inside(*s, (int)(*dollr_sign - *s)) == DOUBLE_QUOTES))
         start_end_shift = 1;
@@ -88,6 +86,5 @@ char *parse_env(char *s, t_list *envp)
                 dollr_sign = ft_strchr(dollr_sign + 1, '$');
         }
     }
-    printf("parese_env s = %s\n",s);
     return (s);
 }
