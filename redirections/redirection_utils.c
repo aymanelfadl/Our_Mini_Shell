@@ -149,12 +149,11 @@ void attach_all_redirections(t_tree *node)
         node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION) 
     {    
         cmd_node = extract_redirections(node, &redir_list);
-        if (cmd_node && cmd_node->type == COMMAND)
+		if (cmd_node && cmd_node->type == PIPE)
+			cmd_node->right->redirects = redir_list;
+        else if (cmd_node && cmd_node->type == COMMAND)
             cmd_node->redirects = redir_list;
+		
     }
-    else 
-    {
-        attach_all_redirections(node->left);
-        attach_all_redirections(node->right);
-    }
+	attach_all_redirections(node->left);
 }
