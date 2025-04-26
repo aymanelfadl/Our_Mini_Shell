@@ -84,8 +84,11 @@ typedef struct s_tree {
 // ==========================================================================
 
 int execute_node(t_tree *node);
-void free_tree(t_tree *node);
-void ft_free_split(char **split);
+int execute_command(t_tree *node);
+int fork_and_exec(t_tree *node);
+int execute_and(t_tree *node);
+int execute_or(t_tree *node);
+int execute_pipe(t_tree *node);
 
 // ==========================================================================
 //                              REDIRECTIONS
