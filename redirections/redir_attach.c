@@ -2,11 +2,16 @@
 
 static void attach_redir_to_cmd(t_tree *cmd_node, t_redirection *redir_list)
 {
-	if (cmd_node && (cmd_node->type == PIPE || cmd_node->type == AND))
-		cmd_node->right->redirects = redir_list;
-	else if (cmd_node && cmd_node->type == COMMAND)
-		cmd_node->redirects = redir_list;
+    if (!cmd_node || !redir_list)
+        return;
+    if (cmd_node->type == PIPE || cmd_node->type == AND || cmd_node->type == OR)
+        cmd_node = cmd_node->right;
+    if (!cmd_node || cmd_node->type != COMMAND)
+        return;
+    if (!cmd_node->redirects)
+        cmd_node->redirects = redir_list;
 }
+
 
 void attach_all_redirections(t_tree *node)
 {
@@ -20,9 +25,7 @@ void attach_all_redirections(t_tree *node)
 		node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION)
 	{
 		cmd_node = extract_redirections(node, &redir_list);
-		attach_redir_to_cmd(cmd_node, redir_list);
-		attach_all_redirections(node->left);
+        attach_redir_to_cmd(cmd_node, redir_list);
 	}
-	else
-		attach_all_redirections(node->left);
+    attach_all_redirections(node->left);
 }
