@@ -4,10 +4,19 @@ void handle_sigint_prompt(int sig)
 {
     (void)sig;
 
+    // Move to a new line
     write(STDOUT_FILENO, "\n", 1);
-    rl_on_new_line(); 
+    
+    // Tell readline we've moved to a new line
+    rl_on_new_line();
+    
+    // Clear the line buffer
     rl_replace_line("", 0);
+    
+    // Force readline to redisplay the prompt
     rl_redisplay();
+    
+    // Set the exit status to indicate interrupt
     *get_exit_status() = 130;
 }
 

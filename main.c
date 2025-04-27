@@ -59,26 +59,48 @@ int main(int ac, char **av, char **envp)
     (void)ac; (void)av;
     t_tree *tree;
     t_list *env_list;
+    char *input;
 
     ft_set_interactive_signals();
     env_list = initialize_env_list(envp);
     while (1) {
-        char *input = readline("$> ");
-        if (!input) ctrl_d_handle();
-        if (*input) add_history(input);
-        char **cmds = ft_split(input, "\n");
-        int saved_stdout = dup(STDOUT_FILENO);
-        int saved_stdin = dup(STDIN_FILENO);
-        for (int i = 0; cmds && cmds[i]; i++) {
-            tree = ilyas_parsing(cmds[i], env_list);
-            if (tree) 
-            {
-                attach_all_redirections(tree);
-                *get_exit_status() =  execute_node(tree);
+        input = readline("$> ");
+        
+        // Handle Ctrl+D properly
+        if (!input) 
+            ctrl_d_handle();
+            
+        // Only process non-empty input
+        if (input && *input) {
+            add_history(input);
+            
+            char **cmds = ft_split(input, "\n");
+            int saved_stdout = dup(STDOUT_FILENO);
+            int saved_stdin = dup(STDIN_FILENO);
+            
+            for (int i = 0; cmds && cmds[i]; i++) {
+                tree = ilyas_parsing(cmds[i], env_list);
+                if (tree) {
+                    attach_all_redirections(tree);
+                    *get_exit_status() = execute_node(tree);
+                }
             }
+            
+            // Restore I/O
+            dup2(saved_stdout, STDOUT_FILENO);
+            dup2(saved_stdin, STDIN_FILENO);
+            close(saved_stdout);
+            close(saved_stdin);
+            
+            // Free resources
+            ft_free_split(cmds);
         }
-        dup2(saved_stdout, STDOUT_FILENO);
-        dup2(saved_stdin, STDIN_FILENO);
+        
+        // Always free input to avoid memory leaks
+        free(input);
+        
+        // Reset signals for next prompt
+        ft_set_interactive_signals();
     }
     return 0;
 }
