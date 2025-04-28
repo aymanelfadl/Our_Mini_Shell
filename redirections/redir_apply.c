@@ -55,6 +55,8 @@ int apply_redirections(t_redirection *rlist)
 			ret = redir_output(rlist);
 		else if (rlist->type == REDIR_APPEND)
 			ret = redir_append(rlist);
+		else if (rlist->type == REDIR_HEREDOC)
+    		ret = redir_heredoc(rlist);
 		else
 			ret = 0;
 		if (ret)

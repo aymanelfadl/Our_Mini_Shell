@@ -104,7 +104,7 @@ void restore_redirections(t_redirection *rlist);
 void free_redirections(t_redirection *rlist);
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
 void attach_all_redirections(t_tree *node);
-
+int redir_heredoc(t_redirection *r);
 
 // ==========================================================================
 //                                BUILTINS
