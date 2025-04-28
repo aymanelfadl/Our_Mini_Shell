@@ -63,8 +63,6 @@ int main(int ac, char **av, char **envp)
 
     env_list = initialize_env_list(envp);
     
-    setup_signals();
-    
     while (1) {
         input = readline("$> ");
         if (!input) 
@@ -73,7 +71,7 @@ int main(int ac, char **av, char **envp)
         {
 
             add_history(input);
-            
+
             char **cmds = ft_split(input, "\n");
             int saved_stdout = dup(STDOUT_FILENO);
             int saved_stdin = dup(STDIN_FILENO);
@@ -82,12 +80,11 @@ int main(int ac, char **av, char **envp)
                 tree = ilyas_parsing(cmds[i], env_list);
                 if (tree) {
                     attach_all_redirections(tree);
-                    set_child_running(1);
+                    process_all_heredocs(tree);
                     *get_exit_status() = execute_node(tree);
-                    set_child_running(0);
                 }
             }
-            
+            cleanup_heredoc_fds(tree);
             dup2(saved_stdout, STDOUT_FILENO);
             dup2(saved_stdin, STDIN_FILENO);
             close(saved_stdout);
