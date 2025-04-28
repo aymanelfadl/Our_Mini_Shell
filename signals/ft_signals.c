@@ -1,5 +1,12 @@
 #include "minishell.h"
 
+void ctrl_d_handle()
+{
+    printf("exit\n");
+    ft_free(garbage_collector);
+    exit(0);
+}
+
 static int *child_running_ptr(void)
 {
     static int child_running = 0;

@@ -1,11 +1,5 @@
 #include <minishell.h>
 
-void ctrl_d_handle()
-{
-    printf("exit\n");
-    ft_free(garbage_collector);
-    exit(0);
-}
 int there_is_one_word(char *command)
 {
     if (*command == 34 || *command == 39)
