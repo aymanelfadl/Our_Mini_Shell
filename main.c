@@ -61,17 +61,17 @@ int main(int ac, char **av, char **envp)
     t_list *env_list;
     char *input;
 
-    ft_set_interactive_signals();
     env_list = initialize_env_list(envp);
+    
+    setup_signals();
+    
     while (1) {
         input = readline("$> ");
-        
-        // Handle Ctrl+D properly
         if (!input) 
             ctrl_d_handle();
-            
-        // Only process non-empty input
-        if (input && *input) {
+        if (input && *input)
+        {
+
             add_history(input);
             
             char **cmds = ft_split(input, "\n");
@@ -82,25 +82,17 @@ int main(int ac, char **av, char **envp)
                 tree = ilyas_parsing(cmds[i], env_list);
                 if (tree) {
                     attach_all_redirections(tree);
+                    set_child_running(1);
                     *get_exit_status() = execute_node(tree);
+                    set_child_running(0);
                 }
             }
             
-            // Restore I/O
             dup2(saved_stdout, STDOUT_FILENO);
             dup2(saved_stdin, STDIN_FILENO);
             close(saved_stdout);
             close(saved_stdin);
-            
-            // Free resources
-            ft_free_split(cmds);
         }
-        
-        // Always free input to avoid memory leaks
-        free(input);
-        
-        // Reset signals for next prompt
-        ft_set_interactive_signals();
     }
     return 0;
 }

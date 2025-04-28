@@ -24,5 +24,3 @@ int execute_node(t_tree *node)
 		return 0;
 }
 
-int execute_command(t_tree *node);
-int fork_and_exec(t_tree *node);

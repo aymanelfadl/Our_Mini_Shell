@@ -24,6 +24,5 @@ int execute_pipe(t_tree *node)
     close(node->pipe_fds[0]);
     close(node->pipe_fds[1]);
     waitpid(l, NULL, 0);
-    waitpid(r, &status, 0);
-    return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
+    return wait_for_child(r);
 }   

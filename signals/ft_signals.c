@@ -1,93 +1,55 @@
 #include "minishell.h"
 
-void handle_sigint_prompt(int sig)
+static int *child_running_ptr(void)
+{
+    static int child_running = 0;
+    return &child_running;
+}
+
+/* Set child running state */
+void set_child_running(int value)
+{
+    *child_running_ptr() = value;
+}
+
+/* Get child running state */
+int get_child_running(void)
+{
+    return *child_running_ptr();
+}
+
+/* SIGINT handler (Ctrl+C) */
+void sigint_handler(int sig)
 {
     (void)sig;
-
-    // Move to a new line
-    write(STDOUT_FILENO, "\n", 1);
-    
-    // Tell readline we've moved to a new line
-    rl_on_new_line();
-    
-    // Clear the line buffer
-    rl_replace_line("", 0);
-    
-    // Force readline to redisplay the prompt
-    rl_redisplay();
-    
-    // Set the exit status to indicate interrupt
-    *get_exit_status() = 130;
+    if (get_child_running())
+        write(1, "\n", 1);
+    else
+    {
+        rl_on_new_line();
+        rl_replace_line("", 0);
+        rl_redisplay();
+        *get_exit_status() = 130;
+    }
 }
 
-// void sigint_handler_heredoc(int sig)
-// {
-//     (void)sig;
-
-//     *heredoc_interrupted() = 1;
-//     write(1, "\n", 1);
-//     rl_done = 1;
-//     rl_on_new_line();
-// }
-
-
-void ft_set_interactive_signals()
+/* SIGQUIT handler (Ctrl+\) */
+void sigquit_handler(int sig)
 {
-    struct sigaction sa_int;
-    struct sigaction sa_quit;
-
-    sa_int.sa_handler = handle_sigint_prompt;
-    sigemptyset(&sa_int.sa_mask);
-    sa_int.sa_flags = SA_RESTART; 
-    if (sigaction(SIGINT, &sa_int, NULL) == -1)
-        perror("sigaction SIGINT interactive error");
-
-
-    sa_quit.sa_handler = SIG_IGN; 
-    sigemptyset(&sa_quit.sa_mask);
-    sa_quit.sa_flags = 0;
-    if (sigaction(SIGQUIT, &sa_quit, NULL) == -1)
-        perror("sigaction SIGQUIT interactive error");
+    (void)sig;
+    // Do nothing
 }
 
-void ft_set_wait_signals()
+/* Setup parent signals */
+void setup_signals(void)
 {
-    struct sigaction sa;
-
-    sa.sa_handler = SIG_IGN;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if (sigaction(SIGINT, &sa, NULL) == -1)
-        perror("sigaction SIGINT ignore error");
-    if (sigaction(SIGQUIT, &sa, NULL) == -1)
-        perror("sigaction SIGQUIT ignore error");
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, sigquit_handler);
 }
 
-// void ft_set_heredoc_signals()
-// {
-//     struct sigaction sa;
-
-//     sa.sa_handler = sigint_handler_heredoc;
-//     sigemptyset(&sa.sa_mask);
-//     sa.sa_flags = 0;
-
-//     if (sigaction(SIGINT, &sa, NULL) == -1)
-//         perror("sigaction SIGINT heredoc error");
-//     if (sigaction(SIGQUIT, &sa, NULL) == -1)
-//         perror("sigaction SIGQUIT heredoc error");
-// }
-
-void ft_set_default_signals()
+void reset_signals_in_child(void)
 {
-    struct sigaction sa;
-
-    sa.sa_handler = SIG_DFL;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = 0;
-
-    if (sigaction(SIGINT, &sa, NULL) == -1)
-        perror("sigaction SIGINT default error");
-    if (sigaction(SIGQUIT, &sa, NULL) == -1)
-        perror("sigaction SIGQUIT default error");
+    signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
 }
+

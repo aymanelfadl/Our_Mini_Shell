@@ -4,23 +4,24 @@ int wait_for_child(pid_t child_pid)
 {
     int status;
     
+    set_child_running(1);
     if (child_pid <= 0)
         return 1;
-    
-    ft_set_default_signals();
-    
     if (waitpid(child_pid, &status, 0) == -1)
     {
         perror("waitpid");
         return 1;
-    }
-    
-    ft_set_interactive_signals();
-    
+    }    
     if (WIFEXITED(status))
+    {
+        set_child_running(0);
         return WEXITSTATUS(status);
+    }
     else if (WIFSIGNALED(status))
+    {
+        set_child_running(0);
         return 128 + WTERMSIG(status);
-    
+    }
+    set_child_running(0);
     return 1;
 }

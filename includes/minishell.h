@@ -203,10 +203,13 @@ int double_char_size(char **s);
 //                                 SIGNALS
 // ==========================================================================
 
-void ft_set_interactive_signals();
+void setup_signals(void);
+void reset_signals_in_child(void);
+void set_child_running(int value);
+
+
+
 void ctrl_d_handle();
-void ft_set_default_signals();
-void ft_set_wait_signals();
 
 // ==========================================================================
 //                                  MISC
