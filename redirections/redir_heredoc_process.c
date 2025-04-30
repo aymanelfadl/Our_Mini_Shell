@@ -5,9 +5,14 @@ static void	process_heredoc_redirects(t_tree *node)
 	t_redirection	*redir;
 	int				heredoc_fd;
 
+	if (!node || !node->redirects)
+		return;
+	heredoc_fd = -1;
 	redir = node->redirects;
 	while (redir)
 	{
+		if (redir->type == REDIR_HEREDOC && redir->expand_heredoc != 0)
+			redir->expand_heredoc = 1;		
 		if (redir->type == REDIR_HEREDOC)
 		{
 			if (redir->heredoc_fd > 0)
@@ -28,6 +33,8 @@ static int	check_heredoc_failures(t_tree *node)
 {
 	t_redirection *redir;
 
+	if (!node || !node->redirects)
+		return (0);
 	redir = node->redirects;
 	while (redir)
 	{
@@ -42,12 +49,10 @@ int	process_all_heredocs(t_tree *node)
 {
 	if (!node)
 		return (0);
-
 	if (process_all_heredocs(node->left) == -1)
 		return (-1);
 	if (process_all_heredocs(node->right) == -1)
 		return (-1);
-
 	if (node->type == COMMAND)
 	{
 		process_heredoc_redirects(node);

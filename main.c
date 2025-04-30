@@ -54,42 +54,56 @@ void print_node(t_tree *node, int depth)
     print_node(node->right, depth + 1);
 }
 
-int main(int ac, char **av, char **envp)
+static void restore_std_fds(int saved_stdout, int saved_stdin)
 {
-    (void)ac; (void)av;
-    t_tree *tree;
-    t_list *env_list;
-    char *input;
+    dup2(saved_stdout, STDOUT_FILENO);
+    dup2(saved_stdin, STDIN_FILENO);
+    close(saved_stdout);
+    close(saved_stdin);
+}
 
-    env_list = initialize_env_list(envp);
-    
-    while (1) {
+static void execute_commands(char **cmds, t_list *env_list)
+{
+    t_tree *tree = NULL;
+    int i = 0;
+    while (cmds && cmds[i])
+    {
+        tree = ilyas_parsing(cmds[i], env_list);
+        if (tree) {
+            attach_all_redirections(tree);
+            process_all_heredocs(tree);
+            *get_exit_status() = execute_node(tree);
+        }
+        i++;
+    }
+    cleanup_heredoc_fds(tree);
+}
+
+static void minishell_loop(t_list *env_list)
+{
+    char *input;
+    while (1)
+    {
         input = readline("$> ");
-        if (!input) 
+        if (!input)
             ctrl_d_handle();
         if (input && *input)
         {
-
             add_history(input);
-
             char **cmds = ft_split(input, "\n");
             int saved_stdout = dup(STDOUT_FILENO);
             int saved_stdin = dup(STDIN_FILENO);
-            
-            for (int i = 0; cmds && cmds[i]; i++) {
-                tree = ilyas_parsing(cmds[i], env_list);
-                if (tree) {
-                    attach_all_redirections(tree);
-                    process_all_heredocs(tree);
-                    *get_exit_status() = execute_node(tree);
-                }
-            }
-            cleanup_heredoc_fds(tree);
-            dup2(saved_stdout, STDOUT_FILENO);
-            dup2(saved_stdin, STDIN_FILENO);
-            close(saved_stdout);
-            close(saved_stdin);
+            execute_commands(cmds, env_list);
+            restore_std_fds(saved_stdout, saved_stdin);
         }
     }
+}
+
+int main(int ac, char **av, char **envp)
+{
+    (void)ac; (void)av;
+    t_list *env_list;
+    env_list = initialize_env_list(envp);
+    minishell_loop(env_list);
     return 0;
 }
