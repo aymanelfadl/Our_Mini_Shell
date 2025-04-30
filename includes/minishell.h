@@ -182,7 +182,8 @@ char *replace_strin_in_string(char *s, int start_string, int end_string, char *i
 // String Utils (Consider moving to libft or a dedicated string utils file)
 char *my_strnstr(const char *haystack, const char *needle, size_t len);
 char *my_strchr(char *s, char *target);
-int ft_strcmp(char *s1, char *s2); // Already in libft?
+int ft_strcmp(char *s1, char *s2);
+char *get_value(t_list *envp, char *key);
 
 // ==========================================================================
 //                                UTILITIES
