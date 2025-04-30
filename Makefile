@@ -23,7 +23,9 @@ REDIRECTIONFILES = \
 	$(REDIRECTIONDIR)/redir_restore.c \
 	$(REDIRECTIONDIR)/execute_pipe.c \
 	$(REDIRECTIONDIR)/utils.c \
-	$(REDIRECTIONDIR)/redir_heredoc.c
+	$(REDIRECTIONDIR)/redir_heredoc.c \
+	$(REDIRECTIONDIR)/redir_heredoc_process.c \
+	$(REDIRECTIONDIR)/redir_heredoc1.c
 
 PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
