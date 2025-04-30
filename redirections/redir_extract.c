@@ -13,41 +13,43 @@ static t_redir_type determine_redir_type(int node_type)
 	return (REDIR_NONE);
 }
 
-static char *unquote_delimiter(char *str)
+static char *remove_all_quotes(char *str, int len)
 {
 	char *result;
-	int i, j;
-	int len;
-	int has_quotes = 0;
-	if (!str)
-		return (NULL);
-	len = ft_strlen(str);
-	if ((str[0] == '\'' && str[len-1] == '\'') || 
-		(str[0] == '"' && str[len-1] == '"'))
-	{
-		return ft_substr(str, 1, len - 2);
-	}
-	for (i = 0; i < len; i++)
-	{
-		if (str[i] == '\'' || str[i] == '"')
-		{
-			has_quotes = 1;
-			break;
-		}
-	}
-	if (!has_quotes)
-		return ft_strdup(str);
+	int i = 0, j = 0;
+	
 	result = ft_malloc(len + 1);
 	if (!result)
 		return (NULL);
-	j = 0;
-	for (i = 0; i < len; i++)
+	while (i < len)
 	{
 		if (str[i] != '\'' && str[i] != '"')
 			result[j++] = str[i];
+		i++;
 	}
 	result[j] = '\0';
-	return result;
+	return (result);
+}
+
+static int is_heredoc_quoted(char *str)
+{
+	int i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+	{
+		if (str[i] == '\'' || str[i] == '"')
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+static void handle_heredoc_redir(char *trimmed_arg, t_redirection **redir_list)
+{
+	if (is_heredoc_quoted(trimmed_arg) && *redir_list)
+		(*redir_list)->expand_heredoc = 0;
+	add_redirection(REDIR_HEREDOC, remove_all_quotes(trimmed_arg, ft_strlen(trimmed_arg)), redir_list);
 }
 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
@@ -55,9 +57,6 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
 	t_redir_type rtype;
 	char *original_arg;
 	char *trimmed_arg;
-	char *unquoted_delimiter;
-	int is_quoted;
-	int i;
 	if (!node)
 		return (NULL);
 	if (node->type == INPUT_REDIRECTION || node->type == OUTPUT_REDIRECTION ||
@@ -66,30 +65,10 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
 		if (node->right && node->right->args)
 		{
 			rtype = determine_redir_type(node->type);
-			original_arg = node->right->args[0];
-			trimmed_arg = ft_strtrim(original_arg, " \t\n");
 			if (rtype == REDIR_HEREDOC)
-			{
-				is_quoted = 0;
-				i = 0;
-				while (trimmed_arg[i])
-				{
-					if (trimmed_arg[i] == '\'' || trimmed_arg[i] == '"')
-					{
-						is_quoted = 1;
-						break;
-					}
-					i++;
-				}
-				unquoted_delimiter = unquote_delimiter(trimmed_arg);
-				add_redirection(rtype, unquoted_delimiter, redir_list);
-				if (is_quoted && *redir_list)
-					(*redir_list)->expand_heredoc = 0;
-			}
+				handle_heredoc_redir(ft_strtrim(node->right->args[0], " \t\n"), redir_list);
 			else
-			{
-				add_redirection(rtype, trimmed_arg, redir_list);
-			}
+				add_redirection(rtype, ft_strtrim(node->right->args[0], " \t\n"), redir_list);
 		}
 		return (extract_redirections(node->left, redir_list));
 	}
