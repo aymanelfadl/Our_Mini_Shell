@@ -17,6 +17,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include "../libft/libft.h"
+#include <linux/limits.h>
 
 // ==========================================================================
 //                              DATA STRUCTURES
@@ -139,6 +140,7 @@ void push_back(t_list **export_envp, char *splited_export);
 char *get_key(char *splited_export);
 t_list *initialize_env_list(char **envp);
 char **list_to_char_array(t_list *list);
+int is_n_option(char *n_option, int wanna_skip);
 
 // ==========================================================================
 //                                 PARSING
@@ -147,6 +149,7 @@ char **list_to_char_array(t_list *list);
 t_tree *ilyas_parsing(char * command , t_list *envp);
 t_tree *make_tree(char ***data , int * to_skip);
 void split_tree(t_tree *tree);
+t_tree *create_one_node(char *command);
 void add_paths_to_tree(t_tree *tree, char **paths);
 char **ft_split_files(char *files);
 
@@ -171,6 +174,7 @@ enum inside_what string_is_inside(char *s, int start);
 int there_is_something_between_2_adresses(char *s1, char *s2);
 
 // Parsing Helpers
+char *get_value(t_list *envp, char *key);
 char *skip_spaces(char *s);
 char *skip_ops(char *command);
 int find_next_ops(char *command);

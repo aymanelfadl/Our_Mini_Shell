@@ -2,6 +2,91 @@
 
 t_list *garbage_collector = NULL;
 
+void print_strings(char **strs)
+{
+    int i = 0;
+    while (strs[i])
+    {
+        printf("%s\n", strs[i]);
+        i++;
+    }
+}
+void print_double_pointer(char ** s)
+{
+    while (s && *s)
+    {
+        printf ("'%s' ",*s);
+        s++;
+        if (*s)
+            printf(",");
+    }
+    printf("\n");
+
+}
+void print_tree(t_tree *tree)
+{
+    if (tree == NULL)
+        return;
+    print_tree(tree->left);
+    printf("%s %d        double :", tree->data, tree->type);
+    print_double_pointer(tree->args);
+    if (tree->type == COMMAND)
+        printf("      path : %s", tree->path);
+    printf("\nnext\n");
+    print_tree(tree->right);
+}
+void print_node(t_tree *node, int depth)
+{
+    if (!node)
+        return;
+
+    // Indent based on depth
+    for (int i = 0; i < depth; i++)
+        printf("  ");
+
+    // Print node type
+    if (node->type == PIPE)
+        printf("PIPE");
+    else if (node->type == COMMAND)
+        printf("COMMAND");
+    else if (node->type == INPUT_REDIRECTION)
+        printf("REDIRECT_IN");
+    else if (node->type == OUTPUT_REDIRECTION)
+        printf("REDIRECT_OUT");
+    else
+        printf("UNKNOWN");
+
+    // Print command if available
+    if (node->args && node->args[0])
+        printf(" | cmd: %s", node->args[0]);
+
+    // Print parent info
+    if (node->parent)
+    {
+        printf(" | parent: ");
+        if (node->parent->type == PIPE)
+            printf("PIPE");
+        else if (node->parent->type == COMMAND)
+            printf("COMMAND");
+        else if (node->parent->type == INPUT_REDIRECTION)
+            printf("REDIRECT_IN");
+        else if (node->parent->type == OUTPUT_REDIRECTION)
+            printf("REDIRECT_OUT");
+        else
+            printf("UNKNOWN");
+    }
+
+    printf("\n"); // <<< Main new line here
+
+    // Recursive calls
+    print_node(node->left, depth + 1);
+    print_node(node->right, depth + 1);
+
+    // Optional: Add empty line between subtrees (helps with visual separation)
+    if (depth == 0)
+        printf("\n");
+}
+
 int *get_exit_status(void)
 {
     static int exit_status;
@@ -87,23 +172,14 @@ static void minishell_loop(t_list *env_list)
         input = readline("$> ");
         if (!input)
             ctrl_d_handle();
-        if (input && *input)
+        char **commands = ft_split(phrase , "\n");
+        while(commands && *commands)
         {
-            add_history(input);
-            char **cmds = ft_split(input, "\n");
-            int saved_stdout = dup(STDOUT_FILENO);
-            int saved_stdin = dup(STDIN_FILENO);
-            execute_commands(cmds, env_list);
-            restore_std_fds(saved_stdout, saved_stdin);
+            tree = ilyas_parsing(*commands , env_list);
+           // print_node(tree, 0);
+            if (tree)
+                print_tree(tree);
+            commands++;
         }
     }
-}
-
-int main(int ac, char **av, char **envp)
-{
-    (void)ac; (void)av;
-    t_list *env_list;
-    env_list = initialize_env_list(envp);
-    minishell_loop(env_list);
-    return 0;
 }

@@ -1,16 +1,15 @@
 #include <minishell.h>
 
-static char ** how_many_file(char *files)
+static char **how_many_file(char *files)
 {
     int files_size;
-
     files_size = 0;
 
     while (*files)
     {
         if (*files == 34 || *files == 39)
         {
-            files = (ft_strchr(files + 1, *files));
+            files = (ft_strchr(files + 1, *files)) + 1;
             files_size++;
         }
         else
@@ -36,7 +35,7 @@ char **ft_split_files(char *files)
         if (*files == 34 || *files == 39)
         {
             files_splited[i++] = ft_substr(files + 1, 0, ft_strchr(files + 1, *files) - (files + 1));
-            files = (ft_strchr(files + 1, *files));
+            files = (ft_strchr(files + 1, *files)) + 1;
         }
         else
         {
@@ -44,7 +43,7 @@ char **ft_split_files(char *files)
                 files_splited[i++] = ft_substr(files, 0, my_strchr(files, " \t") - files);
             else
                 files_splited[i++] = ft_strdup(files);
-            files = my_strchr(files , " \t");
+            files += ft_strlen(files_splited[i - 1]);
         }
         files = skip_spaces(files);
     }

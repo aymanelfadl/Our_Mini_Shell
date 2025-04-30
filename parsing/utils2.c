@@ -1,6 +1,5 @@
 #include <minishell.h>
 
-
 int there_is_something_between_2_adresses(char *s1, char *s2)
 {
     while (s1 != s2)
@@ -11,8 +10,6 @@ int there_is_something_between_2_adresses(char *s1, char *s2)
     }
     return (1);
 }
-
-
 
 int check_file_before_command_irederection(char *command)
 {
@@ -57,38 +54,48 @@ char *assign_file_and_command(char *command, char **commandes_files, int *i)
     *i = j;
     return (command);
 }
+static int extract_files_commands_strings_helper(char **command, char **commandes_files, int *j)
+{
+    int i;
 
+    i = *j;
+    *command = skip_ops(*command);
+    while (*command != skip_ops(*command))
+        *command = skip_ops(*command);
+    if (find_next_ops(*command) != -1)
+        commandes_files[i++] = ft_substr(*command, 0, find_next_ops(*command));
+    else
+    {
+        commandes_files[i++] = ft_substr(*command, 0, ft_strlen(*command));
+        *j = i;
+        return (1);
+    }
+    (*command) += ft_strlen(commandes_files[i - 1]);
+    *j = i;
+    return (0);
+}
 char **extract_files_commands_strings(char *command, char **ops)
 {
-    int size = ops_size(command, ops) + 1;
+    int size;
     int i;
-    i = 0;
-    char **commandes_files = ft_malloc(sizeof(char **) * size);
+    char **commandes_files;
     int first_loop;
+
+    i = 0;
     first_loop = 1;
+    size = ops_size(command, ops) + 1;
+    commandes_files =  ft_malloc(sizeof(char *) * size);
     while (*command)
     {
         command = skip_spaces(command);
         if (first_loop && get_data_type(command) == INPUT_REDIRECTION)
             command = assign_file_and_command(command, commandes_files, &i);
         else if (check_file_before_command_irederection(command))
-        {
-            command = skip_ops(skip_ops(command));
-            command = assign_file_and_command(command, commandes_files, &i);
-        }
+            command = assign_file_and_command(skip_ops(skip_ops(command)), commandes_files, &i);
         else
         {
-            command = skip_ops(command);
-            while (command != skip_ops(command))
-                command = skip_ops(command);
-            if (find_next_ops(command) != -1)
-                commandes_files[i++] = ft_substr(command, 0, find_next_ops(command));
-            else
-            {
-                commandes_files[i++] = ft_substr(command, 0, ft_strlen(command));
+            if (extract_files_commands_strings_helper(&command, commandes_files, &i))
                 break;
-            }
-            command += ft_strlen(commandes_files[i - 1]);
         }
         first_loop = 0;
     }
