@@ -39,7 +39,9 @@ void print_node(t_tree *node, int depth)
 {
     if (!node) return;
     for (int i = 0; i < depth; i++) printf("  ");
-    printf("[type=%d] data='%s' path='%s'\n", node->type, node->data ? node->data : "(null)", node->path ? node->path : "(null)");
+    printf("[type=%d] data='%s' path='%s' ", node->type, node->data ? node->data : "(null)", node->path ? node->path : "(null)");
+    printf("left=%s right=%s\n", node->left ? "yes" : "no", node->right ? "yes" : "no");
+    
     if (node->args && node->args[0]) {
         for (int i = 0; node->args[i]; i++) {
             for (int j = 0; j < depth + 1; j++) printf("  ");
@@ -72,6 +74,7 @@ static void execute_commands(char **cmds, t_list *env_list)
         if (tree) {
             attach_all_redirections(tree);
             process_all_heredocs(tree);
+            // print_node(tree, 0);
             *get_exit_status() = execute_node(tree);
         }
         i++;

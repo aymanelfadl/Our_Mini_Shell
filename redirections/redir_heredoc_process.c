@@ -53,7 +53,7 @@ int	process_all_heredocs(t_tree *node)
 		return (-1);
 	if (process_all_heredocs(node->right) == -1)
 		return (-1);
-	if (node->type == COMMAND)
+	if (node->redirects)
 	{
 		process_heredoc_redirects(node);
 		if (check_heredoc_failures(node) == -1)

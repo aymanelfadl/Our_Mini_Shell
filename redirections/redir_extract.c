@@ -57,6 +57,7 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
 	t_redir_type rtype;
 	char *original_arg;
 	char *trimmed_arg;
+
 	if (!node)
 		return (NULL);
 	if (node->type == INPUT_REDIRECTION || node->type == OUTPUT_REDIRECTION ||
