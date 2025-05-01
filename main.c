@@ -85,12 +85,18 @@ static void minishell_loop(t_list *env_list)
     while (1)
     {
         input = readline("$> ");
+        if (*skip_spaces(input) == 0)
+        {
+            free(input);
+            continue;
+        }
         if (!input)
             ctrl_d_handle();
         if (input && *input)
         {
             add_history(input);
             char **cmds = ft_split(input, "\n");
+                
             int saved_stdout = dup(STDOUT_FILENO);
             int saved_stdin = dup(STDIN_FILENO);
             execute_commands(cmds, env_list);

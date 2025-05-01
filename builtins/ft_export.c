@@ -30,15 +30,16 @@ static void sort_envp(t_list *export_envp)
     }
 }
 
-static void write_expoert_envp(t_list *export_envp)
+static void write_expoert_envp(t_list export_envp)
 {
     char *content;
     int equal_found;
 
-    equal_found = 0;
-    while (export_envp)
+    sort_envp(&export_envp);
+    while (1)
     {
-        content = export_envp->content;
+        equal_found = 0;
+        content = export_envp.content;
         ft_putstr_fd("declare -x ", 1);
         while (*content)
         {
@@ -52,8 +53,12 @@ static void write_expoert_envp(t_list *export_envp)
         }
         if (equal_found)
             ft_putchar_fd('\x22', 1);
-        export_envp = export_envp->next;
+
         ft_putchar_fd('\n', 1);
+        if (export_envp.next)
+            export_envp = *(export_envp.next);
+        else
+            break;
     }
 }
 char *get_key(char *splited_export)
@@ -77,9 +82,8 @@ void ft_export(t_tree *node, t_list **export_envp)
     char *value;
 
     splited_export = node->args;
-    sort_envp(*export_envp);
     if (double_char_size(node->args) == 1)
-        write_expoert_envp(*export_envp);
+        write_expoert_envp(**export_envp);
     else
     {
         splited_export++;
@@ -87,7 +91,9 @@ void ft_export(t_tree *node, t_list **export_envp)
         while (splited_export && *splited_export)
         {
             if (!ft_strchr(*splited_export, '=') && is_valid_key(*splited_export) && !key_is_already_exist(*export_envp, *splited_export))
+            {
                 ft_lstadd_back(export_envp, ft_lstnew(*splited_export));
+            }
             else if ((ft_strnstr(*splited_export, "=", ft_strlen(*splited_export)) || ft_strnstr(*splited_export, "+=", ft_strlen(*splited_export))) && is_valid_key(*splited_export)) // 1 -> "="
                 push_back(export_envp, *splited_export);
             else if (!is_valid_key(*splited_export))

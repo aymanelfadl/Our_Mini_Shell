@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-static int  valid_args(t_tree *node)
+static int valid_args(t_tree *node)
 {
     int i;
 
@@ -12,8 +12,7 @@ static int  valid_args(t_tree *node)
         i++;
     }
     return 1;
-
-} 
+}
 
 int ft_env(t_tree *node)
 {
@@ -25,7 +24,8 @@ int ft_env(t_tree *node)
     {
         while (env)
         {
-            printf("%s\n", (char *)env->content);
+            if (ft_strchr((char *)env->content, '='))
+                printf("%s\n", (char *)env->content);
             env = env->next;
         }
         while (node->args && node->args[++i])

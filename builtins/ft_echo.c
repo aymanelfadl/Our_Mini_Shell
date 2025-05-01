@@ -67,7 +67,7 @@ void ft_echo(t_tree *node)
     }
     else
         n_option = 0;
-    to_write = node->data + 4;
+    to_write = ft_strchr(node->data + 1 , '\x27') + 1;
     if (n_option)
         to_write = skip_all_n_options(to_write);
     ft_echo_write(to_write, n_option);
