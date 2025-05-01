@@ -25,7 +25,10 @@ void attach_all_redirections(t_tree *node)
 		node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION)
 	{
 		cmd_node = extract_redirections(node, &redir_list);
-        attach_redir_to_cmd(cmd_node, redir_list);
+        if (cmd_node)
+            attach_redir_to_cmd(cmd_node, redir_list);
+        else if (redir_list)
+            node->redirects = redir_list;
 	}
     attach_all_redirections(node->left);
 }
