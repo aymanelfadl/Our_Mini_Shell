@@ -18,13 +18,13 @@ static void attach_redir_to_cmd(t_tree *cmd_node, t_redirection *redir_list)
 {
     if (!cmd_node || !redir_list)
         return;
+    
     if (cmd_node->type == PIPE || cmd_node->type == AND || cmd_node->type == OR)
-    {
-        if (!cmd_node->right)
-            cmd_node = get_leftmost_cmd(cmd_node);
-        else 
-            cmd_node = cmd_node->right;
-    }
+        if (cmd_node->right && !cmd_node->redirects)
+            cmd_node->right->redirects = redir_list;
+        else
+            cmd_node->redirects = redir_list;
+
     if (!cmd_node->redirects)
         cmd_node->redirects = redir_list;
 }
