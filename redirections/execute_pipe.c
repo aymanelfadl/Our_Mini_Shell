@@ -9,7 +9,8 @@ int execute_pipe(t_tree *node)
     if (l == 0)
     {
         dup2(node->pipe_fds[1], STDOUT_FILENO);
-        close(node->pipe_fds[0]); close(node->pipe_fds[1]);
+        close(node->pipe_fds[0]);
+        close(node->pipe_fds[1]);
         execute_node(node->left);
         exit(0);
     }
@@ -17,8 +18,12 @@ int execute_pipe(t_tree *node)
     if (r == 0)
     {
         dup2(node->pipe_fds[0], STDIN_FILENO);
-        close(node->pipe_fds[1]); close(node->pipe_fds[0]);
-        execute_node(node->right);
+        close(node->pipe_fds[1]);
+        close(node->pipe_fds[0]);
+        if (!node->right)
+            execute_node(node->left);
+        else
+            execute_node(node->right);
         exit(0);
     }
     close(node->pipe_fds[0]);
