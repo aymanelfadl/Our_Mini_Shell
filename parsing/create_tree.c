@@ -36,7 +36,12 @@ static t_tree *create_right_node(char **commands_files, int index, t_tree *paren
     node_assign->heredoc_content = NULL;
     node_assign->args = NULL;
     node_assign->path = NULL;
+    node_assign->ops = NULL;
     node_assign->to_skip = 0;
+    node_assign->redirects = NULL;
+    node_assign->pipe_fds[0] = -1;
+    node_assign->pipe_fds[1] = -1;
+
     return (node_assign);
 }
 static t_tree *create_left_node(char **commands_files, int index)
@@ -52,6 +57,11 @@ static t_tree *create_left_node(char **commands_files, int index)
     node->to_skip = 0;
     node->left = NULL;
     node->right = NULL;
+    node->ops =NULL;
+    node->redirects = NULL;
+    node->pipe_fds[0] = -1;
+    node->pipe_fds[1] = -1;
+    node->parent = NULL;
     return (node);
 }
 

@@ -6,6 +6,8 @@ static void update_pwds(char *old_pwd, char *pwd, t_list *envp)
     char *s_pwd;
     s_opwd = ft_strjoin("OLDPWD=", old_pwd);
     s_pwd = ft_strjoin("PWD=", pwd);
+    free(old_pwd);
+    free(pwd);
     push_back(&envp, s_opwd);
     push_back(&envp, s_pwd);
 }

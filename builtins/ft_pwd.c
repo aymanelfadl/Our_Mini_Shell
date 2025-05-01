@@ -28,6 +28,7 @@ void ft_pwd(t_list *envp)
         printf("here\n");
         printf("%s\n", buffer);
         *get_exit_status() = 0;
+        free(buffer);
     }
     else
         get_pwd_from_env(envp);

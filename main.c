@@ -84,15 +84,16 @@ static void minishell_loop(t_list *env_list)
     char *input;
     while (1)
     {
+        input = NULL;
         input = readline("$> ");
+        if (!input)
+            ctrl_d_handle();
         if (*skip_spaces(input) == 0)
         {
             *get_exit_status() = 0;
             free(input);
             continue;
         }
-        if (!input)
-            ctrl_d_handle();
         if (input && *input)
         {
             add_history(input);
