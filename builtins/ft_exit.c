@@ -41,5 +41,6 @@ void ft_exit(t_tree *node)
     if (!node->parent)
         printf("exit\n");
 
+    ft_free(garbage_collector);
     exit(exit_code);
 }

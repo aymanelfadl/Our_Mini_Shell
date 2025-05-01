@@ -2,6 +2,32 @@
 
 t_list *garbage_collector = NULL;
 
+
+void print_double_pointer(char **s)
+{
+    if (s == NULL)
+        printf("double pointer is NULL\n");
+    while (s && *s)
+    {
+        printf("%s", *s);
+        s++;
+        if (*s)
+            printf(",");
+    }
+    printf("\n");
+}
+void print_tree(t_tree *tree)
+{
+    if (tree == NULL)
+        return;
+    print_tree(tree->left);
+    printf("%s %d        double :", tree->data, tree->type);
+    print_double_pointer(tree->args);
+    if (tree->type == COMMAND)
+        printf("      path : %s", tree->path);
+    printf("\nnext\n");
+    print_tree(tree->right);
+}
 int *get_exit_status(void)
 {
     static int exit_status;
@@ -69,6 +95,7 @@ static void execute_commands(char **cmds, t_list *env_list)
     while (cmds && cmds[i])
     {
         tree = ilyas_parsing(cmds[i], env_list);
+        print_tree(tree);
         if (tree) {
             attach_all_redirections(tree);
             process_all_heredocs(tree);

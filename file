@@ -1,0 +1,38 @@
+[?2004h$> ks[Kls
+[?2004l'kls' 7        double :kls
+      path : (null)
+next
+[?2004h$> 
+[?2004l[?2004h$> ls
+[?2004la
+builtins
+file
+includes
+libft
+main.c
+Makefile
+minishell
+parsing
+README.md
+redirections
+signals
+'ls' 7        double :ls
+      path : /usr/bin/ls
+next
+[?2004h$> ls
+[?2004la
+builtins
+file
+includes
+libft
+main.c
+Makefile
+minishell
+parsing
+README.md
+redirections
+signals
+'ls' 7        double :ls
+      path : /usr/bin/ls
+next
+[?2004h$> ^C[?2004l
