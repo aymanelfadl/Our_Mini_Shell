@@ -106,6 +106,9 @@ int main(int ac, char **av, char **envp)
 {
     (void)ac; (void)av;
     t_list *env_list;
+
+    signal(SIGINT, sigint_handler);
+    signal(SIGQUIT, SIG_IGN);
     env_list = initialize_env_list(envp);
     minishell_loop(env_list);
     return 0;
