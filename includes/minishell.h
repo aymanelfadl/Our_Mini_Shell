@@ -218,12 +218,7 @@ int double_char_size(char **s);
 //                                 SIGNALS
 // ==========================================================================
 
-void setup_signals(void);
-void reset_signals_in_child(void);
-void set_child_running(int value);
-
-
-
+void sigint_handler(int signo);
 void ctrl_d_handle();
 
 // ==========================================================================

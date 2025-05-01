@@ -9,6 +9,8 @@ static int handle_no_path(t_tree *node)
 
 static int exec_child(t_tree *node)
 {
+	signal(SIGINT,  SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
 	execve(node->path, node->args, list_to_char_array(initialize_env_list(NULL)));
 	perror(node->args[0]);
 	exit(127);
@@ -25,6 +27,8 @@ int run_external_cmd(t_tree *node)
 		return (perror("fork"), 1);
 	if (pid == 0)
 		exec_child(node);
+	signal(SIGINT,  SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
 	return wait_for_child(pid);
 }
 
