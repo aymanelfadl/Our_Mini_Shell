@@ -10,8 +10,12 @@ t_tree *create_one_node(char *command)
     node->left = NULL;
     node->right = NULL;
     node->parent = NULL;
+    node->ops = NULL;
     node->type = COMMAND;
+    node->redirects = NULL;
     node->to_skip = 0;
+    node->pipe_fds[0] = -1;
+    node->pipe_fds[1] = -1;
     return (node);
 }
 

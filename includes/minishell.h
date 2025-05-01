@@ -69,18 +69,18 @@ typedef enum inside_what {
 
 // AST node
 typedef struct s_tree {
-    char               *path;
-    char               *data;              
+    char               *path; // 
+    char               *data;    //          
     char              **args;              
-    char               *heredoc_content;   
-    char              **ops;               
-    struct s_tree      *left;
-    struct s_tree      *right;
-    struct s_tree      *parent;
-    e_type              type;
-    int                 to_skip;
+    char               *heredoc_content; //    
+    char              **ops;       //        
+    struct s_tree      *left; //
+    struct s_tree      *right; // 
+    struct s_tree      *parent; // 
+    e_type              type; // 
+    int                 to_skip; // 
     
-    t_redirection      *redirects;
+    t_redirection      *redirects; // 
     int                 pipe_fds[2];
 } t_tree;
 

@@ -51,7 +51,7 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
     phrase = parse_env(phrase, envp);
     if (!check_unexpected_token(phrase))
     {
-         *get_exit_status() = 2;
+        *get_exit_status() = 2;
         return (printf("unexpexted token \n"), NULL);
     }
     char **cc = extract_ops(phrase);
