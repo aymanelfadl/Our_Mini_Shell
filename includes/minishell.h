@@ -125,7 +125,7 @@ int builtins_engine(t_tree *node, t_list *envp);
 void ft_echo(t_tree *node);
 int ft_cd(t_tree *node , t_list * envp);
 void ft_export(t_tree *node, t_list **export_envp);
-char* ft_pwd(void);
+void ft_pwd(t_list * envp);
 void ft_exit(t_tree *node);
 int ft_unset(t_tree *node);
 int ft_env(t_tree *node);
