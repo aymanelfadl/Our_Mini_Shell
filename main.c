@@ -71,12 +71,12 @@ static void execute_commands(char **cmds, t_list *env_list)
     while (cmds && cmds[i])
     {
         tree = ilyas_parsing(cmds[i], env_list);
-        print_node(tree, 0);
         if (tree) {
             attach_all_redirections(tree);
             process_all_heredocs(tree);
             *get_exit_status() = execute_node(tree);
         }
+        // print_node(tree, 0);
         i++;
     }
     cleanup_heredoc_fds(tree);
