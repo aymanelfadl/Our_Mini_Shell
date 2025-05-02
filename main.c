@@ -102,7 +102,6 @@ static void minishell_loop(t_list *env_list)
         {
             add_history(input);
             char **cmds = ft_split(input, "\n");
-
             int saved_stdout = dup(STDOUT_FILENO);
             int saved_stdin = dup(STDIN_FILENO);
             execute_commands(cmds, env_list);
