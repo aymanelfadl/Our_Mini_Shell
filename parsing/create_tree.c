@@ -103,6 +103,7 @@ t_tree *make_tree(char ***data, int *to_skip)
         tree->heredoc_content = NULL;
         tree->args = NULL;
         tree->path = NULL;
+        tree->redirects = NULL;
         if (last_word != -1)
         {
             tree->left = ft_malloc(sizeof(t_tree));
