@@ -14,7 +14,7 @@ int there_is_something_between_2_adresses(char *s1, char *s2)
 int check_file_before_command_irederection(char *command)
 {
     int ret = 0;
-    if (get_data_type(command) != -1)
+    if ((int) get_data_type(command) != -1)
     {
         if (get_data_type(skip_ops(command) + find_next_ops(command)) == INPUT_REDIRECTION)
         {
@@ -41,7 +41,7 @@ char *assign_file_and_command(char *command, char **commandes_files, int *i)
     command += ft_strlen(file);
     command = skip_spaces(command);
 
-    if (get_data_type(command) == -1 && *command)
+    if ((int) get_data_type(command) == -1 && *command)
     {
         if (find_next_ops(command) != -1)
             my_command = ft_substr(command, 0, find_next_ops(command));

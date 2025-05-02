@@ -7,7 +7,7 @@ char *skip_ops(char *command)
     command = skip_spaces(command);
     if (!get_data_type(command) || get_data_type(command) == 1 || get_data_type(command) == 3)
         command++;
-    else if (get_data_type(command) != -1)
+    else if ((int)get_data_type(command) != -1)
         command += 2;
     command = skip_spaces(command);
     return (command);
@@ -19,7 +19,7 @@ int find_next_ops(char *command)
 
     while (command[i])
     {
-        if (get_data_type(&command[i]) != -1 && commas_ops_check(&command[i]))
+        if ((int)get_data_type(&command[i]) != -1 && commas_ops_check(&command[i]))
             return (i);
         i++;
     }

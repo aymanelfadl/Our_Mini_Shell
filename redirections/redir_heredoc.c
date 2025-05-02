@@ -22,7 +22,7 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 			if (expanded != line)
 				line_to_write = expanded;
 		}
-		if (write_line_to_pipe(pipe_fds[1], line_to_write, expand, line) == -1)
+		if (write_line_to_pipe(pipe_fds[1], line_to_write) == -1)
 			return (close(pipe_fds[0]), close(pipe_fds[1]), -1);
 	}
 	return (0);

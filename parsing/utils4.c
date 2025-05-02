@@ -27,10 +27,8 @@ char *handle_commandes_quoets(t_tree *tree)
     char *rest;
     char *command_with_no_quotes;
     int i;
-    char *space_after_commas;
 
     i = 0;
-    rest = NULL;
     command = skip_spaces(tree->data);
     command = get_command(command);
     rest  = skip_spaces(tree->data) +ft_strlen(command);

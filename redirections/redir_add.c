@@ -3,7 +3,6 @@
 void add_redirection(t_redir_type type, char *file, t_redirection **list)
 {
 	t_redirection *redir;
-	char *trimmed;
 
 	redir = ft_malloc(sizeof(t_redirection));
 	if (!redir)
@@ -17,7 +16,6 @@ void add_redirection(t_redir_type type, char *file, t_redirection **list)
 	redir->origin_fd = -1;
 	redir->heredoc_fd = -1;
 	redir->expand_heredoc = 1;
-	redir->next = NULL;
 	redir->next = *list;
 	*list = redir;
 }

@@ -57,10 +57,6 @@ static t_tree *create_left_node(char **commands_files, int index)
 
 void put_to_tree(t_tree **node, char **commands_files, int index, t_tree *last_node_parent)
 {
-    t_tree *node_assign;
-    int index_shift;
-
-    index_shift = 1;
     if (index < 0)
         return;
     if ((*node) != NULL)
@@ -107,6 +103,7 @@ t_tree *make_tree(char ***data, int *to_skip)
         tree->heredoc_content = NULL;
         tree->args = NULL;
         tree->path = NULL;
+        tree->redirects = NULL;
         if (last_word != -1)
         {
             tree->left = ft_malloc(sizeof(t_tree));

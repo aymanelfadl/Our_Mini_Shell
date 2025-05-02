@@ -78,8 +78,6 @@ char *get_key(char *splited_export)
 void ft_export(t_tree *node, t_list **export_envp)
 {
     char **splited_export;
-    char *key;
-    char *value;
 
     splited_export = node->args;
     if (double_char_size(node->args) == 1)

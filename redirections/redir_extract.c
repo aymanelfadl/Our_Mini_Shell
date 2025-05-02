@@ -47,31 +47,37 @@ static int is_heredoc_quoted(char *str)
 
 static void handle_heredoc_redir(char *trimmed_arg, t_redirection **redir_list)
 {
-	if (is_heredoc_quoted(trimmed_arg) && *redir_list)
-		(*redir_list)->expand_heredoc = 0;
-	add_redirection(REDIR_HEREDOC, remove_all_quotes(trimmed_arg, ft_strlen(trimmed_arg)), redir_list);
+    int quoted = is_heredoc_quoted(trimmed_arg);
+    char *clean_delim = remove_all_quotes(trimmed_arg, ft_strlen(trimmed_arg));
+    
+	add_redirection(REDIR_HEREDOC, clean_delim, redir_list);
+    (*redir_list)->expand_heredoc = quoted ? 0 : 1;
 }
 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
 {
-	t_redir_type rtype;
-	char *original_arg;
-	char *trimmed_arg;
+    t_redir_type rtype;
+    char         *trimmed;
 
-	if (!node)
-		return (NULL);
-	if (node->type == INPUT_REDIRECTION || node->type == OUTPUT_REDIRECTION ||
-		node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION)
-	{
-		if (node->right && node->right->args)
-		{
-			rtype = determine_redir_type(node->type);
-			if (rtype == REDIR_HEREDOC)
-				handle_heredoc_redir(ft_strtrim(node->right->args[0], " \t\n"), redir_list);
-			else
-				add_redirection(rtype, ft_strtrim(node->right->args[0], " \t\n"), redir_list);
-		}
-		return (extract_redirections(node->left, redir_list));
-	}
-	return (node);
+    if (!node)
+        return NULL;
+
+    if (node->type == INPUT_REDIRECTION || \
+        node->type == OUTPUT_REDIRECTION || \
+        node->type == APP_OUTPUT_REDIRECTION || \
+        node->type == APP_INPUT_REDIRECTION)
+    {
+        if (node->right && node->right->args)
+        {
+            rtype = determine_redir_type(node->type);
+            trimmed = ft_strtrim(node->right->args[0], " \t\n");
+            if (rtype == REDIR_HEREDOC)
+                handle_heredoc_redir(trimmed, redir_list);
+            else
+                add_redirection(rtype, trimmed, redir_list);
+        }
+        return extract_redirections(node->left, redir_list);
+    }
+    return node;
 }
+
