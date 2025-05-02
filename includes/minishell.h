@@ -108,7 +108,7 @@ int process_all_heredocs(t_tree *node);
 void cleanup_heredoc_fds(t_tree *node);
 void	handle_eof_warning(const char *delimiter);
 char *expand_heredoc_line(char *line);
-int	write_line_to_pipe(int pipe_fd, char *line_to_write, int expand, char *line);
+int	write_line_to_pipe(int pipe_fd, char *line_to_write);
 
 // Redirection Application
 void add_redirection(t_redir_type type, char *file, t_redirection **list);
