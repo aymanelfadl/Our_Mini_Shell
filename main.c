@@ -74,6 +74,7 @@ static void execute_commands(char **cmds, t_list *env_list)
         if (tree) {
             attach_all_redirections(tree);
             process_all_heredocs(tree);
+            // print_node(tree, 0);
             *get_exit_status() = execute_node(tree);
         }
         i++;
@@ -101,7 +102,6 @@ static void minishell_loop(t_list *env_list)
         {
             add_history(input);
             char **cmds = ft_split(input, "\n");
-
             int saved_stdout = dup(STDOUT_FILENO);
             int saved_stdin = dup(STDIN_FILENO);
             execute_commands(cmds, env_list);
@@ -114,7 +114,7 @@ int main(int ac, char **av, char **envp)
 {
     (void)ac; (void)av;
     t_list *env_list;
-
+    
     env_list = initialize_env_list(envp);
     minishell_loop(env_list);
     return 0;

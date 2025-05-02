@@ -113,7 +113,7 @@ int	write_line_to_pipe(int pipe_fd, char *line_to_write);
 // Redirection Application
 void add_redirection(t_redir_type type, char *file, t_redirection **list);
 int apply_redirections(t_redirection *rlist);
-void restore_redirections(t_redirection *rlist); // Keep for potential future use with builtins
+void restore_redirections(t_redirection *rlist); 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
 void attach_all_redirections(t_tree *node);
 
