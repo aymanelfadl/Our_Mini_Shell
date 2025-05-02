@@ -112,6 +112,7 @@ t_tree *make_tree(char ***data, int *to_skip)
             tree->left = ft_malloc(sizeof(t_tree));
             tree = tree->left;
         }
+        tree->redirects = NULL;
     }
     tree->left = NULL;
     put_to_tree(&head, data[0], double_char_size(data[0]) - 1, tree);

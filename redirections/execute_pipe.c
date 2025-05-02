@@ -22,7 +22,7 @@ int execute_pipe(t_tree *node)
         close(node->pipe_fds[0]);
         if (!node->right)
         {
-            print_node(node,0);
+            // print_node(node,0);
             apply_redirections(node->redirects);
         }
         else

@@ -49,10 +49,10 @@ int	process_all_heredocs(t_tree *node)
 {
 	if (!node)
 		return (0);
-	if (process_all_heredocs(node->left) == -1)
-		return (-1);
-	if (process_all_heredocs(node->right) == -1)
-		return (-1);
+	if (node->left && process_all_heredocs(node->left) == -1)
+		return (-1);		
+	if (node->right && process_all_heredocs(node->right) == -1)
+		return (-1);	
 	if (node->redirects)
 	{
 		process_heredoc_redirects(node);

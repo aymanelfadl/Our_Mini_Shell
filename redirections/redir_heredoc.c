@@ -7,6 +7,8 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 
 	while (1)
 	{
+		signal(SIGINT,  SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
 		line = readline("> ");
 		if (!line)
 		{

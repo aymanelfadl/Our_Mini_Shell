@@ -1,31 +1,18 @@
 #include "minishell.h"
 
-static t_tree *get_leftmost_cmd(t_tree *node)
-{
-    t_tree *left_result;
-
-    if (!node)
-        return NULL;
-
-    if (node->type == COMMAND)
-        return node;
-
-    left_result = get_leftmost_cmd(node->left);
-    if (left_result)
-        return left_result;
-}
 static void attach_redir_to_cmd(t_tree *cmd_node, t_redirection *redir_list)
 {
     if (!cmd_node || !redir_list)
         return;
-    
+
     if (cmd_node->type == PIPE || cmd_node->type == AND || cmd_node->type == OR)
+    {
         if (cmd_node->right && !cmd_node->redirects)
             cmd_node->right->redirects = redir_list;
         else
             cmd_node->redirects = redir_list;
-
-    if (!cmd_node->redirects)
+    }
+    else if (!cmd_node->redirects)
         cmd_node->redirects = redir_list;
 }
 
@@ -37,6 +24,7 @@ void attach_all_redirections(t_tree *node)
     if (!node)
         return;
     redir_list = NULL;
+    cmd_node = NULL;
     if ((node->type == INPUT_REDIRECTION || node->type == OUTPUT_REDIRECTION ||
          node->type == APP_OUTPUT_REDIRECTION || node->type == APP_INPUT_REDIRECTION) &&
         (!node->parent || !(node->parent->type == INPUT_REDIRECTION ||
@@ -50,5 +38,6 @@ void attach_all_redirections(t_tree *node)
         else if (redir_list)
             node->redirects = redir_list;
     }
-    attach_all_redirections(node->left);
+    if (node->left)
+        attach_all_redirections(node->left);
 }
