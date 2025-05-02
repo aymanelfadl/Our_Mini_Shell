@@ -38,10 +38,8 @@ typedef struct s_redirection {
     char                 *file;          // filename or heredoc delimiter
     int                   fd_src;        // source fd (0 for stdin, 1 for stdout)
     int                   origin_fd;     // original fd before redirection
-    // --- Additions for Heredoc ---
     int                   expand_heredoc;   // Flag: 1 if delimiter unquoted, 0 if quoted
-    int                   heredoc_fd;       // File descriptor for heredoc pipe read end
-    // --- End Additions ---
+    int                   heredoc_fd;       
     struct s_redirection *next;
 } t_redirection;
 
@@ -78,7 +76,6 @@ typedef struct s_tree {
     struct s_tree      *parent;
     e_type              type;
     int                 to_skip;
-    
     t_redirection      *redirects;
     int                 pipe_fds[2];
 } t_tree;
@@ -107,7 +104,7 @@ int process_all_heredocs(t_tree *node);
 void cleanup_heredoc_fds(t_tree *node);
 void	handle_eof_warning(const char *delimiter);
 char *expand_heredoc_line(char *line);
-int	write_line_to_pipe(int pipe_fd, char *line_to_write, int expand, char *line);
+int	write_line_to_pipe(int pipe_fd, char *line_to_write);
 
 // Redirection Application
 void add_redirection(t_redir_type type, char *file, t_redirection **list);

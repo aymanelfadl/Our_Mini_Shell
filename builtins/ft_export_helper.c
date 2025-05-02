@@ -30,9 +30,6 @@ char *remove_quotes(char *string)
 char *extract_key_from_string(char *content)
 {
     char *key;
-    int i;
-    int j;
-    i = j = 0;
     if (ft_strnstr(content, "+=", ft_strlen(content)))
         key = ft_substr(content, 0, ft_strchr(content, '=') - content);
     else if (ft_strchr(content, '='))

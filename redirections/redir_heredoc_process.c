@@ -17,10 +17,7 @@ static void process_heredoc_redirects(t_tree *node)
                 close(redir->heredoc_fd);
                 redir->heredoc_fd = -1;
             }
-            heredoc_fd = read_heredoc_to_pipe(
-                redir->file,
-                redir->expand_heredoc
-            );
+            heredoc_fd = read_heredoc_to_pipe(redir->file, redir->expand_heredoc);
             if (heredoc_fd == -1)
                 return;
             redir->heredoc_fd = heredoc_fd;
@@ -50,12 +47,10 @@ int	process_all_heredocs(t_tree *node)
 {
 	if (!node)
 		return (0);
-	if (process_all_heredocs(node->left) == -1)
-		return (-1);
-	if (process_all_heredocs(node->right) == -1)
+	if (node->left && process_all_heredocs(node->left) == -1)
 		return (-1);
 	if (node->redirects)
-	{
+	{	
 		process_heredoc_redirects(node);
 		if (check_heredoc_failures(node) == -1)
 			return (-1);

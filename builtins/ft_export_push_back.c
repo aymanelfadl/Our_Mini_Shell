@@ -4,7 +4,6 @@ void push_back(t_list **export_envp, char *splited_export)
 {
     char *key;
     char *value;
-    char *end_adresss;
     char *export_envp_content;
 
     key = get_key(splited_export);

@@ -6,9 +6,8 @@ char *handle_commandes_quoets(t_tree *tree)
     char *command;
     char *rest;
     char *command_with_no_quotes;
-    int i;
 
-    i = 0;
+
     command = skip_spaces(tree->data);
     if (my_strchr(command, " \t"))
     {

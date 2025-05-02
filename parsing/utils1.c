@@ -18,6 +18,7 @@ void *ft_malloc(size_t size)
     t_list *new;
     new = malloc(sizeof(t_list));
     new->content = malloc(size);
+    ft_bzero(new->content, size);
     new->next = NULL;
     ft_lstadd_back(&garbage_collector, new);
     return (new->content);

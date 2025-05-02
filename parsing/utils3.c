@@ -89,7 +89,7 @@ char *parse_env(char *s, t_list *envp)
 {
     char *dollr_sign;
     int i = 1;
-    int j = 1;
+    // int j = 1;
 
     s = handle_ted(envp, s);
     dollr_sign = ft_strchr(s, '$');

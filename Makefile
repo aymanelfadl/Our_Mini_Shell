@@ -1,6 +1,6 @@
 CC = cc
-CFLAGS = -g -Iincludes -Ilibft
-
+CFLAGS = -Wall -Wextra -Werror -Iincludes -Ilibft
+# -fsanitize=address,undefined 
 NAME = minishell
 HEADER = includes/minishell.h 
 
@@ -13,7 +13,6 @@ BUILTINSDIR = builtins
 
 REDIRECTIONFILES = \
 	$(REDIRECTIONDIR)/execution_main.c \
-	$(REDIRECTIONDIR)/execution_andor.c \
 	$(REDIRECTIONDIR)/execution_helpers1.c \
 	$(REDIRECTIONDIR)/execution_helpers2.c \
 	$(REDIRECTIONDIR)/redir_add.c \

@@ -74,7 +74,6 @@ static void execute_commands(char **cmds, t_list *env_list)
         if (tree) {
             attach_all_redirections(tree);
             process_all_heredocs(tree);
-            // print_node(tree, 0);
             *get_exit_status() = execute_node(tree);
         }
         i++;
