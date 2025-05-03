@@ -18,8 +18,12 @@ void sigint_handler(int sig)
     rl_redisplay();
 }
 
-void heredoc_parent_sigint_handler(int sig)
+void heredoc_sigint_handler(int sig)
 {
     (void)sig;
+    
+    *get_exit_status() = 130;
     write(STDOUT_FILENO, "\n", 1);
+    rl_on_new_line();
+    rl_replace_line("", 0);    
 }
