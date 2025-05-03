@@ -46,10 +46,31 @@ static int handled_exit_status(char **dollr_sign, char **s)
     return (0);
 }
 
+
 static int is_it_to_expand(char *s, char *dollr_sign)
 {
+    int there_is_end_of_before;
+    char *string;
 
-    if (string_is_inside(s , dollr_sign - s) == DOUBLE_QUOTES)
+    string = s;
+    there_is_end_of_before = 0;
+    while (string < dollr_sign)
+    {
+        if (find_next_ops(string) == -1)
+            break;
+        string += find_next_ops(string);
+        if (get_data_type(string) == APP_INPUT_REDIRECTION)
+        {
+            string = skip_ops(string);
+            string = skip_spaces(string);
+            if (string == dollr_sign)
+                return (0);
+            if ((string == dollr_sign - 1) && *string == 34)
+                return (0);
+        }
+    }
+
+    if (string_is_inside(s, dollr_sign - s) == DOUBLE_QUOTES)
     {
         if (*(dollr_sign + 1) == 34 && (*(dollr_sign - 1)) == 34)
             return (0);
