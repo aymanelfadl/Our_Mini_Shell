@@ -57,10 +57,13 @@ char *handle_commandes_quoets(char *tree_data)
 t_list *strings_to_list(char **strings)
 {
     t_list *head;
+    char *dup_str;
+    
     head = NULL;
     while (strings && *strings)
     {
-        ft_lstadd_back(&head, ft_lstnew(*strings));
+        dup_str = ft_strdup(*strings);
+        ft_lstadd_back(&head, ft_lstnew(dup_str));
         strings++;
     }
     return (head);
