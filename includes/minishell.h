@@ -124,8 +124,8 @@ void attach_all_redirections(t_tree *node);
 int builtins_engine(t_tree *node, t_list *envp);
 void ft_echo(t_tree *node);
 int ft_cd(t_tree *node , t_list * envp);
-void ft_export(t_tree *node, t_list **export_envp);
-void ft_pwd(t_list * envp);
+int ft_export(t_tree *node, t_list **export_envp);
+int ft_pwd(t_list *envp);
 void ft_exit(t_tree *node);
 int ft_unset(t_tree *node);
 int ft_env(t_tree *node);
@@ -158,7 +158,7 @@ char **ft_split_files(char *files);
 char **extract_ops(char *s);
 char **extract_files_commands_strings(char *command, char **ops);
 char *parse_env(char *s , t_list *envp);
-char *handle_commandes_quoets(t_tree *tree);
+char *handle_commandes_quoets(char * tree_data);
 
 // Path Handling
 char **extract_paths(t_list *envp);

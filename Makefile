@@ -1,4 +1,4 @@
-CC = cc
+PCC = cc
 CFLAGS = -g -Iincludes -Ilibft
 
 NAME = minishell

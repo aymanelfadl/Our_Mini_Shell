@@ -15,7 +15,7 @@ char *skip_all_n_options(char *to_write)
 }
 static char *ft_echo_write_helper(char *to_write, int *i_did_write)
 {
-    if (*to_write == 34 || *to_write == 39)
+    if (*to_write == 1)
     {
         *i_did_write = 1;
         ft_putstr_fd(ft_substr(to_write + 1, 0, ft_strchr(to_write + 1, *to_write) - (to_write + 1)), 1);
@@ -29,7 +29,7 @@ static char *ft_echo_write_helper(char *to_write, int *i_did_write)
     }
     else
     {
-        while (*to_write && (*to_write != ' ' && *to_write != '\t' && *to_write != 34 && *to_write != 39))
+        while (*to_write && (*to_write != ' ' && *to_write != '\t' && *to_write != 1))
         {
             ft_putchar_fd(*to_write, 1);
             to_write++;
@@ -67,7 +67,7 @@ void ft_echo(t_tree *node)
     }
     else
         n_option = 0;
-    to_write = ft_strchr(node->data + 1 , '\x27') + 1;
+    to_write = ft_strchr(node->data + 1 , '\x01') + 1;
     if (n_option)
         to_write = skip_all_n_options(to_write);
     ft_echo_write(to_write, n_option);

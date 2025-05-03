@@ -15,8 +15,12 @@ char *remove_quotes(char *string)
         if ((*string == 34 || *string == 39) && ft_strchr(string + 1, *string))
         {
             next_quote_adresse = ft_strchr(string + 1, *string);
-            while (++string != next_quote_adresse)
+            string++;
+            while (*string && string != next_quote_adresse)
+            {
                 string_removed_quotes[i++] = *string;
+                string++;
+            }
         }
         else if ((*string != 34 && *string != 39))
             string_removed_quotes[i++] = *string;
@@ -63,18 +67,23 @@ t_list *key_is_already_exist(t_list *envp, char *key)
 int is_valid_key(char *s)
 {
     char *key;
+    int equal_found;
 
+    equal_found = 0;
     if (!ft_strchr(s, '=') && s[0] != '=')
         key = s;
     else if (ft_strchr(s, '='), s[0] != '=')
+    {
         key = ft_substr(s, 0, ft_strchr(s, '=') - s);
+        equal_found = 1;
+    }
     else
         return (0);
     if (ft_isdigit(*key))
         return (0);
     while (*key)
     {
-        if (ft_isalnum(*key) || *key == '_' || (*key == '+' && *(key + 1) == 0))
+        if (ft_isalnum(*key) || *key == '_' || ((*key == '+') && (*(key + 1) == 0) && equal_found))
             key++;
         else
             return (0);

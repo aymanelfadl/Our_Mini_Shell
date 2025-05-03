@@ -24,8 +24,12 @@ char *check_paths(char **paths, char **command)
         i = -1;
         if (!command || !(*command))
                 return (NULL);
+        if (ft_strcmp(*command, ".") == 0 || ft_strcmp(*command, "..") == 0)
+                return (NULL);
+        if (**command == 0)
+                return(NULL);
         if (is_path(*command))
-                return ((access(*command, X_OK) == 0) ? ft_strdup(*command) : NULL);
+                return (*command);
         while (paths && paths[++i])
         {
                 path = ft_strjoin(paths[i], "/");

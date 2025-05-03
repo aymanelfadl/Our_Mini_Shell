@@ -11,9 +11,9 @@ static int handle_builtin(t_tree *node, t_list *envp)
     else if (!ft_strcmp(node->args[0], "echo"))
         return (ft_echo(node), 0);
     else if (!ft_strcmp(node->args[0], "pwd"))
-        return (ft_pwd(envp), 0);
+        return (ft_pwd(envp));
     else if (!ft_strcmp(node->args[0], "export"))
-        return (ft_export(node, &envp) , 0);
+        return (ft_export(node, &envp));
     else if (!ft_strcmp(node->args[0], "env"))
         return ft_env(node); 
 

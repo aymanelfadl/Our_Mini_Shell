@@ -13,7 +13,7 @@ char *get_command(char *all_command)
         {
             if (string_is_inside(all_command, ft_strlen(all_command)) == INSIDE_NOTHING)
             {
-                command_name = ft_substr(command_head , 0 , all_command - command_head);
+                command_name = ft_substr(command_head, 0, all_command - command_head);
                 return (command_name);
             }
         }
@@ -21,7 +21,7 @@ char *get_command(char *all_command)
     }
     return (command_head);
 }
-char *handle_commandes_quoets(t_tree *tree)
+char *handle_commandes_quoets(char * tree_data)
 {
     char *command;
     char *rest;
@@ -31,15 +31,17 @@ char *handle_commandes_quoets(t_tree *tree)
 
     i = 0;
     rest = NULL;
-    command = skip_spaces(tree->data);
+    command = skip_spaces(tree_data);
     command = get_command(command);
-    rest  = skip_spaces(tree->data) +ft_strlen(command);
+    rest = skip_spaces(tree_data) + ft_strlen(command);
     if (*skip_spaces(rest) == 0)
         rest = NULL;
     command = remove_quotes(command);
-    command = ft_strjoin("'" , command);
-    command = ft_strjoin(command,"'");
-    return (ft_strjoin(command ,rest));
+    command = ft_strjoin("\x01", command);
+    command = ft_strjoin(command, "\x01");
+    if (rest)
+        return (ft_strjoin(ft_strjoin(command , " " ), handle_commandes_quoets(rest)));
+    return (command);
 }
 
 t_list *strings_to_list(char **strings)

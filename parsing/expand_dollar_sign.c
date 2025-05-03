@@ -36,7 +36,7 @@ static int handled_exit_status(char **dollr_sign, char **s)
         *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
         *dollr_sign = ft_strchr(*s, '$');
     }
-    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_')))
+    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_') || (*(*dollr_sign + 1) == 34) || (*(*dollr_sign + 1) == 39) ))
     {
         return (1);
     }
@@ -48,6 +48,12 @@ static int handled_exit_status(char **dollr_sign, char **s)
 
 static int is_it_to_expand(char *s, char *dollr_sign)
 {
+
+    if (string_is_inside(s , dollr_sign - s) == DOUBLE_QUOTES)
+    {
+        if (*(dollr_sign + 1) == 34 && (*(dollr_sign - 1)) == 34)
+            return (0);
+    }
     return ((string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES) || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING);
 }
 
@@ -61,13 +67,21 @@ static void if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)
 
     start_end_shift = 0;
     i = 1;
-    while (ft_isalnum(dollr_sign[0][i]) || dollr_sign[0][i] == '_')
-        i++;
-    to_replace = get_value(envp, ft_substr(*dollr_sign + 1, 0, i - 1));
-    if ((string_is_inside(*s, (int)(*dollr_sign - *s)) == DOUBLE_QUOTES))
-        start_end_shift = 1;
-    start = (int)(*dollr_sign - *s) - start_end_shift;
-    end = (int)(*dollr_sign - *s + i) + start_end_shift;
+
+    if (ft_isdigit(dollr_sign[0][i]))
+        i = 2;
+    else
+    {
+        while (ft_isalnum(dollr_sign[0][i]) || dollr_sign[0][i] == '_')
+            i++;
+    }
+    if (i == 1)
+        to_replace = NULL;
+    else
+       to_replace = get_value(envp, ft_substr(*dollr_sign + 1, 0, i - 1));
+
+    start = (int)(*dollr_sign - *s);
+    end = (int)(*dollr_sign - *s + i);
     *s = replace_strin_in_string(*s, start, end, to_replace);
     *dollr_sign = ft_strchr(*s, '$');
 }
