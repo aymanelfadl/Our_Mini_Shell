@@ -27,7 +27,7 @@ static char *handle_ted(t_list *envp, char *command)
             ted_adresse = ft_strchr(ted_adresse + 1, '~');
     }
     return (command);
-}
+}zx
 
 static int handled_exit_status(char **dollr_sign, char **s)
 {
@@ -64,12 +64,11 @@ static int is_it_to_expand(char *s, char *dollr_sign)
             string = skip_spaces(string);
             if (string == dollr_sign)
                 return (0);
-            printf("string is = %s\n",string);
             if ((string == dollr_sign - 1) && *string == 34)
                 return (0);
         }
-        printf("b9ina hna\n");
     }
+
     if (string_is_inside(s, dollr_sign - s) == DOUBLE_QUOTES)
     {
         if (*(dollr_sign + 1) == 34 && (*(dollr_sign - 1)) == 34)
