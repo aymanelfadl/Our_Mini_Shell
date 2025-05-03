@@ -90,14 +90,14 @@ static void minishell_loop(t_list *env_list)
         signal(SIGINT, sigint_handler);
         signal(SIGQUIT, SIG_IGN);
         input = readline("$> ");
+        if (!input)
+            ctrl_d_handle();
         if (*skip_spaces(input) == 0)
         {
             *get_exit_status() = 0;
             free(input);
             continue;
         }
-        if (!input)
-            ctrl_d_handle();
         if (input && *input)
         {
             add_history(input);
