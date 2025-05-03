@@ -181,6 +181,8 @@ int find_next_ops(char *command);
 int ops_size(char *s, char **ops);
 int extract_ops_helper(char *s, char **ops);
 char *replace_strin_in_string(char *s, int start_string, int end_string, char *inserted_string);
+int isdirectory(char *path);
+
 
 // String Utils (Consider moving to libft or a dedicated string utils file)
 char *my_strnstr(const char *haystack, const char *needle, size_t len);

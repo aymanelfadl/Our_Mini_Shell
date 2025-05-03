@@ -1,5 +1,15 @@
 #include <minishell.h>
 
+
+
+int isdirectory(char *path)
+{
+    struct stat statbuf;
+    if (stat(path, &statbuf) != 0)
+        return (0);
+    return (S_ISDIR(statbuf.st_mode));
+}
+
 char *get_command(char *all_command)
 {
     char *command_name;
@@ -21,7 +31,7 @@ char *get_command(char *all_command)
     }
     return (command_head);
 }
-char *handle_commandes_quoets(char * tree_data)
+char *handle_commandes_quoets(char *tree_data)
 {
     char *command;
     char *rest;
@@ -40,7 +50,7 @@ char *handle_commandes_quoets(char * tree_data)
     command = ft_strjoin("\x01", command);
     command = ft_strjoin(command, "\x01");
     if (rest)
-        return (ft_strjoin(ft_strjoin(command , " " ), handle_commandes_quoets(rest)));
+        return (ft_strjoin(ft_strjoin(command, " "), handle_commandes_quoets(rest)));
     return (command);
 }
 
