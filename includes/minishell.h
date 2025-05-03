@@ -69,18 +69,18 @@ typedef enum inside_what {
 
 // AST node
 typedef struct s_tree {
-    char               *path; //
-    char               *data;   //          
-    char              **args;     //         
-    char               *heredoc_content;  //  
-    char              **ops;  //            
+    char               *path; // 
+    char               *data;    //          
+    char              **args;              
+    char               *heredoc_content; //    
+    char              **ops;       //        
     struct s_tree      *left; //
-    struct s_tree      *right; //
-    struct s_tree      *parent; //
-    e_type              type; //
-    int                 to_skip;// 
+    struct s_tree      *right; // 
+    struct s_tree      *parent; // 
+    e_type              type; // 
+    int                 to_skip; // 
     
-    t_redirection      *redirects; 
+    t_redirection      *redirects; // 
     int                 pipe_fds[2];
 } t_tree;
 
@@ -108,12 +108,12 @@ int process_all_heredocs(t_tree *node);
 void cleanup_heredoc_fds(t_tree *node);
 void	handle_eof_warning(const char *delimiter);
 char *expand_heredoc_line(char *line);
-int	write_line_to_pipe(int pipe_fd, char *line_to_write, int expand, char *line);
+int	write_line_to_pipe(int pipe_fd, char *line_to_write);
 
 // Redirection Application
 void add_redirection(t_redir_type type, char *file, t_redirection **list);
 int apply_redirections(t_redirection *rlist);
-void restore_redirections(t_redirection *rlist); // Keep for potential future use with builtins
+void restore_redirections(t_redirection *rlist); 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
 void attach_all_redirections(t_tree *node);
 
@@ -124,8 +124,8 @@ void attach_all_redirections(t_tree *node);
 int builtins_engine(t_tree *node, t_list *envp);
 void ft_echo(t_tree *node);
 int ft_cd(t_tree *node , t_list * envp);
-int ft_export(t_tree *node, t_list **export_envp);
-int ft_pwd(t_list *envp);
+int  ft_export(t_tree *node, t_list **export_envp);
+int  ft_pwd(t_list *envp);
 void ft_exit(t_tree *node);
 int ft_unset(t_tree *node);
 int ft_env(t_tree *node);
@@ -218,12 +218,7 @@ int double_char_size(char **s);
 //                                 SIGNALS
 // ==========================================================================
 
-void setup_signals(void);
-void reset_signals_in_child(void);
-void set_child_running(int value);
-
-
-
+void sigint_handler(int signo);
 void ctrl_d_handle();
 
 // ==========================================================================

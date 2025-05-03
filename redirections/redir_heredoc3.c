@@ -73,7 +73,7 @@ char	*expand_heredoc_line(char *line)
 	return (result);
 }
 
-int	write_line_to_pipe(int pipe_fd, char *line_to_write, int expand, char *line)
+int	write_line_to_pipe(int pipe_fd, char *line_to_write)
 {
 	if (write(pipe_fd, line_to_write, ft_strlen(line_to_write)) == -1 ||
 		write(pipe_fd, "\n", 1) == -1)
