@@ -2,11 +2,12 @@
 
 int commas_ops_check(char *s)
 {
+    int commas;
     if (!s)
         return (0);
     while (*s)
     {
-        if ((*s == 34) | (*s == 39))
+        if (*s == 34 | *s == 39)
         {
             if (ft_strchr(s + 1, *s))
                 s = ft_strchr(s + 1, *s) + 1;
@@ -39,6 +40,7 @@ char **extract_ops(char *s)
     char *all_ops[8] = {">>", "<<", ">", "<", "||", "|", "&&", NULL};
     char **ops;
     int i;
+    int op_found;
     int size;
 
     size = ops_size(s, all_ops);

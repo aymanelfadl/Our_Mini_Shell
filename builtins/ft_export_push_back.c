@@ -4,6 +4,7 @@ void push_back(t_list **export_envp, char *splited_export)
 {
     char *key;
     char *value;
+    char *end_adresss;
     char *export_envp_content;
 
     key = get_key(splited_export);
@@ -12,8 +13,16 @@ void push_back(t_list **export_envp, char *splited_export)
         export_envp_content = key_is_already_exist(*export_envp, key)->content;
         if (export_operator(splited_export) == 1)
         {
-            export_envp_content = ft_substr(export_envp_content, 0, ft_strchr(export_envp_content, '=') + 1 - export_envp_content);
-            export_envp_content = ft_strjoin(export_envp_content, ft_strchr(splited_export, '=') + 1);
+            if (ft_strchr(export_envp_content , '='))
+            {
+                export_envp_content = ft_substr(export_envp_content, 0, ft_strchr(export_envp_content, '=') + 1 - export_envp_content);
+                export_envp_content = ft_strjoin(export_envp_content, ft_strchr(splited_export, '=') + 1);
+            }
+            else 
+            {
+                export_envp_content = ft_strjoin(export_envp_content , "=");
+                export_envp_content = ft_strjoin(export_envp_content, ft_strchr(splited_export, '=') + 1);
+            }
         }
         else if (export_operator(splited_export) == 2)
         {

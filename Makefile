@@ -1,5 +1,5 @@
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iincludes -Ilibft
+CFLAGS =  -Iincludes -Ilibft
 # -fsanitize=address,undefined 
 NAME = minishell
 HEADER = includes/minishell.h 

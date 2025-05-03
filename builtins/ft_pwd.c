@@ -1,10 +1,35 @@
 #include "minishell.h"
 
-char* ft_pwd(void)
+static int get_pwd_from_env(t_list *env)
 {
-    char * buffer = malloc (1000);
-    //printf("%s\n",getcwd(buffer , 1000));
-    getcwd(buffer , 1000);
-    printf("%s\n",buffer);
-    return (buffer);
+    char *pwd;
+
+    pwd = get_value(env, "PWD");
+    if (pwd)
+    {
+        printf("%s\n", pwd);
+        return (0);
+    }
+    else
+    {
+        ft_putstr_fd("cant get env\n", 2);
+        return (1);
+    }
+    return (1);
+}
+
+int ft_pwd(t_list *envp)
+{
+    char *buffer;
+
+    buffer = NULL;
+    buffer = getcwd(NULL, 0);
+    if (buffer)
+    {
+        printf("here\n");
+        printf("%s\n", buffer);
+        free(buffer);
+        return (1);
+    }
+    return (get_pwd_from_env(envp));
 }

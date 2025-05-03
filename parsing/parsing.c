@@ -10,7 +10,7 @@ int there_is_one_word(char *command)
             command++;
     }
     command = skip_spaces(command);
-    if ((int) get_data_type(command) != -1 || *command == 0)
+    if (get_data_type(command) != -1 || *command == 0)
         return (1);
     return (0);
 }
@@ -43,9 +43,10 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
 {
     char **paths = extract_paths(envp);
     int *to_skip;
-    // t_list *lst;
-
-    // lst = NULL;
+    t_list *lst;
+    int i;
+    i = 0;
+    lst = NULL;
     add_history(phrase);
     phrase = parse_env(phrase, envp);
     if (!check_unexpected_token(phrase))
