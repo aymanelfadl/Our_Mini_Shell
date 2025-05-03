@@ -1,5 +1,21 @@
 #include "minishell.h"
 
+static void mark_heredocs_as_failed(t_tree *node)
+{
+    t_redirection *temp;
+
+    if (!node || !node->redirects)
+        return;
+
+    temp = node->redirects;
+    while (temp)
+    {
+        if (temp->type == REDIR_HEREDOC)
+            temp->heredoc_fd = -1;
+        temp = temp->next;
+    }
+}
+
 static void process_heredoc_redirects(t_tree *node)
 {
     t_redirection *redir;
@@ -19,7 +35,7 @@ static void process_heredoc_redirects(t_tree *node)
             }
             heredoc_fd = read_heredoc_to_pipe(redir->file, redir->expand_heredoc);
             if (heredoc_fd == -1)
-                return;
+                return mark_heredocs_as_failed(node);
             redir->heredoc_fd = heredoc_fd;
         }
         redir = redir->next;

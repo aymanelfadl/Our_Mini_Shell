@@ -50,8 +50,11 @@ static void handle_heredoc_redir(char *trimmed_arg, t_redirection **redir_list)
     int quoted = is_heredoc_quoted(trimmed_arg);
     char *clean_delim = remove_all_quotes(trimmed_arg, ft_strlen(trimmed_arg));
     
-	add_redirection(REDIR_HEREDOC, clean_delim, redir_list);
-    (*redir_list)->expand_heredoc = quoted ? 0 : 1;
+    add_redirection(REDIR_HEREDOC, clean_delim, redir_list);
+	if (quoted)
+        (*redir_list)->expand_heredoc = 0;
+    else
+        (*redir_list)->expand_heredoc = 1;
 }
 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
@@ -62,14 +65,15 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
     if (!node)
         return NULL;
 
-    if (node->type == INPUT_REDIRECTION || \
-        node->type == OUTPUT_REDIRECTION || \
-        node->type == APP_OUTPUT_REDIRECTION || \
+    if (node->type == INPUT_REDIRECTION ||
+        node->type == OUTPUT_REDIRECTION || 
+        node->type == APP_OUTPUT_REDIRECTION || 
         node->type == APP_INPUT_REDIRECTION)
     {
         if (node->right && node->right->args)
         {
             rtype = determine_redir_type(node->type);
+			printf("::: %s\n", node->right->args[0]);
             trimmed = ft_strtrim(node->right->args[0], " \t\n");
             if (rtype == REDIR_HEREDOC)
                 handle_heredoc_redir(trimmed, redir_list);

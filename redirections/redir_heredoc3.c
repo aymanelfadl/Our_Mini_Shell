@@ -26,7 +26,10 @@ static char	*handle_var_replacement(char **result_ptr, char *start, char *var_va
 
 	temp = ft_substr(*result_ptr, 0, start - *result_ptr);
 	after_var = ft_strdup(start + var_len);
-	first_half = ft_strjoin(temp, var_value ? var_value : "");
+	if (var_value)
+		first_half = ft_strjoin(temp, var_value);
+	else
+		first_half = ft_strjoin(temp, "");
 	final = ft_strjoin(first_half, after_var);
 	*result_ptr = final;
 	return (*result_ptr);
@@ -44,7 +47,7 @@ static char	*process_var(char **result_ptr, char *start)
 	i = 1;
 	while (start[i] && (ft_isalnum(start[i]) || start[i] == '_'))
 		i++;
-	if (i <= 1)
+	if (i == 1)
 		return (start + 1);
 	var_name = ft_substr(start + 1, 0, i - 1);
 	env_list = initialize_env_list(NULL);
@@ -64,8 +67,11 @@ char	*expand_heredoc_line(char *line)
 	if (!result)
 		return (NULL);
 	start = result;
-	while ((start = ft_strchr(start, '$')))
+	while (1)
 	{
+		start = ft_strchr(start, '$');
+		if (!start)
+			break;
 		if (*(start + 1) == '\0')
 			break;
 		start = process_var(&result, start);

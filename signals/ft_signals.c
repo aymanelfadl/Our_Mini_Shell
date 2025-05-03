@@ -17,3 +17,9 @@ void sigint_handler(int sig)
     rl_replace_line("", 0);
     rl_redisplay();
 }
+
+void heredoc_parent_sigint_handler(int sig)
+{
+    (void)sig;
+    write(STDOUT_FILENO, "\n", 1);
+}

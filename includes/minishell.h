@@ -220,11 +220,10 @@ int double_char_size(char **s);
 
 void sigint_handler(int signo);
 void ctrl_d_handle();
+void heredoc_parent_sigint_handler(int sig);
 
 // ==========================================================================
 //                                  MISC
 // ==========================================================================
-
-// t_tree *find_leftmost_cmd(t_tree *node); // Commented out, seems unused
 
 #endif
