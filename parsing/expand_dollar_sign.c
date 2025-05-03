@@ -27,7 +27,7 @@ static char *handle_ted(t_list *envp, char *command)
             ted_adresse = ft_strchr(ted_adresse + 1, '~');
     }
     return (command);
-}zx
+}
 
 static int handled_exit_status(char **dollr_sign, char **s)
 {
