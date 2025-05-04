@@ -87,12 +87,21 @@ typedef struct s_tree {
 
 int execute_node(t_tree *node);
 int execute_command(t_tree *node);
+void execute_commands(char **cmds, t_list *env_list);
 int fork_and_exec(t_tree *node);
 int execute_pipe(t_tree *node);
+
+// SETUP ENVP
+t_list *create_minimal_env(void);
+void increment_shlvl(t_list *env_list);
+t_list *initialize_env_list(char **envp);
 
 // UTILS
 int command_path_is_dir(char *path);
 int handle_no_path(t_tree *node);
+void restore_std_fds(int saved_stdout, int saved_stdin);
+void save_std_fds(int *saved_stdout, int *saved_stdin);
+
 
 // ==========================================================================
 //                              REDIRECTIONS

@@ -15,6 +15,7 @@ REDIRECTIONFILES = \
 	$(REDIRECTIONDIR)/execution_main.c \
 	$(REDIRECTIONDIR)/execution_helpers1.c \
 	$(REDIRECTIONDIR)/execution_helpers2.c \
+	$(REDIRECTIONDIR)/setup_envp.c \
 	$(REDIRECTIONDIR)/redir_add.c \
 	$(REDIRECTIONDIR)/redir_apply.c \
 	$(REDIRECTIONDIR)/redir_attach.c \

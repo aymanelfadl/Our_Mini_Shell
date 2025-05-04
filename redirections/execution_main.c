@@ -1,5 +1,25 @@
 #include "minishell.h"
 
+int *get_exit_status(void)
+{
+    static int exit_status;
+    return &exit_status;
+}
+
+void restore_std_fds(int saved_stdout, int saved_stdin)
+{
+    dup2(saved_stdout, STDOUT_FILENO);
+    dup2(saved_stdin, STDIN_FILENO);
+    close(saved_stdout);
+    close(saved_stdin);
+}
+
+void save_std_fds(int *saved_stdout, int *saved_stdin)
+{
+    *saved_stdout = dup(STDOUT_FILENO);
+    *saved_stdin = dup(STDIN_FILENO);       
+}
+
 int execute_node(t_tree *node)
 {
     if (!node)
@@ -23,3 +43,28 @@ int execute_node(t_tree *node)
         return 0;
 }
 
+void execute_commands(char **cmds, t_list *env_list)
+{
+    t_tree *tree;
+    int i;
+
+    tree = NULL;
+    i = 0;
+    while (cmds && cmds[i])
+    {
+        tree = ilyas_parsing(cmds[i], env_list);
+        if (tree)
+        {
+            attach_all_redirections(tree);
+            if (process_all_heredocs(tree) == -1)
+            {
+                cleanup_heredoc_fds(tree);
+                *get_exit_status() = 130;
+                break;
+            }
+            *get_exit_status() = execute_node(tree);
+        }
+        i++;
+    }
+    cleanup_heredoc_fds(tree);
+}
