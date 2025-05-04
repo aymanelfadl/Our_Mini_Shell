@@ -17,7 +17,7 @@ int ft_cd(t_tree *node, t_list *envp)
     char *pwd;
 
     if (double_char_size(node->args) > 2)
-        return (printf("bash: cd: too many arguments\n"), 1);
+        return (ft_putstr_fd("minishell: cd: too many arguments\n", STDERR_FILENO), 1);
     old_pwd = getcwd(NULL, 0);
     if (double_char_size(node->args) == 1)
     {
@@ -48,15 +48,13 @@ int ft_cd(t_tree *node, t_list *envp)
             ft_putstr_fd("minishell : cd : cannot access parent dir \n", 2);
             return (1);
         }
-
         update_pwds(old_pwd, pwd, envp);
         return (0);
     }
     else
     {
-        ft_putstr_fd("bash: cd" , 2);
-        ft_putstr_fd(node->args[1] , 2);
-        perror("");
+        ft_putstr_fd("minishell: cd: " , 2);
+        perror(node->args[1]);
     }
     return (1);
 }
