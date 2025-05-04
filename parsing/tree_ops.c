@@ -1,8 +1,18 @@
 #include <minishell.h>
 
+t_tree *find_first_commamd_at_left(t_tree *tree)
+{
+    t_tree *command;
+    if (tree->right && tree->right->type == COMMAND)
+        return (tree->right);
+    if ((tree->left) && tree->left->type == COMMAND)
+        return (tree->left);
+    return (find_first_commamd_at_left(tree->left));
+}
 void add_files_to_args(t_tree *node)
 {
     int i;
+    t_tree *first_command_at_left;
 
     i = 1;
     if (double_char_size(node->args) > 1)
@@ -12,13 +22,11 @@ void add_files_to_args(t_tree *node)
 
         while (node->args[i])
         {
-            if (my_strchr(node->args[i], " \t"))
-                node->parent->left->data = ft_strjoin(node->parent->left->data, "'");
-            node->parent->left->data = ft_strjoin(node->parent->left->data, node->args[i]);
-            if (my_strchr(node->args[i], " \t"))
-                node->parent->left->data = ft_strjoin(node->parent->left->data, "'");
-            if (node->args[i + 1])
-                node->parent->left->data = ft_strjoin(node->parent->left->data, " ");
+            first_command_at_left = find_first_commamd_at_left(node->parent);
+            first_command_at_left->data = ft_strjoin(first_command_at_left->data, " ");
+            first_command_at_left->data = ft_strjoin(first_command_at_left->data, "\0x1");
+            first_command_at_left->data = ft_strjoin(first_command_at_left->data, node->args[i]);
+            first_command_at_left->data = ft_strjoin("\0x1", first_command_at_left->data);
             i++;
         }
     }
@@ -34,7 +42,7 @@ void split_tree(t_tree *tree)
         tree->args = ft_split_files(tree->data);
         if (tree->type == FT_FILE)
             add_files_to_args(tree);
-     }
+    }
     else if (tree->type == FT_EOF)
     {
         tree->data = ft_strtrim(tree->data, " \t");

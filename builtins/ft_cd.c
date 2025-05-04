@@ -17,7 +17,7 @@ int ft_cd(t_tree *node, t_list *envp)
     char *pwd;
 
     if (double_char_size(node->args) > 2)
-        return (ft_putstr_fd("minishell: cd: too many arguments\n", 2), 1);
+        return (printf("bash: cd: too many arguments\n"), 1);
     old_pwd = getcwd(NULL, 0);
     if (double_char_size(node->args) == 1)
     {
@@ -53,6 +53,10 @@ int ft_cd(t_tree *node, t_list *envp)
         return (0);
     }
     else
-        perror("chdir");
+    {
+        ft_putstr_fd("bash: cd" , 2);
+        ft_putstr_fd(node->args[1] , 2);
+        perror("");
+    }
     return (1);
 }

@@ -1,7 +1,5 @@
 #include <minishell.h>
 
-
-
 int isdirectory(char *path)
 {
     struct stat statbuf;
@@ -19,17 +17,22 @@ char *get_command(char *all_command)
 
     while (*all_command)
     {
-        if (*all_command == ' ' || *all_command == '\t')
+        if (*all_command == 34 || *all_command == 39)
+            all_command = ft_strchr(all_command + 1, *all_command) + 1;
+        else if (*all_command == ' ' || *all_command == '\t')
         {
-            if (string_is_inside(all_command, ft_strlen(all_command)) == INSIDE_NOTHING)
+            if (string_is_inside(command_head, all_command - command_head) == INSIDE_NOTHING)
             {
                 command_name = ft_substr(command_head, 0, all_command - command_head);
                 return (command_name);
             }
+            else
+                all_command++;
         }
-        all_command++;
+        else
+            all_command++;
     }
-    return (command_head);
+    return (ft_strdup(command_head));
 }
 char *handle_commandes_quoets(char *tree_data)
 {
@@ -58,7 +61,7 @@ t_list *strings_to_list(char **strings)
 {
     t_list *head;
     char *dup_str;
-    
+
     head = NULL;
     while (strings && *strings)
     {

@@ -11,7 +11,7 @@ char *replace_strin_in_string(char *s, int start_string, int end_string, char *i
 
 int here_doc_before_dollar_sign(char *string, char *dollr_sign)
 {
-    while (string < dollr_sign)
+    while (*string && string < dollr_sign)
     {
         if (find_next_ops(string) == -1)
             break;
@@ -20,11 +20,13 @@ int here_doc_before_dollar_sign(char *string, char *dollr_sign)
         {
             string = skip_ops(string);
             string = skip_spaces(string);
-            if (string == dollr_sign)
+            if (skip_spaces(skip_ops(string)) == dollr_sign)
                 return (0);
-            if ((string == dollr_sign - 1) && *string == 34)
+            if ((skip_spaces(skip_ops(string)) == dollr_sign - 1) && *skip_spaces(skip_ops(string)) == 34)
                 return (0);
         }
+        string = skip_ops(string);
+        string = skip_spaces(string);
     }
     return (1);
 }

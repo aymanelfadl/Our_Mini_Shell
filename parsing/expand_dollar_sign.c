@@ -28,24 +28,6 @@ static char *handle_ted(t_list *envp, char *command)
     }
     return (command);
 }
-
-static int handled_exit_status(char **dollr_sign, char **s)
-{
-    if (*(*dollr_sign + 1) == '?' && here_doc_before_dollar_sign(*s, *dollr_sign))
-    {
-        *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
-        *dollr_sign = ft_strchr(*s, '$');
-    }
-    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_') || (*(*dollr_sign + 1) == 34) || (*(*dollr_sign + 1) == 39)))
-    {
-        return (1);
-    }
-    else
-        *dollr_sign = ft_strchr(*dollr_sign + 1, '$');
-
-    return (0);
-}
-
 static int is_it_to_expand(char *s, char *dollr_sign)
 {
     int there_is_end_of_before;
@@ -61,6 +43,23 @@ static int is_it_to_expand(char *s, char *dollr_sign)
             return (0);
     }
     return ((string_is_inside(s, (int)(dollr_sign - s)) == DOUBLE_QUOTES) || string_is_inside(s, (int)(dollr_sign - s)) == INSIDE_NOTHING);
+}
+
+static int handled_exit_status(char **dollr_sign, char **s)
+{
+    if (*(*dollr_sign + 1) == '?' && is_it_to_expand(*s, *dollr_sign))
+    {
+        *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
+        *dollr_sign = ft_strchr(*s, '$');
+    }
+    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_') || (*(*dollr_sign + 1) == 34) || (*(*dollr_sign + 1) == 39)))
+    {
+        return (1);
+    }
+    else
+        *dollr_sign = ft_strchr(*dollr_sign + 1, '$');
+
+    return (0);
 }
 
 static void if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)

@@ -47,8 +47,15 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
     int i;
     i = 0;
     lst = NULL;
+    if (*phrase == 0)
+        return (NULL);
     add_history(phrase);
     phrase = parse_env(phrase, envp);
+    if (*phrase == 0)
+    {
+        *get_exit_status() = 0;
+        return (NULL);
+    }
     if (!check_unexpected_token(phrase))
     {
         *get_exit_status() = 2;
