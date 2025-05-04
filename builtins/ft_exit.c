@@ -2,6 +2,8 @@
 
 static int ft_isnumber(char *str)
 {
+    if (*str == '-' || *str == '+')
+        str++;
     while (*str)
     {
         if (!ft_isdigit(*str))
@@ -26,20 +28,23 @@ void ft_exit(t_tree *node)
 
     if (ft_count_args(node) > 2)
     {
-        printf("exit: too many arguments\n");
+        ft_putstr_fd("exit\n", STDOUT_FILENO);
+        ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
         *get_exit_status() = 1; 
         return;
     }
     if (ft_count_args(node) == 2 && !ft_isnumber(node->args[1]))
     {
-        printf("exit: %s: numeric argument required\n", node->args[1]);
-        exit(255);
+        ft_putstr_fd("minishell: ", STDERR_FILENO);
+        ft_putstr_fd(node->args[1], STDERR_FILENO);
+        ft_putstr_fd(": numeric argument required", STDERR_FILENO);
+        *get_exit_status() = 2;
+        exit(2);
     }
     if (ft_count_args(node) == 2)
         exit_code = ft_atoi(node->args[1]);
-
     if (!node->parent)
-        printf("exit\n");
-
+        ft_putstr_fd("exit\n", STDOUT_FILENO);
+    *get_exit_status() = exit_code;
     exit(exit_code);
 }
