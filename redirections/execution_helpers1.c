@@ -6,7 +6,12 @@ static int exec_child(t_tree *node)
 	signal(SIGQUIT, SIG_DFL);
 	execve(node->path, node->args, list_to_char_array(initialize_env_list(NULL)));
 	perror(node->args[0]);
-	exit(127);
+	if (errno == EACCES)
+        exit(126);
+    else if (errno == ENOENT)
+        exit(127);
+    else
+        exit(1);
 }
 
 static int handle_builtin(t_tree *node)

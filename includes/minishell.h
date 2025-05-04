@@ -18,6 +18,7 @@
 #include <sys/wait.h>
 #include "../libft/libft.h"
 #include <linux/limits.h>
+#include <errno.h>
 
 // ==========================================================================
 //                              DATA STRUCTURES
