@@ -17,9 +17,8 @@ int ft_cd(t_tree *node, t_list *envp)
     char *pwd;
 
     if (double_char_size(node->args) > 2)
-        return (printf("bash: cd: too many arguments\n"), 1);
+        return (ft_putstr_fd("minishell: cd: too many arguments\n", 2), 1);
     old_pwd = getcwd(NULL, 0);
-    printf("old_pwd = %s\n", old_pwd);
     if (double_char_size(node->args) == 1)
     {
         pwd = get_value(envp, "HOME");
@@ -43,7 +42,6 @@ int ft_cd(t_tree *node, t_list *envp)
     }
     else if (chdir(node->args[1]) == 0)
     {
-        printf("here\n");
         pwd = getcwd(NULL, 0);
         if (!pwd)
         {

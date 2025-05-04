@@ -1,15 +1,26 @@
 #include "minishell.h"
 
-static int exec_child(t_tree *node)
+static void exec_child(t_tree *node)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-	execve(node->path, node->args, list_to_char_array(initialize_env_list(NULL)));
-	perror(node->args[0]);
-	if (errno == EACCES)
-        exit(126);
-    else
-        exit(127);
+	if (execve(node->path, node->args, list_to_char_array(initialize_env_list(NULL))) == -1)
+	{
+		if (errno == ENOEXEC)
+		{
+			char *new_args[] = {"/bin/sh", node->path, NULL};
+			execve("/bin/sh", new_args, list_to_char_array(initialize_env_list(NULL)));
+		}
+		else if (errno == EACCES)
+		{
+			ft_putstr_fd("minishell: ", 2);
+			perror(node->args[0]);
+			exit(126);
+		}
+		ft_putstr_fd("minishell: ", 2);
+		perror(node->args[0]);	
+		exit(127);
+	}
 }
 
 static int handle_builtin(t_tree *node)

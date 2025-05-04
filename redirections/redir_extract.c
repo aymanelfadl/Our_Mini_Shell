@@ -74,7 +74,7 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
         {
             rtype = determine_redir_type(node->type);
             trimmed = ft_strtrim(node->right->args[0], " \t\n");
-            if (rtype == REDIR_HEREDOC)
+			if (rtype == REDIR_HEREDOC)
                 handle_heredoc_redir(trimmed, redir_list);
             else
                 add_redirection(rtype, trimmed, redir_list);
