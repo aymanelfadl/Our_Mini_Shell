@@ -3,7 +3,7 @@
 static int handle_builtin(t_tree *node, t_list *envp)
 {
     if (!ft_strcmp(node->args[0], "exit"))
-        ft_exit(node);
+        return(ft_exit(node) ,*get_exit_status());
     else if (!ft_strcmp(node->args[0], "unset"))
         return ft_unset(node);
     else if (!ft_strcmp(node->args[0], "cd"))

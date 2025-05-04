@@ -25,13 +25,12 @@ static int ft_count_args(t_tree *node)
 void ft_exit(t_tree *node)
 {
     int exit_code = 0;
-
     if (ft_count_args(node) > 2)
     {
         ft_putstr_fd("exit\n", STDOUT_FILENO);
         ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
         *get_exit_status() = 1; 
-        return;
+        return ;
     }
     if (ft_count_args(node) == 2 && !ft_isnumber(node->args[1]))
     {
