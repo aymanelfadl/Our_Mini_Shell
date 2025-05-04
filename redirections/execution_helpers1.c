@@ -8,10 +8,8 @@ static int exec_child(t_tree *node)
 	perror(node->args[0]);
 	if (errno == EACCES)
         exit(126);
-    else if (errno == ENOENT)
-        exit(127);
     else
-        exit(1);
+        exit(127);
 }
 
 static int handle_builtin(t_tree *node)
