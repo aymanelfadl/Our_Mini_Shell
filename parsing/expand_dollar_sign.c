@@ -1,59 +1,7 @@
 #include <minishell.h>
 
-static char *handle_ted(t_list *envp, char *command)
+static int here_doc_before_dollar_sign(char *string, char *dollr_sign)
 {
-    char *command_head = command;
-    char *ted_adresse;
-
-    ted_adresse = ft_strchr(command, '~');
-    while (ted_adresse)
-    {
-        if (string_is_inside(command, ted_adresse - command) == INSIDE_NOTHING)
-        {
-            if ((ted_adresse == command_head) && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
-            {
-                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
-                ted_adresse = ft_strchr(command, '~');
-            }
-            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
-            {
-                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
-                ted_adresse = ft_strchr(command, '~');
-            }
-            else
-                ted_adresse = ft_strchr(ted_adresse + 1, '~');
-        }
-        else
-            ted_adresse = ft_strchr(ted_adresse + 1, '~');
-    }
-    return (command);
-}
-
-static int handled_exit_status(char **dollr_sign, char **s)
-{
-    if (*(*dollr_sign + 1) == '?')
-    {
-        *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
-        *dollr_sign = ft_strchr(*s, '$');
-    }
-    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_') || (*(*dollr_sign + 1) == 34) || (*(*dollr_sign + 1) == 39) ))
-    {
-        return (1);
-    }
-    else
-        *dollr_sign = ft_strchr(*dollr_sign + 1, '$');
-
-    return (0);
-}
-
-
-static int is_it_to_expand(char *s, char *dollr_sign)
-{
-    int there_is_end_of_before;
-    char *string;
-
-    string = s;
-    there_is_end_of_before = 0;
     while (string < dollr_sign)
     {
         if (find_next_ops(string) == -1)
@@ -69,6 +17,59 @@ static int is_it_to_expand(char *s, char *dollr_sign)
                 return (0);
         }
     }
+    return (1);
+}
+static char *handle_ted(t_list *envp, char *command)
+{
+    char *command_head = command;
+    char *ted_adresse;
+
+    ted_adresse = ft_strchr(command, '~');
+    while (ted_adresse)
+    {
+        if (string_is_inside(command, ted_adresse - command) == INSIDE_NOTHING)
+        {
+            if ((ted_adresse == command_head) && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
+            {
+                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
+                ted_adresse = ft_strchr(command, '~');
+            }
+            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)) && here_doc_before_dollar_sign(command , ted_adresse))
+            {
+                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
+                ted_adresse = ft_strchr(command, '~');
+            }
+            else
+                ted_adresse = ft_strchr(ted_adresse + 1, '~');
+        }
+        else
+            ted_adresse = ft_strchr(ted_adresse + 1, '~');
+    }
+    return (command);
+}
+
+static int handled_exit_status(char **dollr_sign, char **s)
+{
+    if (*(*dollr_sign + 1) == '?' && here_doc_before_dollar_sign(*s , *dollr_sign))
+    {
+        *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
+        *dollr_sign = ft_strchr(*s, '$');
+    }
+    else if (((ft_isalnum(*(*dollr_sign + 1))) || (*(*dollr_sign + 1) == '_') || (*(*dollr_sign + 1) == 34) || (*(*dollr_sign + 1) == 39)))
+    {
+        return (1);
+    }
+    else
+        *dollr_sign = ft_strchr(*dollr_sign + 1, '$');
+
+    return (0);
+}
+
+static int is_it_to_expand(char *s, char *dollr_sign)
+{
+    int there_is_end_of_before;
+
+    there_is_end_of_before = 0;
 
     if (string_is_inside(s, dollr_sign - s) == DOUBLE_QUOTES)
     {
@@ -99,7 +100,7 @@ static void if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)
     if (i == 1)
         to_replace = NULL;
     else
-       to_replace = get_value(envp, ft_substr(*dollr_sign + 1, 0, i - 1));
+        to_replace = get_value(envp, ft_substr(*dollr_sign + 1, 0, i - 1));
 
     start = (int)(*dollr_sign - *s);
     end = (int)(*dollr_sign - *s + i);

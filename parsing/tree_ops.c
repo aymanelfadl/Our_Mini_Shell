@@ -36,7 +36,12 @@ void split_tree(t_tree *tree)
             add_files_to_args(tree);
     }
     else if (tree->type == FT_EOF)
+    {
         tree->data = ft_strtrim(tree->data, " \t");
+        tree->args = ft_malloc(sizeof(char *) * 2);
+        tree->args[0] = tree->data;
+        tree->args[1] = NULL;
+    }
     split_tree(tree->right);
     split_tree(tree->left);
 }

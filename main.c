@@ -28,28 +28,35 @@ void ft_free_split(char **split)
 {
     if (!split)
         return;
-        
+
     for (int i = 0; split[i]; i++)
         free(split[i]);
-    
+
     free(split);
 }
 
 void print_node(t_tree *node, int depth)
 {
-    if (!node) return;
-    for (int i = 0; i < depth; i++) printf("  ");
+    if (!node)
+        return;
+    for (int i = 0; i < depth; i++)
+        printf("  ");
     printf("[type=%d] data='%s' path='%s' ", node->type, node->data ? node->data : "(null)", node->path ? node->path : "(null)");
     printf("left=%s right=%s\n", node->left ? "yes" : "no", node->right ? "yes" : "no");
-    
-    if (node->args && node->args[0]) {
-        for (int i = 0; node->args[i]; i++) {
-            for (int j = 0; j < depth + 1; j++) printf("  ");
+
+    if (node->args && node->args[0])
+    {
+        for (int i = 0; node->args[i]; i++)
+        {
+            for (int j = 0; j < depth + 1; j++)
+                printf("  ");
             printf("arg[%d]='%s'\n", i, node->args[i]);
         }
     }
-    if (node->redirects && node->redirects->file) {
-        for (int i = 0; i < depth + 1; i++) printf("  ");
+    if (node->redirects && node->redirects->file)
+    {
+        for (int i = 0; i < depth + 1; i++)
+            printf("  ");
         printf("redirect: type=%d file='%s'\n", node->redirects->type, node->redirects->file);
     }
     print_node(node->left, depth + 1);
@@ -71,9 +78,11 @@ static void execute_commands(char **cmds, t_list *env_list)
     while (cmds && cmds[i])
     {
         tree = ilyas_parsing(cmds[i], env_list);
-        if (tree) {
+        if (tree)
+        {
             attach_all_redirections(tree);
-            if (process_all_heredocs(tree) == -1) {
+            if (process_all_heredocs(tree) == -1)
+            {
                 cleanup_heredoc_fds(tree);
                 *get_exit_status() = 130;
                 break;
@@ -119,12 +128,12 @@ static t_list *create_minimal_env(void)
     t_list *env_list;
     char *cwd;
     int i;
-    
+
     env_list = NULL;
     cwd = getcwd(NULL, 0);
     if (!cwd)
         cwd = ft_strdup("/");
-    
+
     minimal_env[0] = ft_strjoin("PWD=", cwd);
     minimal_env[1] = ft_strdup("SHLVL=1");
     minimal_env[2] = ft_strdup("_=/usr/bin/env");
@@ -141,7 +150,7 @@ static void increment_shlvl(t_list *env_list)
     char *current_shlvl = NULL;
     char *new_shlvl_str = NULL;
     int shlvl_value;
-    
+
     current = env_list;
     shlvl_value = 1;
     current_shlvl = NULL;
@@ -164,10 +173,11 @@ static void increment_shlvl(t_list *env_list)
 
 int main(int ac, char **av, char **envp)
 {
-    (void)ac; (void)av;
+    (void)ac;
+    (void)av;
     t_list *env_list;
     char **env_array;
-    
+
     if (!*envp)
         initialize_env_list(get_envp(list_to_char_array(create_minimal_env())));
     else
