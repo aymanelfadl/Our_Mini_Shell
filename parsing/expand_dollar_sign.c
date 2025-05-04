@@ -1,24 +1,5 @@
 #include <minishell.h>
 
-static int here_doc_before_dollar_sign(char *string, char *dollr_sign)
-{
-    while (string < dollr_sign)
-    {
-        if (find_next_ops(string) == -1)
-            break;
-        string += find_next_ops(string);
-        if (get_data_type(string) == APP_INPUT_REDIRECTION)
-        {
-            string = skip_ops(string);
-            string = skip_spaces(string);
-            if (string == dollr_sign)
-                return (0);
-            if ((string == dollr_sign - 1) && *string == 34)
-                return (0);
-        }
-    }
-    return (1);
-}
 static char *handle_ted(t_list *envp, char *command)
 {
     char *command_head = command;
@@ -34,7 +15,7 @@ static char *handle_ted(t_list *envp, char *command)
                 command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
                 ted_adresse = ft_strchr(command, '~');
             }
-            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)) && here_doc_before_dollar_sign(command , ted_adresse))
+            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)) && here_doc_before_dollar_sign(command, ted_adresse))
             {
                 command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
                 ted_adresse = ft_strchr(command, '~');
@@ -50,7 +31,7 @@ static char *handle_ted(t_list *envp, char *command)
 
 static int handled_exit_status(char **dollr_sign, char **s)
 {
-    if (*(*dollr_sign + 1) == '?' && here_doc_before_dollar_sign(*s , *dollr_sign))
+    if (*(*dollr_sign + 1) == '?' && here_doc_before_dollar_sign(*s, *dollr_sign))
     {
         *s = replace_strin_in_string(*s, (int)(*dollr_sign - *s), (*dollr_sign - *s + 2), ft_itoa(*get_exit_status()));
         *dollr_sign = ft_strchr(*s, '$');
@@ -70,6 +51,9 @@ static int is_it_to_expand(char *s, char *dollr_sign)
     int there_is_end_of_before;
 
     there_is_end_of_before = 0;
+
+    if (here_doc_before_dollar_sign(s, dollr_sign) == 0)
+        return (0);
 
     if (string_is_inside(s, dollr_sign - s) == DOUBLE_QUOTES)
     {

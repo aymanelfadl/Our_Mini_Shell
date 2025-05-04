@@ -215,6 +215,7 @@ int *get_exit_status(void);
 
 // General Helpers
 int double_char_size(char **s);
+int here_doc_before_dollar_sign(char *string, char *dollr_sign);
 
 // ==========================================================================
 //                                 SIGNALS

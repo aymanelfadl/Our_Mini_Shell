@@ -34,7 +34,7 @@ void split_tree(t_tree *tree)
         tree->args = ft_split_files(tree->data);
         if (tree->type == FT_FILE)
             add_files_to_args(tree);
-    }
+     }
     else if (tree->type == FT_EOF)
     {
         tree->data = ft_strtrim(tree->data, " \t");

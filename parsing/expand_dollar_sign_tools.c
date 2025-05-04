@@ -9,6 +9,25 @@ char *replace_strin_in_string(char *s, int start_string, int end_string, char *i
     return (new_s);
 }
 
+int here_doc_before_dollar_sign(char *string, char *dollr_sign)
+{
+    while (string < dollr_sign)
+    {
+        if (find_next_ops(string) == -1)
+            break;
+        string += find_next_ops(string);
+        if (get_data_type(string) == APP_INPUT_REDIRECTION)
+        {
+            string = skip_ops(string);
+            string = skip_spaces(string);
+            if (string == dollr_sign)
+                return (0);
+            if ((string == dollr_sign - 1) && *string == 34)
+                return (0);
+        }
+    }
+    return (1);
+}
 enum inside_what string_is_inside(char *s, int start)
 {
     int i;
