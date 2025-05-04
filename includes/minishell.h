@@ -36,13 +36,11 @@ typedef enum e_redir_type {
 // Redirection linked-list
 typedef struct s_redirection {
     t_redir_type          type;
-    char                 *file;          // filename or heredoc delimiter
-    int                   fd_src;        // source fd (0 for stdin, 1 for stdout)
-    int                   origin_fd;     // original fd before redirection
-    // --- Additions for Heredoc ---
-    int                   expand_heredoc;   // Flag: 1 if delimiter unquoted, 0 if quoted
-    int                   heredoc_fd;       // File descriptor for heredoc pipe read end
-    // --- End Additions ---
+    char                 *file;              
+    int                   fd_src;
+    int                   origin_fd;     
+    int                   expand_heredoc;    
+    int                   heredoc_fd;
     struct s_redirection *next;
 } t_redirection;
 
@@ -69,19 +67,18 @@ typedef enum inside_what {
 
 // AST node
 typedef struct s_tree {
-    char               *path; // 
-    char               *data;    //          
+    char               *path; 
+    char               *data;             
     char              **args;              
-    char               *heredoc_content; //    
-    char              **ops;       //        
-    struct s_tree      *left; //
-    struct s_tree      *right; // 
-    struct s_tree      *parent; // 
-    e_type              type; // 
-    int                 to_skip; // 
-    
-    t_redirection      *redirects; // 
+    char               *heredoc_content;    
+    char              **ops;              
+    struct s_tree      *left;
+    struct s_tree      *right; 
+    struct s_tree      *parent; 
+    e_type              type; 
+    int                 to_skip; 
     int                 pipe_fds[2];
+    t_redirection      *redirects; 
 } t_tree;
 
 // ==========================================================================
@@ -91,9 +88,11 @@ typedef struct s_tree {
 int execute_node(t_tree *node);
 int execute_command(t_tree *node);
 int fork_and_exec(t_tree *node);
-int execute_and(t_tree *node);
-int execute_or(t_tree *node);
 int execute_pipe(t_tree *node);
+
+// UTILS
+int command_path_is_dir(char *path);
+int handle_no_path(t_tree *node);
 
 // ==========================================================================
 //                              REDIRECTIONS
@@ -112,8 +111,11 @@ int	write_line_to_pipe(int pipe_fd, char *line_to_write);
 
 // Redirection Application
 void add_redirection(t_redir_type type, char *file, t_redirection **list);
+int redir_input(t_redirection *r);
+int redir_output(t_redirection *r);
+int redir_append(t_redirection *r);
+int redir_heredoc(t_redirection *r);
 int apply_redirections(t_redirection *rlist);
-void restore_redirections(t_redirection *rlist); 
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list);
 void attach_all_redirections(t_tree *node);
 
@@ -197,7 +199,6 @@ char *get_value(t_list *envp, char *key);
 // Environment
 char **get_envp(char **envp);
 t_list *strings_to_list(char **strings);
-char **list_to_strings(t_list *list);
 
 // Process Management
 int wait_for_child(pid_t child_pid);

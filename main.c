@@ -120,9 +120,20 @@ static void execute_commands(char **cmds, t_list *env_list)
     cleanup_heredoc_fds(tree);
 }
 
+static void save_std_fds(int *saved_stdout, int *saved_stdin)
+{
+    *saved_stdout = dup(STDOUT_FILENO);
+    *saved_stdin = dup(STDIN_FILENO);       
+}
+
+
 static void minishell_loop(t_list *env_list)
 {
     char *input;
+    char **cmds;
+    int saved_stdout;
+    int saved_stdin;
+    
     while (1)
     {
         signal(SIGINT, sigint_handler);
@@ -139,9 +150,8 @@ static void minishell_loop(t_list *env_list)
         if (input && *input)
         {
             add_history(input);
-            char **cmds = ft_split(input, "\n");
-            int saved_stdout = dup(STDOUT_FILENO);
-            int saved_stdin = dup(STDIN_FILENO);
+            cmds = ft_split(input, "\n");
+            save_std_fds(&saved_stdout, &saved_stdin);
             execute_commands(cmds, env_list);
             restore_std_fds(saved_stdout, saved_stdin);
         }
@@ -153,13 +163,11 @@ static t_list *create_minimal_env(void)
     char *minimal_env[4];
     t_list *env_list;
     char *cwd;
-    int i;
 
     env_list = NULL;
     cwd = getcwd(NULL, 0);
     if (!cwd)
         cwd = ft_strdup("/");
-
     minimal_env[0] = ft_strjoin("PWD=", cwd);
     minimal_env[1] = ft_strdup("SHLVL=1");
     minimal_env[2] = ft_strdup("_=/usr/bin/env");
@@ -205,7 +213,7 @@ int main(int ac, char **av, char **envp)
     char **env_array;
 
     if (!*envp)
-        initialize_env_list(get_envp(list_to_char_array(create_minimal_env())));
+        env_list = initialize_env_list(get_envp(list_to_char_array(create_minimal_env())));
     else
     {
         env_list = initialize_env_list(envp);

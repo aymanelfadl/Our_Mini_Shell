@@ -19,9 +19,7 @@ REDIRECTIONFILES = \
 	$(REDIRECTIONDIR)/redir_apply.c \
 	$(REDIRECTIONDIR)/redir_attach.c \
 	$(REDIRECTIONDIR)/redir_extract.c \
-	$(REDIRECTIONDIR)/redir_restore.c \
 	$(REDIRECTIONDIR)/execute_pipe.c \
-	$(REDIRECTIONDIR)/utils.c \
 	$(REDIRECTIONDIR)/redir_heredoc.c \
 	$(REDIRECTIONDIR)/redir_heredoc_process.c \
 	$(REDIRECTIONDIR)/redir_heredoc1.c \

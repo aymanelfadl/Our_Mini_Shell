@@ -1,5 +1,19 @@
 #include "minishell.h"
 
+int command_path_is_dir(char *path)
+{
+	ft_putstr_fd("minishell : ", 2);
+	ft_putstr_fd(path, 2);
+	ft_putstr_fd(": Is a directory\n", 2);
+	return (126);
+}
+int handle_no_path(t_tree *node)
+{
+	fprintf(stderr, "minishell: %s: command not found\n", node->args[0]);
+	*get_exit_status() = 127;
+	return 127;
+}
+
 static int try_apply_redir(t_tree *node)
 {
 	if (!node)
@@ -22,7 +36,23 @@ int execute_command(t_tree *node)
 	if (try_apply_redir(node))
 		return 1;
 	status = fork_and_exec(node);
-	if (node && node->redirects)
-		restore_redirections(node->redirects);
 	return status;
+}
+
+char *ft_strncpy(char *dest, const char *src, size_t n)
+{
+    size_t i;
+
+    i = 0;
+    while (i < n && src[i] != '\0')
+    {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n)
+    {
+        dest[i] = '\0';
+        i++;
+    }
+    return (dest);
 }
