@@ -70,10 +70,10 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
         node->type == APP_OUTPUT_REDIRECTION || 
         node->type == APP_INPUT_REDIRECTION)
     {
-        if (node->right && node->right->data)
+        if (node->right && node->right->args[0])
         {
             rtype = determine_redir_type(node->type);
-            trimmed = ft_strtrim(node->right->data, " \t\n");
+            trimmed = ft_strtrim(node->right->args[0], " \t\n");
             if (rtype == REDIR_HEREDOC)
                 handle_heredoc_redir(trimmed, redir_list);
             else
