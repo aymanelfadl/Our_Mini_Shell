@@ -38,8 +38,10 @@ void add_files_to_args(t_tree *node)
 
 void split_tree(t_tree *tree)
 {
+    char *original_eof;
     if (tree == NULL)
         return;
+    tree->data = ft_strtrim(tree->data, " \t");
     if (tree->type == FT_FILE || tree->type == COMMAND)
     {
         tree->data = handle_commandes_quoets(tree->data);
@@ -49,14 +51,16 @@ void split_tree(t_tree *tree)
     }
     else if (tree->type == FT_EOF)
     {
-        tree->data = ft_strtrim(tree->data, " \t");
-        tree->args = ft_malloc(sizeof(char *) * 2);
-        tree->args[0] = tree->data;
-        tree->args[1] = NULL;
+        original_eof = get_original_eof(tree->data);
+        tree->data = handle_commandes_quoets(tree->data);
+        tree->args = ft_split_files(tree->data);
+        tree->args[0] = original_eof;
+        add_files_to_args(tree);
     }
     split_tree(tree->right);
     split_tree(tree->left);
 }
+
 void add_paths_to_tree(t_tree *tree, char **paths)
 {
     if (tree == NULL)
