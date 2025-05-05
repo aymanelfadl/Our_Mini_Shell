@@ -12,6 +12,19 @@ void ft_free_split(char **split)
 
     free(split);
 }
+char *get_prompt(void)
+{
+    char cwd[PATH_MAX];
+    char *prompt;
+
+    if (!getcwd(cwd, sizeof(cwd)))
+        cwd[0] = '\0';
+    prompt = ft_strjoin("minishell:", cwd);
+    prompt = ft_strjoin(prompt, "$> ");
+    return prompt;
+}
+
+
 
 static void minishell_loop(t_list *env_list)
 {
@@ -19,12 +32,13 @@ static void minishell_loop(t_list *env_list)
     char **cmds;
     int saved_stdout;
     int saved_stdin;
-    
+    char *prompt;
     while (1)
     {
         signal(SIGINT, sigint_handler);
         signal(SIGQUIT, SIG_IGN);
-        input = readline("$> ");
+        prompt = get_prompt();
+        input = readline(prompt);
         if (!input)
             ctrl_d_handle();
         if (*skip_spaces(input) == 0)
