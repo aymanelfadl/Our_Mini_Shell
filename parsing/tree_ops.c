@@ -13,6 +13,7 @@ void add_files_to_args(t_tree *node)
 {
     int i;
     t_tree *first_command_at_left;
+    char *quotes_to_add;
 
     i = 1;
     if (double_char_size(node->args) > 1)
@@ -22,11 +23,14 @@ void add_files_to_args(t_tree *node)
 
         while (node->args[i])
         {
+            quotes_to_add = "'";
+            if (ft_strchr(node->args[i], 39))
+                quotes_to_add = "\x22";
             first_command_at_left = find_first_commamd_at_left(node->parent);
             first_command_at_left->data = ft_strjoin(first_command_at_left->data, " ");
-            first_command_at_left->data = ft_strjoin(first_command_at_left->data, "\0x1");
+            first_command_at_left->data = ft_strjoin(first_command_at_left->data, quotes_to_add);
             first_command_at_left->data = ft_strjoin(first_command_at_left->data, node->args[i]);
-            first_command_at_left->data = ft_strjoin("\0x1", first_command_at_left->data);
+            first_command_at_left->data = ft_strjoin(first_command_at_left->data, quotes_to_add);
             i++;
         }
     }
