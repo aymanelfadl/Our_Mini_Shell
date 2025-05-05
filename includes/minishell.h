@@ -56,7 +56,9 @@ typedef enum data_type {
     OR,                     // ||
     COMMAND,                // simple command
     FT_FILE,                // filename token
-    FT_EOF                  // end of input
+    FT_EOF  , 
+    UNEXPECTED_TOKEN,               // end of input
+    NON
 } e_type;
 
 // Quote context

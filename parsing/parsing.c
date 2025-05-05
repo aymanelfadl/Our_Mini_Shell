@@ -10,7 +10,7 @@ int there_is_one_word(char *command)
             command++;
     }
     command = skip_spaces(command);
-    if (get_data_type(command) != -1 || *command == 0)
+    if (get_data_type(command) != NON || *command == 0)
         return (1);
     return (0);
 }

@@ -1,13 +1,11 @@
 #include <minishell.h>
 
-
-
 char *skip_ops(char *command)
 {
     command = skip_spaces(command);
-    if (!get_data_type(command) || get_data_type(command) == 1 || get_data_type(command) == 3)
+    if (get_data_type(command) == PIPE || get_data_type(command) == INPUT_REDIRECTION || get_data_type(command) == OUTPUT_REDIRECTION)
         command++;
-    else if (get_data_type(command) != -1)
+    else if (get_data_type(command) != NON)
         command += 2;
     command = skip_spaces(command);
     return (command);
@@ -19,7 +17,7 @@ int find_next_ops(char *command)
 
     while (command[i])
     {
-        if (get_data_type(&command[i]) != -1 && commas_ops_check(&command[i]))
+        if (get_data_type(&command[i]) != NON && commas_ops_check(&command[i]))
             return (i);
         i++;
     }
@@ -29,9 +27,9 @@ int find_next_ops(char *command)
 enum data_type get_data_type(char *s)
 {
     if (!ft_strncmp(s, "||", 2))
-        return (OR);
+        return (UNEXPECTED_TOKEN);
     if (!ft_strncmp(s, "&&", 2))
-        return (AND);
+        return (UNEXPECTED_TOKEN);
     if (!ft_strncmp(s, ">>", 2))
         return (APP_OUTPUT_REDIRECTION);
     if (!ft_strncmp(s, "<<", 2))
@@ -43,10 +41,14 @@ enum data_type get_data_type(char *s)
     if (!ft_strncmp(s, "<", 1))
         return (INPUT_REDIRECTION);
     if (!ft_strncmp(s, ";", 1))
-        return (-2);
+        return (UNEXPECTED_TOKEN);
     if (!ft_strncmp(s, "\\", 1))
-        return (-2);
-    return (-1);
+        return (UNEXPECTED_TOKEN);
+    if (!ft_strncmp(s, "(", 1))
+        return (UNEXPECTED_TOKEN);
+    if (!ft_strncmp(s, ")", 1))
+        return (UNEXPECTED_TOKEN);
+    return (NON);
 }
 
 int ops_size(char *s, char **all_ops)
