@@ -1,5 +1,6 @@
 #include "minishell.h"
 
+
 int *get_exit_status(void)
 {
     static int exit_status;

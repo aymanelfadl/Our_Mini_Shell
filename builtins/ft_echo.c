@@ -1,51 +1,42 @@
 #include <minishell.h>
 
-
-char *skip_all_n_options(char *to_write)
+char *skip_spaces(char *s)
 {
-    while (*to_write)
-    {
-        to_write = skip_spaces(to_write);
-        if (is_n_option(to_write, 1))
-            to_write += is_n_option(to_write, 1);
-        else
-            break;
-    }
-    return (to_write);
-}
-static char *ft_echo_write_helper(char *to_write, int *i_did_write)
-{
-    if (*to_write == 1)
-    {
-        *i_did_write = 1;
-        ft_putstr_fd(ft_substr(to_write + 1, 0, ft_strchr(to_write + 1, *to_write) - (to_write + 1)), 1);
-        to_write = ft_strchr(to_write + 1, *to_write) + 1;
-    }
-    else if (*to_write == ' ' || *to_write == '\t')
-    {
-        to_write = skip_spaces(to_write);
-        if (*to_write && *i_did_write)
-            ft_putchar_fd(' ', 1);
-    }
-    else
-    {
-        while (*to_write && (*to_write != ' ' && *to_write != '\t' && *to_write != 1))
-        {
-            ft_putchar_fd(*to_write, 1);
-            to_write++;
-        }
-        *i_did_write = 1;
-    }
-    return (to_write);
+    while (*s && (*s == ' ' || *s == '\t'))
+        s++;
+    return (s);
 }
 
-static void ft_echo_write(char *to_write, int n_option)
+static int is_n_option(char *n_option)
 {
-    int i_did_write;
-    i_did_write = 0;
+    int len;
+    char *extract_n;
+
+    len = 0;
+    if (!(*n_option == '-'))
+        return (0);
+    n_option++;
+    while (*n_option)
+    {
+        if (*n_option != 'n')
+            return (0);
+        n_option++;
+    }
+    return (1);
+}
+
+static void ft_echo_write(char **to_write, int n_option)
+{
+    int not_first_loop;
+
+    not_first_loop = 0;
     while (to_write && *to_write)
     {
-        to_write = ft_echo_write_helper(to_write, &i_did_write);
+        if (not_first_loop)
+            ft_putchar_fd(' ', 1);
+        ft_putstr_fd(*to_write, 1);
+        to_write++;
+        not_first_loop = 1;
     }
     if (!n_option)
         ft_putchar_fd('\n', 1);
@@ -56,19 +47,23 @@ void ft_echo(t_tree *node)
     int n_option;
     char **check_n_option;
     char *to_write;
+    int i;
+
+    i = 2;
     to_write = NULL;
-    if (ft_strnstr(node->data, "-n", ft_strlen(node->data)))
-    {
-        check_n_option = node->args;
-        if (is_n_option(check_n_option[1], 0))
-            n_option = 1;
-        else
-            n_option = 0;
-    }
+    check_n_option = node->args;
+    if (node->args && is_n_option(node->args[1]))
+        n_option = 1;
     else
         n_option = 0;
-    to_write = ft_strchr(node->data + 1 , '\x01') + 1;
     if (n_option)
-        to_write = skip_all_n_options(to_write);
-    ft_echo_write(to_write, n_option);
+    {
+        while (node->args[i] && is_n_option(node->args[i]))
+            i++;
+    }
+    if (n_option)
+        ft_echo_write((node->args) + i, n_option);
+    else
+        ft_echo_write((node->args) + 1, n_option);
+    *get_exit_status() = 0;
 }

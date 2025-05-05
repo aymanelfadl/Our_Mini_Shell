@@ -57,7 +57,7 @@ static t_tree *create_left_node(char **commands_files, int index)
     node->to_skip = 0;
     node->left = NULL;
     node->right = NULL;
-    node->ops =NULL;
+    node->ops = NULL;
     node->redirects = NULL;
     node->pipe_fds[0] = -1;
     node->pipe_fds[1] = -1;
@@ -108,6 +108,9 @@ t_tree *make_tree(char ***data, int *to_skip)
     ops = data[1];
     while (last_word >= 0)
     {
+        tree->redirects = NULL;
+        tree->pipe_fds[0] = -1;
+        tree->pipe_fds[1] = -1;
         tree->parent = parent;
         parent = tree;
         tree->to_skip = to_skip[last_word];
@@ -117,6 +120,9 @@ t_tree *make_tree(char ***data, int *to_skip)
         tree->heredoc_content = NULL;
         tree->args = NULL;
         tree->path = NULL;
+        tree->ops = NULL;
+        tree->heredoc_content = NULL;
+        
         if (last_word != -1)
         {
             tree->left = ft_malloc(sizeof(t_tree));

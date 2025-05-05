@@ -55,6 +55,7 @@ static void minishell_loop(t_list *env_list)
             execute_commands(cmds, env_list);
             restore_std_fds(saved_stdout, saved_stdin);
         }
+        free(input);
     }
 }
 
