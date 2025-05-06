@@ -7,7 +7,7 @@ static void	cleanup_node_heredocs(t_tree *node)
 	if (!node)
 		return;
 		
-	if (node->type == COMMAND && node->redirects)
+	if (node->redirects)
 	{
 		redir = node->redirects;
 		while (redir)

@@ -2,70 +2,83 @@
 
 int	ft_isnumber(char *str)
 {
-	int sign;
-	unsigned long long result;
-	unsigned long long limit;
+	int	i;
 
-	result = 0;
-	sign = 1;
-	if (*str == '-' || *str == '+')
+	i = 0;
+	if (!str || !*str)
+		return (0);
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (!str[i])
+		return (0);
+	while (str[i])
 	{
-		if (*str == '-')
-			sign = -1;
-		str++;
-	}
-	if (sign == -1)
-		limit = (unsigned long long)(-(LLONG_MIN + 1)) + 1;
-	else
-		limit = (unsigned long long)LLONG_MAX;
-	while (*str)
-	{
-		result = result * 10 + (*str - '0');
-		if (result > limit)
+		if (!ft_isdigit(str[i]))
 			return (0);
-		str++;
+		i++;
 	}
 	return (1);
 }
 
-
-static int ft_count_args(t_tree *node)
+static int	ft_count_args(t_tree *node)
 {
-    int count = 0;
+	int	count;
 
-    while (node && node->args[count])
-        count++;
-    return count;
+	count = 0;
+	while (node && node->args && node->args[count])
+		count++;
+	return (count);
 }
 
-void ft_exit(t_tree *node)
+static void	close_saved_fds(void)
 {
-    int exit_code;
+	int	*fds;
 
-    exit_code = 0;
-    if (ft_count_args(node) > 1 && !ft_isnumber(node->args[1]))
-    {
-        *get_exit_status() = 2;
-        ft_putstr_fd("exit\nminishell: ", STDERR_FILENO);
-        ft_putstr_fd(node->args[1], STDERR_FILENO);
-        ft_putstr_fd(": numeric argument required", STDERR_FILENO);
-        exit(2);
-    }
-    if (ft_count_args(node) > 2)
-    {
-        *get_exit_status() = 1; 
-        ft_putstr_fd("exit\nminishell: ", STDERR_FILENO);
-        return ft_putstr_fd("exit: too many arguments\n", STDERR_FILENO);
-    }
-    if (ft_count_args(node) == 2)
-    {
-        exit_code = ft_atoi(node->args[1]);
-        printf("::%d\n", exit_code);
-    }
-    if (!node->parent)
-        ft_putstr_fd("exit\n", STDOUT_FILENO);
-    if (exit_code < 0)
-        exit(156);
-    *get_exit_status() = exit_code;
-    exit(exit_code);
+	fds = get_std_fds(-1, -1);
+	if (fds[0] >= 0)
+		close(fds[0]);
+	if (fds[1] >= 0)
+		close(fds[1]);
+}
+
+static void	handle_numeric_exit(t_tree *node)
+{
+	long long	exit_code;
+	
+	if (ft_count_args(node) > 2)
+	{
+		ft_putstr_fd("minishell: exit: too many arguments\n", STDERR_FILENO);
+		*get_exit_status() = 1;
+		return ;
+	}
+	exit_code = ft_atoi(node->args[1]);
+	*get_exit_status() = exit_code & 255;
+	close_saved_fds();
+	exit(exit_code & 255);
+}
+
+void	ft_exit(t_tree *node)
+{
+	long long	exit_code;
+	char		*arg;
+
+	if (!node->parent)
+		ft_putstr_fd("exit\n", STDOUT_FILENO);
+	if (ft_count_args(node) <= 1)
+	{
+		exit_code = *get_exit_status();
+		close_saved_fds();
+		exit(exit_code & 255);
+	}
+	arg = node->args[1];
+	if (!ft_isnumber(arg))
+	{
+		ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
+		ft_putstr_fd(arg, STDERR_FILENO);
+		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
+		*get_exit_status() = 2;
+		close_saved_fds();
+		exit(2);
+	}
+	handle_numeric_exit(node);
 }

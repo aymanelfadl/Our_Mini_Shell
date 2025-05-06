@@ -1,24 +1,15 @@
 #include "minishell.h"
 
-
 int *get_exit_status(void)
 {
     static int exit_status;
     return &exit_status;
 }
 
-void restore_std_fds(int saved_stdout, int saved_stdin)
+void close_std_fds(int *saved_stdout, int *saved_stdin)
 {
-    dup2(saved_stdout, STDOUT_FILENO);
-    dup2(saved_stdin, STDIN_FILENO);
-    close(saved_stdout);
-    close(saved_stdin);
-}
-
-void save_std_fds(int *saved_stdout, int *saved_stdin)
-{
-    *saved_stdout = dup(STDOUT_FILENO);
-    *saved_stdin = dup(STDIN_FILENO);       
+    close(*saved_stdin);
+    close(*saved_stdout);
 }
 
 int execute_node(t_tree *node)
@@ -64,6 +55,7 @@ void execute_commands(char **cmds, t_list *env_list)
                 break;
             }
             *get_exit_status() = execute_node(tree);
+            cleanup_heredoc_fds(tree);
         }
         i++;
     }

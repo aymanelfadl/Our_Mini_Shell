@@ -38,8 +38,7 @@ typedef enum e_redir_type {
 typedef struct s_redirection {
     t_redir_type          type;
     char                 *file;              
-    int                   fd_src;
-    int                   origin_fd;     
+    int                   fd_src; 
     int                   expand_heredoc;    
     int                   heredoc_fd;
     struct s_redirection *next;
@@ -102,9 +101,9 @@ t_list *initialize_env_list(char **envp);
 // UTILS
 int command_path_is_dir(char *path);
 int handle_no_path(t_tree *node);
-void restore_std_fds(int saved_stdout, int saved_stdin);
-void save_std_fds(int *saved_stdout, int *saved_stdin);
-
+void save_std_fds(int *saved_stdin, int *saved_stdout);
+void restore_std_fds(int saved_stdin, int saved_stdout);
+int *get_std_fds(int stdin_fd, int stdout_fd);
 
 // ==========================================================================
 //                              REDIRECTIONS

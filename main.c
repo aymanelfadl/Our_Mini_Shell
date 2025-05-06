@@ -12,35 +12,51 @@ void ft_free_split(char **split)
 
     free(split);
 }
-char *get_prompt(void)
-{
-    char cwd[PATH_MAX];
-    char *prompt;
 
-    if (!getcwd(cwd, sizeof(cwd)))
-        cwd[0] = '\0';
-    prompt = ft_strjoin("minishell:", cwd);
-    prompt = ft_strjoin(prompt, "$> ");
-    return prompt;
+int *get_std_fds(int stdin_fd, int stdout_fd)
+{
+    static int fds[2] = {-1, -1};
+    
+    if (stdin_fd >= 0 && stdout_fd >= 0) {
+        fds[0] = stdin_fd;
+        fds[1] = stdout_fd;
+    }
+    
+    return fds;
 }
 
+void save_std_fds(int *saved_stdin, int *saved_stdout)
+{
+    *saved_stdin = dup(STDIN_FILENO);
+    *saved_stdout = dup(STDOUT_FILENO);
+    get_std_fds(*saved_stdin, *saved_stdout);
+}
 
+void restore_std_fds(int saved_stdin, int saved_stdout)
+{
+    dup2(saved_stdin, STDIN_FILENO);
+    dup2(saved_stdout, STDOUT_FILENO);
+    close(saved_stdin);
+    close(saved_stdout);
+}
 
 static void minishell_loop(t_list *env_list)
 {
     char *input;
     char **cmds;
-    int saved_stdout;
     int saved_stdin;
-    char *prompt;
+    int saved_stdout;
+
     while (1)
-    {
+    {    
         signal(SIGINT, sigint_handler);
         signal(SIGQUIT, SIG_IGN);
-        prompt = get_prompt();
-        input = readline(prompt);
+        input = readline(" $>"); 
         if (!input)
+        {
+            restore_std_fds(saved_stdin, saved_stdout);
             ctrl_d_handle();
+        }
         if (*skip_spaces(input) == 0)
         {
             *get_exit_status() = 0;
@@ -51,9 +67,9 @@ static void minishell_loop(t_list *env_list)
         {
             add_history(input);
             cmds = ft_split(input, "\n");
-            save_std_fds(&saved_stdout, &saved_stdin);
+            save_std_fds(&saved_stdin, &saved_stdout);
             execute_commands(cmds, env_list);
-            restore_std_fds(saved_stdout, saved_stdin);
+            restore_std_fds(saved_stdin, saved_stdout);
         }
         free(input);
     }
