@@ -71,3 +71,18 @@ t_list *strings_to_list(char **strings)
     }
     return (head);
 }
+char *get_original_eof(char * tree_data)
+{
+    char *head;
+
+    head = tree_data;
+    if (!ft_strchr(tree_data , ' '))
+        return (tree_data);
+    while (*tree_data)
+    {
+        if (*tree_data == ' ' && (string_is_inside(head , tree_data - head) == INSIDE_NOTHING))
+            return (ft_substr(head , 0 , tree_data - head));
+        tree_data++;
+    }
+    return (head);
+}

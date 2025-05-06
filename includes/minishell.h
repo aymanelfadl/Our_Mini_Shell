@@ -165,6 +165,7 @@ void split_tree(t_tree *tree);
 t_tree *create_one_node(char *command);
 void add_paths_to_tree(t_tree *tree, char **paths);
 char **ft_split_files(char *files);
+char *get_original_eof(char * tree_data);
 
 
 // Token Extraction & Handling

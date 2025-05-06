@@ -1,33 +1,6 @@
 #include <minishell.h>
 
-static char *handle_ted(t_list *envp, char *command)
-{
-    char *command_head = command;
-    char *ted_adresse;
 
-    ted_adresse = ft_strchr(command, '~');
-    while (ted_adresse)
-    {
-        if (string_is_inside(command, ted_adresse - command) == INSIDE_NOTHING)
-        {
-            if ((ted_adresse == command_head) && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)))
-            {
-                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
-                ted_adresse = ft_strchr(command, '~');
-            }
-            else if ((*(ted_adresse - 1) == ' ' || *(ted_adresse - 1) == '\t') && (my_strchr(ted_adresse, " \t") == (ted_adresse + 1)) && here_doc_before_dollar_sign(command, ted_adresse))
-            {
-                command = replace_strin_in_string(command, ted_adresse - command, ted_adresse - command + 1, get_value(envp, "HOME"));
-                ted_adresse = ft_strchr(command, '~');
-            }
-            else
-                ted_adresse = ft_strchr(ted_adresse + 1, '~');
-        }
-        else
-            ted_adresse = ft_strchr(ted_adresse + 1, '~');
-    }
-    return (command);
-}
 static int is_it_to_expand(char *s, char *dollr_sign)
 {
     int there_is_end_of_before;
@@ -93,7 +66,7 @@ static void if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)
 char *parse_env(char *s, t_list *envp)
 {
     char *dollr_sign;
-    s = handle_ted(envp, s);
+    
     dollr_sign = ft_strchr(s, '$');
     while (dollr_sign)
     {
