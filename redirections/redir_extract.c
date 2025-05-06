@@ -60,12 +60,10 @@ static void handle_heredoc_redir(char *trimmed_arg, t_redirection **redir_list)
 t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
 {
     t_redir_type rtype;
-    char         *trimmed;
-
+    
     if (!node)
         return NULL;
-
-    if (node->type == INPUT_REDIRECTION ||
+	if (node->type == INPUT_REDIRECTION ||
         node->type == OUTPUT_REDIRECTION || 
         node->type == APP_OUTPUT_REDIRECTION || 
         node->type == APP_INPUT_REDIRECTION)
@@ -73,11 +71,10 @@ t_tree *extract_redirections(t_tree *node, t_redirection **redir_list)
         if (node->right && node->right->args[0])
         {
             rtype = determine_redir_type(node->type);
-            trimmed = ft_strtrim(node->right->args[0], " \t\n");
 			if (rtype == REDIR_HEREDOC)
-                handle_heredoc_redir(trimmed, redir_list);
+                handle_heredoc_redir(node->right->args[0], redir_list);
             else
-                add_redirection(rtype, trimmed, redir_list);
+                add_redirection(rtype, node->right->args[0], redir_list);
         }
         return extract_redirections(node->left, redir_list);
     }
