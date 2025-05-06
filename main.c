@@ -62,7 +62,7 @@ static void minishell_loop(t_list *env_list)
     {    
         signal(SIGINT, sigint_handler);
         signal(SIGQUIT, SIG_IGN);
-        input = readline(" $>"); 
+        input = readline("$>"); 
         if (!input)
         {
             restore_std_fds(saved_stdin, saved_stdout);

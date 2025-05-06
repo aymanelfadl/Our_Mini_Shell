@@ -18,15 +18,19 @@ int here_doc_before_dollar_sign(char *string, char *dollr_sign)
         string += find_next_ops(string);
         if (get_data_type(string) == APP_INPUT_REDIRECTION)
         {
-            string = skip_ops(string);
-            string = skip_spaces(string);
-            if (skip_spaces(skip_ops(string)) == dollr_sign)
+            string = skip_spaces(skip_ops(string));
+            if (string == dollr_sign)
                 return (0);
-            if ((skip_spaces(skip_ops(string)) == dollr_sign - 1) && *skip_spaces(skip_ops(string)) == 34)
+            while (*string && (*string == 34 || *string == 39))
+                string++;
+            if (string == dollr_sign || skip_spaces(string) == dollr_sign)
                 return (0);
         }
-        string = skip_ops(string);
-        string = skip_spaces(string);
+        else
+        {
+            string = skip_ops(string);
+            string = skip_spaces(string);
+        }
     }
     return (1);
 }

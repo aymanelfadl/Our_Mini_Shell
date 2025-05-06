@@ -66,6 +66,5 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
     t_tree *tree = make_tree(s, to_skip);
     split_tree(tree);
     add_paths_to_tree(tree, paths);
-    
     return (tree);
 }
