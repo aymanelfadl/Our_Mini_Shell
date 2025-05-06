@@ -28,6 +28,7 @@ int execute_pipe(t_tree *node)
         dup2(node->pipe_fds[1], STDOUT_FILENO);
         close(node->pipe_fds[0]);
         close(node->pipe_fds[1]);
+    	close_saved_fds();
         exit(execute_node(node->left));
     }
     pid_t r = fork();
@@ -36,6 +37,7 @@ int execute_pipe(t_tree *node)
         dup2(node->pipe_fds[0], STDIN_FILENO);
         close(node->pipe_fds[1]);
         close(node->pipe_fds[0]);
+    	close_saved_fds();
         if (!node->right)
             apply_redirections(node->redirects);
         else

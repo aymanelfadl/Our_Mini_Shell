@@ -48,8 +48,12 @@ static void	setup_heredoc_child(int *pipe_fds, const char *delimiter, int expand
 {
 	signal(SIGINT, SIG_DFL);
 	close(pipe_fds[0]);
+	close_saved_fds();
 	if (read_heredoc_lines(pipe_fds, delimiter, expand) == -1)
+	{
+		close(pipe_fds[1]);
 		exit(1);
+	}
 	close(pipe_fds[1]);
 	exit(0);
 }

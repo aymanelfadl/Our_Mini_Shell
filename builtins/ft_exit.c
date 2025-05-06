@@ -30,17 +30,6 @@ static int	ft_count_args(t_tree *node)
 	return (count);
 }
 
-static void	close_saved_fds(void)
-{
-	int	*fds;
-
-	fds = get_std_fds(-1, -1);
-	if (fds[0] >= 0)
-		close(fds[0]);
-	if (fds[1] >= 0)
-		close(fds[1]);
-}
-
 static void	handle_numeric_exit(t_tree *node)
 {
 	long long	exit_code;

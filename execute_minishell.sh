@@ -1,1 +1,1 @@
-valgrind --leak-check=full  --track-fds=yes   ./minishell
+valgrind --leak-check=full --track-fds=yes   ./minishell

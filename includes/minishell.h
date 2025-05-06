@@ -93,6 +93,8 @@ void execute_commands(char **cmds, t_list *env_list);
 int fork_and_exec(t_tree *node);
 int execute_pipe(t_tree *node);
 
+
+
 // SETUP ENVP
 t_list *create_minimal_env(void);
 void increment_shlvl(t_list *env_list);
@@ -104,6 +106,7 @@ int handle_no_path(t_tree *node);
 void save_std_fds(int *saved_stdin, int *saved_stdout);
 void restore_std_fds(int saved_stdin, int saved_stdout);
 int *get_std_fds(int stdin_fd, int stdout_fd);
+void	close_saved_fds(void);
 
 // ==========================================================================
 //                              REDIRECTIONS
