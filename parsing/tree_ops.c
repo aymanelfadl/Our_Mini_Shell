@@ -51,7 +51,7 @@ void split_tree(t_tree *tree)
     }
     else if (tree->type == FT_EOF)
     {
-        original_eof = get_original_eof(tree->data);
+        original_eof = ft_strtrim(get_original_eof(tree->data ), " \t");
         tree->data = handle_commandes_quoets(tree->data);
         tree->args = ft_split_files(tree->data);
         tree->args[0] = original_eof;

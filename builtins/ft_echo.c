@@ -52,7 +52,7 @@ void ft_echo(t_tree *node)
     i = 2;
     to_write = NULL;
     check_n_option = node->args;
-    if (node->args && is_n_option(node->args[1]))
+    if (node->args && node->args[1] && is_n_option(node->args[1]))
         n_option = 1;
     else
         n_option = 0;

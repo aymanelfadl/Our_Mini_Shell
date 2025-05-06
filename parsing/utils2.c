@@ -31,23 +31,36 @@ char *assign_file_and_command(char *command, char **commandes_files, int *i)
     int j;
     char *file;
     char *my_command;
+    char *file_and_command;
+    int file_len;
 
+    file_len = 0;
     file = NULL;
     my_command = NULL;
     j = *i;
-    command = skip_ops(command);
-    file = ft_substr(command, 0, my_strchr(command, " \t") - command);
-
-    command += ft_strlen(file);
-    command = skip_spaces(command);
-
-    if (get_data_type(command) == NON && *command)
+    command = skip_spaces(skip_ops(command));
+    if (find_next_ops(command) != -1)
     {
-        if (find_next_ops(command) != -1)
-            my_command = ft_substr(command, 0, find_next_ops(command));
-        else
-            my_command = ft_substr(command, 0, ft_strlen(command));
-        command += ft_strlen(my_command);
+        file_and_command = ft_substr(command, 0, find_next_ops(command));
+        command += find_next_ops(command);
+    }
+    else
+    {
+        file_and_command = command;
+        command = NULL;
+    }
+    while (file_and_command[file_len])
+    {
+        if ((file_and_command[file_len] == ' ' || file_and_command[file_len] == '\t') && string_is_inside(file_and_command , file_len) == INSIDE_NOTHING)
+            break;
+        file_len++;
+    }
+    file = ft_substr(file_and_command, 0 , file_len);
+    file_and_command+= file_len;
+    file_and_command = skip_spaces(file_and_command);
+    if (*file_and_command)
+    {
+        my_command = ft_substr(file_and_command, 0, ft_strlen(file_and_command));
         commandes_files[j++] = my_command;
     }
     commandes_files[j++] = file;
@@ -84,7 +97,7 @@ char **extract_files_commands_strings(char *command, char **ops)
     i = 0;
     first_loop = 1;
     size = ops_size(command, ops) + 1;
-    commandes_files =  ft_malloc(sizeof(char *) * size);
+    commandes_files = ft_malloc(sizeof(char *) * size);
     while (*command)
     {
         command = skip_spaces(command);
@@ -98,6 +111,8 @@ char **extract_files_commands_strings(char *command, char **ops)
                 break;
         }
         first_loop = 0;
+        if (command == NULL)
+            break;
     }
     commandes_files[i] = NULL;
 

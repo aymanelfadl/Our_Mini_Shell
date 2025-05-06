@@ -4,11 +4,6 @@ int there_is_one_word(char *command)
 {
     if (*command == 34 || *command == 39)
         command = ft_strchr(command + 1, *command);
-    else
-    {
-        while (*command && (*command != ' ' && *command != '\t'))
-            command++;
-    }
     command = skip_spaces(command);
     if (get_data_type(command) != NON || *command == 0)
         return (1);
@@ -59,16 +54,18 @@ t_tree *ilyas_parsing(char *phrase, t_list *envp)
     if (!check_unexpected_token(phrase))
     {
         *get_exit_status() = 2;
-        return (printf("unexpexted token \n"), NULL);
+    return (printf("unexpexted token \n"), NULL);
     }
     char **cc = extract_ops(phrase);
     char ***s;
     s = ft_malloc(sizeof(char **) * 2);
     s[0] = extract_files_commands_strings(phrase, cc);
+
     s[1] = cc;
     to_skip = get_to_skip(phrase, cc);
     t_tree *tree = make_tree(s, to_skip);
     split_tree(tree);
     add_paths_to_tree(tree, paths);
+    
     return (tree);
 }
