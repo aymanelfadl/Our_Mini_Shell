@@ -11,10 +11,14 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 		if (!line)
 		{
 			handle_eof_warning(delimiter);
+			free(line);
 			break;
 		}
 		if (ft_strcmp(line, (char*) delimiter) == 0)
+		{
+			free(line);
 			break;
+		}
 		line_to_write = line;
 		if (expand)
 		{
@@ -24,6 +28,7 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 		}
 		if (write_line_to_pipe(pipe_fds[1], line_to_write) == -1)
 			return (close(pipe_fds[1]), -1);
+		free(line);
 	}
 	return (0);
 }
