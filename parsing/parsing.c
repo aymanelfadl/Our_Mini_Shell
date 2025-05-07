@@ -1,5 +1,44 @@
 #include <minishell.h>
 
+void print_double_pointer(char **s)
+{
+    if (s == NULL)
+        printf("double pointer is NULL\n");
+    while (s && *s)
+    {
+        printf("%s", *s);
+        s++;
+        if (*s)
+            printf(",");
+    }
+    printf("\n");
+}
+void print_tree(t_tree *tree)
+{
+    if (tree == NULL)
+        return;
+    print_tree(tree->left);
+    printf("%s %d        double :", tree->data, tree->type);
+    print_double_pointer(tree->args);
+    if (tree->type == COMMAND)
+        printf("      path : %s\n", tree->path);
+    if (tree->parent)
+        printf("parent->data = %s\n",tree->parent->data);
+    else
+        printf("parent is NULL\n");
+    if (tree->right)
+        printf("right-data=%s\n",tree->right->data);
+    else
+        printf("right is NULL\n");
+         if (tree->left)
+        printf("left-data=%s\n",tree->left->data);
+    else
+        printf("left is NULL\n");
+
+    printf("\nnext\n");
+    print_tree(tree->right);
+}
+
 int there_is_one_word(char *command)
 {
     if (*command == 34 || *command == 39)
@@ -25,7 +64,7 @@ int *get_to_skip(char *command, char **ops)
             to_skip[i++] = 0;
             break;
         }
-        else if (there_is_something_between_2_adresses(skip_ops(command), skip_ops(command) + find_next_ops(skip_ops(command))) && there_is_one_word(skip_ops(skip_ops(command) + find_next_ops(skip_ops(command)))))
+        else if (there_is_something_between_2_adresses(skip_ops(command), skip_ops(command)))
             to_skip[i++] = 1;
         else
             to_skip[i++] = 0;
