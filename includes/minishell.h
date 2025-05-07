@@ -107,7 +107,7 @@ void save_std_fds(int *saved_stdin, int *saved_stdout);
 void restore_std_fds(int saved_stdin, int saved_stdout);
 int *get_std_fds(int stdin_fd, int stdout_fd);
 void	close_saved_fds(void);
-
+void debug_heredoc_fds(t_tree *node);
 // ==========================================================================
 //                              REDIRECTIONS
 // ==========================================================================

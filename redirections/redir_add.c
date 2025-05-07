@@ -66,6 +66,7 @@ int redir_heredoc(t_redirection *r)
 		perror("dup2 heredoc error");
 		return (1);
 	}
+	close(r->heredoc_fd);
 	return (0);
 }
 

@@ -16,6 +16,40 @@ static void mark_heredocs_as_failed(t_tree *node)
     }
 }
 
+void debug_heredoc_fds(t_tree *node)
+{
+    t_redirection *redir;
+
+    if (!node || !node->redirects)
+    {
+        printf("No node or no redirections.\n");
+        return;
+    }
+
+    redir = node->redirects;
+    while (redir)
+    {
+        if (redir->type == REDIR_HEREDOC)
+        {
+            printf("Heredoc for delimiter '%s': ", redir->file);
+            if (redir->heredoc_fd >= 0)
+            {
+                // Test if the FD is still open
+                if (fcntl(redir->heredoc_fd, F_GETFD) != -1)
+                    printf("FD %d is open ✅\n", redir->heredoc_fd);
+                else
+                    printf("FD %d is closed ❌\n", redir->heredoc_fd);
+            }
+            else
+            {
+                printf("FD is -1 (already closed)\n");
+            }
+        }
+        redir = redir->next;
+    }
+}
+
+
 static void process_heredoc_redirects(t_tree *node)
 {
     t_redirection *redir;
@@ -28,7 +62,7 @@ static void process_heredoc_redirects(t_tree *node)
     {
         if (redir->type == REDIR_HEREDOC)
         {
-            if (redir->heredoc_fd > 0)
+            if (redir->heredoc_fd != -1)
             {
                 close(redir->heredoc_fd);
                 redir->heredoc_fd = -1;
@@ -41,7 +75,6 @@ static void process_heredoc_redirects(t_tree *node)
         redir = redir->next;
     }
 }
-
 
 static int	check_heredoc_failures(t_tree *node)
 {
