@@ -1,5 +1,7 @@
 #include <minishell.h>
 
+
+
 int there_is_one_word(char *command)
 {
     if (*command == 34 || *command == 39)

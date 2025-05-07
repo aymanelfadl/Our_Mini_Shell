@@ -9,24 +9,45 @@ t_tree *find_first_commamd_at_left(t_tree *tree)
         return (tree->left);
     return (find_first_commamd_at_left(tree->left));
 }
+void there_is_a_command(t_tree *tree, int *there_is_a_comm)
+{
+    if (tree == NULL)
+        return;
+    if (tree->type == COMMAND)
+    {
+        *there_is_a_comm = 1;
+        return;
+    }
+    there_is_a_command(tree->left, there_is_a_comm);
+    there_is_a_command(tree->left, there_is_a_comm);
+    return;
+}
 void add_files_to_args(t_tree *node)
 {
     int i;
     t_tree *first_command_at_left;
     char *quotes_to_add;
+    int there_is_a_comm = 0;
 
     i = 1;
+    first_command_at_left = NULL;
     if (double_char_size(node->args) > 1)
     {
         if (!node->parent->left)
-            node->parent->left = create_one_node(NULL);
-
-        while (node->args[i])
         {
+            first_command_at_left = create_one_node(NULL);
+            node->parent->left = first_command_at_left;
+            first_command_at_left->parent = node->parent;
+        }
+        there_is_a_command(node->parent, &there_is_a_comm);
+        while (node->args[i] && there_is_a_comm)
+        {
+            printf("node->data = %s\n", node->data);
             quotes_to_add = "'";
             if (ft_strchr(node->args[i], 39))
                 quotes_to_add = "\x22";
-            first_command_at_left = find_first_commamd_at_left(node->parent);
+            if (first_command_at_left == NULL)
+                first_command_at_left = find_first_commamd_at_left(node->parent);
             first_command_at_left->data = ft_strjoin(first_command_at_left->data, " ");
             first_command_at_left->data = ft_strjoin(first_command_at_left->data, quotes_to_add);
             first_command_at_left->data = ft_strjoin(first_command_at_left->data, node->args[i]);
@@ -51,7 +72,7 @@ void split_tree(t_tree *tree)
     }
     else if (tree->type == FT_EOF)
     {
-        original_eof = ft_strtrim(get_original_eof(tree->data ), " \t");
+        original_eof = ft_strtrim(get_original_eof(tree->data), " \t");
         tree->data = handle_commandes_quoets(tree->data);
         tree->args = ft_split_files(tree->data);
         tree->args[0] = original_eof;

@@ -11,6 +11,9 @@ char *replace_strin_in_string(char *s, int start_string, int end_string, char *i
 
 int here_doc_before_dollar_sign(char *string, char *dollr_sign)
 {
+    int searching_interval;
+
+    searching_interval = 0;
     while (*string && string < dollr_sign)
     {
         if (find_next_ops(string) == -1)
@@ -18,13 +21,17 @@ int here_doc_before_dollar_sign(char *string, char *dollr_sign)
         string += find_next_ops(string);
         if (get_data_type(string) == APP_INPUT_REDIRECTION)
         {
-            string = skip_spaces(skip_ops(string));
-            if (string == dollr_sign)
-                return (0);
-            while (*string && (*string == 34 || *string == 39))
-                string++;
-            if (string == dollr_sign || skip_spaces(string) == dollr_sign)
-                return (0);
+            string = skip_ops(string);
+            string = skip_spaces(string);
+            if (find_next_ops(string) == -1)
+                return(0);
+            searching_interval = find_next_ops(string);
+            while (searching_interval--)
+            {
+                if (string == dollr_sign)
+                    return(0);
+                    string++;
+            }
         }
         else
         {
