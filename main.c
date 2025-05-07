@@ -65,6 +65,7 @@ static void minishell_loop(t_list *env_list)
         input = readline("$>"); 
         if (!input)
         {
+            save_std_fds(&saved_stdin, &saved_stdout);
             restore_std_fds(saved_stdin, saved_stdout);
             ctrl_d_handle();
         }
