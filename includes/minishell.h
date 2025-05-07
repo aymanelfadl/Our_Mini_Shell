@@ -107,7 +107,7 @@ void save_std_fds(int *saved_stdin, int *saved_stdout);
 void restore_std_fds(int saved_stdin, int saved_stdout);
 int *get_std_fds(int stdin_fd, int stdout_fd);
 void	close_saved_fds(void);
-void debug_heredoc_fds(t_tree *node);
+
 // ==========================================================================
 //                              REDIRECTIONS
 // ==========================================================================
@@ -156,7 +156,9 @@ void push_back(t_list **export_envp, char *splited_export);
 char *get_key(char *splited_export);
 t_list *initialize_env_list(char **envp);
 char **list_to_char_array(t_list *list);
-
+void is_not_valid_key_helper(char *splited_export, int *exit_status);
+void export_switch_cases(char * splited_export , t_list **export_envp , int * exit_status);
+char *write_envp_content(char *content, int *equal_found);
 
 // ==========================================================================
 //                                 PARSING
@@ -169,7 +171,11 @@ t_tree *create_one_node(char *command);
 void add_paths_to_tree(t_tree *tree, char **paths);
 char **ft_split_files(char *files);
 char *get_original_eof(char * tree_data);
-
+void put_to_tree(t_tree **node, char **commands_files, int index, t_tree *last_node_parent);
+void add_files_to_args(t_tree *node);
+t_tree *find_first_commamd_at_left(t_tree *tree);
+void there_is_a_command(t_tree *tree, int *there_is_a_comm);
+char *assign_file_and_command(char *command, char **commandes_files, int *i);
 
 // Token Extraction & Handling
 char **extract_ops(char *s);

@@ -15,16 +15,11 @@ char *remove_quotes(char *string)
         if ((*string == 34 || *string == 39) && ft_strchr(string + 1, *string))
         {
             next_quote_adresse = ft_strchr(string + 1, *string);
-            string++;
-            while (*string && string != next_quote_adresse)
-            {
+            while (++string != next_quote_adresse && *string)
                 string_removed_quotes[i++] = *string;
-                string++;
-            }
         }
         else if ((*string != 34 && *string != 39))
             string_removed_quotes[i++] = *string;
-
         string++;
     }
     string_removed_quotes[i] = '\0';
@@ -34,9 +29,7 @@ char *remove_quotes(char *string)
 char *extract_key_from_string(char *content)
 {
     char *key;
-    int i;
-    int j;
-    i = j = 0;
+
     if (ft_strnstr(content, "+=", ft_strlen(content)))
         key = ft_substr(content, 0, ft_strchr(content, '=') - content);
     else if (ft_strchr(content, '='))
@@ -46,12 +39,7 @@ char *extract_key_from_string(char *content)
     return (key);
 }
 
-int export_operator(char *explited_sport)
-{
-    if (ft_strchr(explited_sport, '=') && *(ft_strchr(explited_sport, '=') - 1) == '+')
-        return (2);
-    return (1);
-}
+
 
 t_list *key_is_already_exist(t_list *envp, char *key)
 {

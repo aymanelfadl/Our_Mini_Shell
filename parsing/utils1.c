@@ -23,15 +23,7 @@ void *ft_malloc(size_t size)
     return (new->content);
 }
 
-void add_adresse_to_garbage(void *adress)
-{
-    t_list *new;
 
-    new = malloc(sizeof(t_list));
-    new->content = adress;
-    new->next = NULL;
-    ft_lstadd_back(&garbage_collector, new);
-}
 
 int double_char_size(char **s)
 {
@@ -43,4 +35,20 @@ int double_char_size(char **s)
         i++;
     }
     return (i);
+}
+int there_is_something_between_2_adresses(char *s1, char *s2)
+{
+    while (s1 != s2)
+    {
+        if (*s1 != ' ' && *s1 != '\t')
+            return (0);
+        s1++;
+    }
+    return (1);
+}
+ 
+
+int is_file(enum data_type type)
+{
+    return (type == INPUT_REDIRECTION || type == APP_OUTPUT_REDIRECTION || type == OUTPUT_REDIRECTION);
 }

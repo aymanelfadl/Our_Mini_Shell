@@ -35,19 +35,28 @@ int extract_ops_helper(char *s, char **ops)
     return (-1);
 }
 
-char **extract_ops(char *s)
+char **extract_ops_init (char *s , char **all_ops)
 {
-    char *all_ops[8] = {">>", "<<", ">", "<", "||", "|", "&&", NULL};
-    char **ops;
-    int i;
-    int op_found;
     int size;
+    char **ops;
 
     size = ops_size(s, all_ops);
     if (size == 0)
         return (NULL);
+    return (ft_malloc((sizeof(char *) * size)));
+}
+
+char **extract_ops(char *s)
+{
+    char *all_ops[6] = {">>", "<<", ">", "<",  "|", NULL};
+    char **ops;
+    int i;
+    int op_found;
+
+    ops = extract_ops_init(s , all_ops);
+    if (!ops)
+        return (NULL);
     i = 0;
-    ops = ft_malloc((sizeof(char **) * size));
     while (*s)
     {
         if (extract_ops_helper(s, all_ops) >= 0)

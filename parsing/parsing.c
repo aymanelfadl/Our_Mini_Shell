@@ -1,7 +1,5 @@
 #include <minishell.h>
 
-
-
 int there_is_one_word(char *command)
 {
     if (*command == 34 || *command == 39)
@@ -36,37 +34,41 @@ int *get_to_skip(char *command, char **ops)
     return (to_skip);
 }
 
-t_tree *ilyas_parsing(char *phrase, t_list *envp)
+static int phrase_check(char *phrase)
 {
-    char **paths = extract_paths(envp);
-    int *to_skip;
-    t_list *lst;
-    int i;
-    i = 0;
-    lst = NULL;
-    if (*phrase == 0)
-        return (NULL);
-    add_history(phrase);
-    phrase = parse_env(phrase, envp);
     if (*phrase == 0)
     {
         *get_exit_status() = 0;
-        return (NULL);
+        return (0);
     }
     if (!check_unexpected_token(phrase))
     {
         *get_exit_status() = 2;
-    return (printf("unexpexted token \n"), NULL);
+        return (ft_putstr_fd("minishell: syntax error near unexpected token\n" , 2), 0);
     }
-    char **cc = extract_ops(phrase);
-    char ***s;
-    s = ft_malloc(sizeof(char **) * 2);
-    s[0] = extract_files_commands_strings(phrase, cc);
+    return (1);
+}
 
-    s[1] = cc;
-    to_skip = get_to_skip(phrase, cc);
-    t_tree *tree = make_tree(s, to_skip);
+t_tree *ilyas_parsing(char *phrase, t_list *envp)
+{
+    char **paths;
+    int *to_skip;
+    char ***s;
+    t_tree *tree;
+
+    if (*phrase == 0)
+        return (NULL);
+    add_history(phrase);
+    phrase = parse_env(phrase, envp);
+    if (phrase_check(phrase) == 0)
+        return (NULL);
+    s = ft_malloc(sizeof(char **) * 2);
+    s[1] = extract_ops(phrase);
+    s[0] = extract_files_commands_strings(phrase, s[1]);
+    to_skip = get_to_skip(phrase, s[1]);
+    tree = make_tree(s, to_skip);
     split_tree(tree);
+    paths = extract_paths(envp);
     add_paths_to_tree(tree, paths);
     return (tree);
 }

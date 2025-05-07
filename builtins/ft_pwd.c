@@ -12,7 +12,7 @@ static int get_pwd_from_env(t_list *env)
     }
     else
     {
-        ft_putstr_fd("cant get env\n", 2);
+        ft_putstr_fd("cant get PWD from env\n", 2);
         return (1);
     }
     return (1);

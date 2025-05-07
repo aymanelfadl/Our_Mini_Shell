@@ -2,12 +2,12 @@
 
 static int there_is_only_op_and__checklast_op(char *command)
 {
-    char *head_command ;
+    char *head_command;
     head_command = command;
 
     while (find_next_ops(head_command) != -1)
     {
-        head_command+= find_next_ops(head_command);
+        head_command += find_next_ops(head_command);
         head_command = skip_ops(head_command);
     }
     if (*head_command == 0)
@@ -34,6 +34,27 @@ static int check_two_ops(enum data_type op1, enum data_type op2)
         return (0);
     return (1);
 }
+static int check_condition(char *command, int first_loop, int n_condition)
+{
+    if (n_condition == 1)
+        return (first_loop && ((get_data_type(command) == OR) || (get_data_type(command) == AND) || get_data_type(command) == PIPE));
+    else if (n_condition == 2)
+        return (get_data_type(command) == UNEXPECTED_TOKEN);
+    return (get_data_type(command) != NON && get_data_type(skip_ops(command)) != NON);
+}
+static int apply_conditions(char *command, int first_loop)
+{
+    if (check_condition(command, first_loop, 1))
+        return (0);
+    else if (check_condition(command, first_loop, 2))
+        return (0);
+    else if (check_condition(command, first_loop, 3))
+    {
+        if (!check_two_ops(get_data_type(command), get_data_type(skip_ops(command))))
+            return (0);
+    }
+    return (1);
+}
 
 int check_unexpected_token(char *command)
 {
@@ -45,15 +66,8 @@ int check_unexpected_token(char *command)
     command = skip_spaces(command);
     while (*command)
     {
-        if (first_loop && ((get_data_type(command) == OR) || (get_data_type(command) == AND) || get_data_type(command) == PIPE))
+        if (apply_conditions(command, first_loop) == 0)
             return (0);
-        else if (get_data_type(command) == UNEXPECTED_TOKEN)
-            return (0);
-        else if (get_data_type(command) != NON && get_data_type(skip_ops(command)) != NON)
-        {
-            if (!check_two_ops(get_data_type(command), get_data_type(skip_ops(command))))
-                return (0);
-        }
         command = skip_ops(command);
         first_loop = 0;
         if (find_next_ops(command) != -1)

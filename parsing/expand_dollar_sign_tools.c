@@ -21,23 +21,19 @@ int here_doc_before_dollar_sign(char *string, char *dollr_sign)
         string += find_next_ops(string);
         if (get_data_type(string) == APP_INPUT_REDIRECTION)
         {
-            string = skip_ops(string);
-            string = skip_spaces(string);
+            string = skip_spaces(skip_ops(string));
             if (find_next_ops(string) == -1)
-                return(0);
+                return (0);
             searching_interval = find_next_ops(string);
             while (searching_interval--)
             {
                 if (string == dollr_sign)
-                    return(0);
-                    string++;
+                    return (0);
+                string++;
             }
         }
         else
-        {
-            string = skip_ops(string);
-            string = skip_spaces(string);
-        }
+            string = skip_spaces(skip_ops(string));
     }
     return (1);
 }
