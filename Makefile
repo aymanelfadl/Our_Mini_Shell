@@ -24,7 +24,7 @@ REDIRECTIONFILES = \
 	$(REDIRECTIONDIR)/redir_heredoc.c \
 	$(REDIRECTIONDIR)/redir_heredoc_process.c \
 	$(REDIRECTIONDIR)/redir_heredoc1.c \
-	$(REDIRECTIONDIR)/redir_heredoc3.c
+	$(REDIRECTIONDIR)/redir_heredoc3.c 
 
 PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/utils2.c \
 				$(PARSINGDIR)/mylibft.c $(PARSINGDIR)/extract_path.c $(PARSINGDIR)/tree_ops.c \
@@ -40,7 +40,7 @@ BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_engine.c \
 
 
 
-EXECUTION_FILES = $(REDIRECTIONFILES) $(BUILTINS_FILES) main.c signals/ft_signals.c 
+EXECUTION_FILES = $(REDIRECTIONFILES) $(BUILTINS_FILES) main.c signals/ft_signals.c g_utils.c 
 
 SRCS = $(PARSING_FILES) $(EXECUTION_FILES)
 OBJS = $(SRCS:.c=.o)
