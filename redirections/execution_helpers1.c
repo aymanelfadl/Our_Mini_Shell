@@ -22,11 +22,11 @@ static void	exec_child(t_tree *node)
 	{
 		if (errno == EACCES)
 		{
-			ft_putstr_fd("minishell: ", 2);
+			ft_putstr_fd("minishell: ", STDERR_FILENO);
 			perror(node->args[0]);
 			exit(126);
 		}
-		ft_putstr_fd("minishell: ", 2);
+		ft_putstr_fd("minishell: ", STDERR_FILENO);
 		perror(node->args[0]);
 		exit(127);
 	}

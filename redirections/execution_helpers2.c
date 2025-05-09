@@ -22,7 +22,9 @@ int	command_path_is_dir(char *path)
 
 int	handle_no_path(t_tree *node)
 {
-	fprintf(stderr, "minishell: %s: command not found\n", node->args[0]);
+	ft_putstr_fd("minishell: ", STDERR_FILENO);
+	ft_putstr_fd(node->args[0], STDERR_FILENO);
+	ft_putstr_fd(": command not found\n", STDERR_FILENO);
 	*get_exit_status() = 127;
 	return (127);
 }
