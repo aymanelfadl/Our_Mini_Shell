@@ -261,8 +261,4 @@ void						sigint_handler(int signo);
 void						ctrl_d_handle(void);
 void						heredoc_sigint_handler(int sig);
 
-// ==========================================================================
-//                                  MISC
-// ==========================================================================
-
 #endif
