@@ -20,15 +20,10 @@ int	redir_input(t_redirection *r)
 	if (fd != -1)
 	{
 		if (dup2(fd, STDIN_FILENO) == -1)
-		{
-			close(fd);
-			return (perror("dup2 input error"), 1);
-		}
-		close(fd);
-		return (0);
+			return (close(fd), perror("dup2 input error"), 1);
+		return (close(fd), 0);
 	}
-	perror(r->file);
-	return (1);
+	return (perror(r->file), 1);
 }
 
 int	redir_output(t_redirection *r)
@@ -39,15 +34,10 @@ int	redir_output(t_redirection *r)
 	if (fd != -1)
 	{
 		if (dup2(fd, STDOUT_FILENO) == -1)
-		{
-			close(fd);
-			return (perror("dup2 output error"), 1);
-		}
-		close(fd);
-		return (0);
+			return (close(fd), perror("dup2 output error"), 1);
+		return (close(fd), 0);
 	}
-	perror(r->file);
-	return (1);
+	return (perror(r->file), 1);
 }
 
 int	redir_append(t_redirection *r)
@@ -62,22 +52,16 @@ int	redir_append(t_redirection *r)
 			close(fd);
 			return (perror("dup2 append error"), 1);
 		}
-		close(fd);
-		return (0);
+		return (close(fd), 0);
 	}
-	perror(r->file);
-	return (1);
+	return (perror(r->file), 1);
 }
 
 int	redir_heredoc(t_redirection *r)
 {
 	if (dup2(r->heredoc_fd, STDIN_FILENO) == -1)
-	{
-		perror("dup2 heredoc error");
-		return (1);
-	}
-	close(r->heredoc_fd);
-	return (0);
+		return (perror("dup2 heredoc error"), 1);
+	return (close(r->heredoc_fd), 0);
 }
 
 void	add_redirection(t_redir_type type, char *file, t_redirection **list)
