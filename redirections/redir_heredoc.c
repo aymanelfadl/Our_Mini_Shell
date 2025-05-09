@@ -4,6 +4,7 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 {
 	char	*line;
 	char	*line_to_write;
+	char	*expanded;
 
 	while (1)
 	{
@@ -12,17 +13,17 @@ static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 		{
 			handle_eof_warning(delimiter);
 			free(line);
-			break;
+			break ;
 		}
-		if (ft_strcmp(line, (char*) delimiter) == 0)
+		if (ft_strcmp(line, (char *)delimiter) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
 		line_to_write = line;
 		if (expand)
 		{
-			char *expanded = expand_heredoc_line(line);
+			expanded = expand_heredoc_line(line);
 			if (expanded != line)
 				line_to_write = expanded;
 		}
@@ -49,7 +50,8 @@ static void	handle_parent_process(int *pipe_fds, int *read_fd, pid_t child_pid)
 	}
 }
 
-static void	setup_heredoc_child(int *pipe_fds, const char *delimiter, int expand)
+static void	setup_heredoc_child(int *pipe_fds, const char *delimiter,
+		int expand)
 {
 	signal(SIGINT, SIG_DFL);
 	close(pipe_fds[0]);

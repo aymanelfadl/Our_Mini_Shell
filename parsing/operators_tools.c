@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   operators_tools.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/09 20:01:16 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/05/09 20:01:16 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <minishell.h>
 
 char	*skip_ops(char *command)
@@ -30,6 +42,8 @@ int	find_next_ops(char *command)
 enum data_type	get_data_type(char *s)
 {
 	if (!ft_strncmp(s, "||", 2))
+		return (UNEXPECTED_TOKEN);
+	if (!ft_strncmp(s, "<<<", 3))
 		return (UNEXPECTED_TOKEN);
 	if (!ft_strncmp(s, "&&", 2))
 		return (UNEXPECTED_TOKEN);

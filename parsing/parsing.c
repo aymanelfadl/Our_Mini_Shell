@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/09 20:01:16 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/05/09 20:01:16 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <minishell.h>
 
 void	print_double_pointer(char **s)
@@ -74,5 +86,6 @@ t_tree	*ilyas_parsing(char *phrase, t_list *envp)
 	split_tree(tree);
 	paths = extract_paths(envp);
 	add_paths_to_tree(tree, paths);
+	print_tree(tree);
 	return (tree);
 }

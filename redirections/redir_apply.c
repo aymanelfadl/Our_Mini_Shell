@@ -2,7 +2,7 @@
 
 static int	apply_single_redirection(t_redirection *current)
 {
-	int ret;
+	int	ret;
 
 	if (current->type == REDIR_INPUT)
 		ret = redir_input(current);
@@ -14,14 +14,13 @@ static int	apply_single_redirection(t_redirection *current)
 		ret = redir_heredoc(current);
 	else
 		ret = 0;
-
 	return (ret);
 }
 
-int apply_redirections(t_redirection *rlist)
+int	apply_redirections(t_redirection *rlist)
 {
-	int ret;
-	t_redirection *current;
+	int				ret;
+	t_redirection	*current;
 
 	current = rlist;
 	while (current)

@@ -5,8 +5,7 @@ static void	cleanup_node_heredocs(t_tree *node)
 	t_redirection	*redir;
 
 	if (!node)
-		return;
-		
+		return ;
 	if (node->redirects)
 	{
 		redir = node->redirects;
@@ -25,8 +24,7 @@ static void	cleanup_node_heredocs(t_tree *node)
 void	cleanup_heredoc_fds(t_tree *node)
 {
 	if (!node)
-		return;
-
+		return ;
 	cleanup_heredoc_fds(node->left);
 	cleanup_heredoc_fds(node->right);
 	cleanup_node_heredocs(node);

@@ -17,7 +17,8 @@ static char	*handle_exit_status(char **result_ptr, char *start)
 	return (*result_ptr);
 }
 
-static char	*handle_var_replacement(char **result_ptr, char *start, char *var_value, int var_len)
+static char	*handle_var_replacement(char **result_ptr, char *start,
+		char *var_value, int var_len)
 {
 	char	*temp;
 	char	*after_var;
@@ -71,9 +72,9 @@ char	*expand_heredoc_line(char *line)
 	{
 		start = ft_strchr(start, '$');
 		if (!start)
-			break;
+			break ;
 		if (*(start + 1) == '\0')
-			break;
+			break ;
 		start = process_var(&result, start);
 	}
 	return (result);
@@ -81,8 +82,8 @@ char	*expand_heredoc_line(char *line)
 
 int	write_line_to_pipe(int pipe_fd, char *line_to_write)
 {
-	if (write(pipe_fd, line_to_write, ft_strlen(line_to_write)) == -1 ||
-		write(pipe_fd, "\n", 1) == -1)
+	if (write(pipe_fd, line_to_write, ft_strlen(line_to_write)) == -1
+		|| write(pipe_fd, "\n", 1) == -1)
 	{
 		perror("minishell: write to heredoc pipe");
 		return (-1);

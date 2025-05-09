@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_export.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/09 20:02:28 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/05/09 20:02:28 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 static t_list	*ft_lstdup(t_list *src)
@@ -37,7 +49,7 @@ static void	sort_envp(t_list *export_envp)
 		while (temp)
 		{
 			if (ft_strcmp((char *)(export_envp)->content,
-				(char *)temp->content) > 0)
+					(char *)temp->content) > 0)
 			{
 				helper = ((export_envp)->content);
 				(export_envp)->content = temp->content;

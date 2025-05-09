@@ -13,21 +13,19 @@
 #ifndef LIBFT_H
 # define LIBFT_H
 
+# include <stdint.h>
 # include <stdlib.h>
 # include <unistd.h>
-# include <stdint.h>
 
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
-}t_list;
+}					t_list;
 
 # include "../includes/minishell.h"
 
-
-
-extern t_list *garbage_collector;
+extern t_list		*garbage_collector;
 
 int					ft_atoi(const char *nptr);
 void				ft_bzero(void *s, size_t n);

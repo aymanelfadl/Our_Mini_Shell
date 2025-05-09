@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_exit.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/09 20:02:28 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/05/09 20:02:28 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "minishell.h"
 
 int	ft_isnumber(char *str)
@@ -61,7 +73,8 @@ int	ft_strtoll(const char *str, long long *result)
 		digit = str[i] - '0';
 		if (sign == 1 && num > (LLONG_MAX - digit) / 10)
 			return (0);
-		if (sign == -1 && num > ((unsigned long long)LLONG_MAX + 1 - digit) / 10)
+		if (sign == -1 && num > ((unsigned long long)LLONG_MAX + 1 - digit)
+			/ 10)
 			return (0);
 		num = num * 10 + digit;
 		i++;
@@ -69,9 +82,9 @@ int	ft_strtoll(const char *str, long long *result)
 	if (str[i] != '\0')
 		return (0);
 	if (sign == 1)
-	*result = (long long)num;
+		*result = (long long)num;
 	else
-	*result = -(long long)num;
+		*result = -(long long)num;
 	return (1);
 }
 
@@ -119,4 +132,3 @@ void	ft_exit(t_tree *node)
 		exit(exit_code);
 	}
 }
-
