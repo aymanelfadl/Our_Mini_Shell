@@ -31,7 +31,7 @@ PARSING_FILES = $(PARSINGDIR)/parsing.c  $(PARSINGDIR)/utils1.c $(PARSINGDIR)/ut
 				$(PARSINGDIR)/expand_dollar_sign.c $(PARSINGDIR)/unexpectedtoken.c  \
 				$(PARSINGDIR)/operators_tools.c $(PARSINGDIR)/operators_tools2.c $(PARSINGDIR)/ft_split_files.c \
 				$(PARSINGDIR)/create_tree.c $(PARSINGDIR)/expand_dollar_sign_tools.c  $(PARSINGDIR)/create_tree_2.c \
-				$(PARSINGDIR)/extract_commandes.c $(PARSINGDIR)/extract_commandes2.c
+				$(PARSINGDIR)/extract_commandes.c $(PARSINGDIR)/extract_commandes2.c $(PARSINGDIR)/get_to_skip.c
 
 BUILTINS_FILES = $(BUILTINSDIR)/ft_unset.c $(BUILTINSDIR)/builtins_engine.c \
 				$(BUILTINSDIR)/ft_exit.c $(BUILTINSDIR)/ft_env.c $(BUILTINSDIR)/ft_cd.c $(BUILTINSDIR)/ft_echo.c \

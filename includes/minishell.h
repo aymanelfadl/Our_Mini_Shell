@@ -173,6 +173,7 @@ char **ft_split_files(char *files);
 char *get_original_eof(char * tree_data);
 void put_to_tree(t_tree **node, char **commands_files, int index, t_tree *last_node_parent);
 char *assign_file_and_command(char *command, char **commandes_files, int *i);
+int	*get_to_skip(char *command, char **ops);
 
 // Token Extraction & Handling
 char **extract_ops(char *s);

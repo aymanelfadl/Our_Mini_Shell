@@ -1,9 +1,9 @@
 #include <minishell.h>
 
-char *my_strnstr(const char *haystack, const char *needle, size_t len)
+char	*my_strnstr(const char *haystack, const char *needle, size_t len)
 {
-	size_t i;
-	size_t j;
+	size_t	i;
+	size_t	j;
 
 	if (!haystack && len == 0)
 		return (NULL);
@@ -27,7 +27,7 @@ char *my_strnstr(const char *haystack, const char *needle, size_t len)
 	return (NULL);
 }
 
-static int incleded_in_char(char s, char *target)
+static int	incleded_in_char(char s, char *target)
 {
 	while (*target)
 	{
@@ -38,7 +38,7 @@ static int incleded_in_char(char s, char *target)
 	return (0);
 }
 
-char *my_strchr(char *s, char *target)
+char	*my_strchr(char *s, char *target)
 {
 	if (!s)
 		return (NULL);
@@ -51,7 +51,7 @@ char *my_strchr(char *s, char *target)
 	return (NULL);
 }
 
-int ft_strcmp(char *s1, char *s2)
+int	ft_strcmp(char *s1, char *s2)
 {
 	while (*s1 && *s2 && *s1 == *s2)
 	{
