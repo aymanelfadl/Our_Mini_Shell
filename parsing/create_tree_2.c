@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
 t_tree	*create_one_node(char *command)
 {
@@ -79,10 +79,6 @@ static t_tree	*create_left_node(char **commands_files, int index)
 void	put_to_tree(t_tree **node, char **commands_files, int index,
 		t_tree *last_node_parent)
 {
-	t_tree	*node_assign;
-	int		index_shift;
-
-	index_shift = 1;
 	if (index < 0)
 		return ;
 	if ((*node) != NULL)

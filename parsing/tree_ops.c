@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
 static void	add_files_to_args_helper(t_tree *node, t_tree **command_node,
 		int *j)
@@ -63,7 +63,6 @@ static void	add_files_to_args(t_tree *node)
 {
 	int		i;
 	t_tree	*command_node;
-	char	*quotes_to_add;
 
 	i = 1;
 	command_node = NULL;

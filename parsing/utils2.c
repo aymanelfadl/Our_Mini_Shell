@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
 int	isdirectory(char *path)
 {
@@ -53,9 +53,7 @@ char	*handle_commandes_quoets(char *tree_data)
 {
 	char	*command;
 	char	*rest;
-	char	*command_with_no_quotes;
 	int		i;
-	char	*space_after_commas;
 
 	i = 0;
 	rest = NULL;

@@ -22,7 +22,6 @@ char	*skip_spaces(char *s)
 static int	is_n_option(char *n_option)
 {
 	int		len;
-	char	*extract_n;
 
 	len = 0;
 	if (!(*n_option == '-'))

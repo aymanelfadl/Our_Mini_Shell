@@ -10,12 +10,10 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
 int	commas_ops_check(char *s)
 {
-	int	commas;
-
 	if (!s)
 		return (0);
 	while (*s)
@@ -50,8 +48,7 @@ int	extract_ops_helper(char *s, char **ops)
 
 char	**extract_ops_init(char *s, char **all_ops)
 {
-	int		size;
-	char	**ops;
+	int	size;
 
 	size = ops_size(s, all_ops);
 	if (size == 0)
@@ -74,7 +71,6 @@ char	**extract_ops(char *s)
 	char	*all_ops[6];
 	char	**ops;
 	int		i;
-	int		op_found;
 
 	initialize_all_ops(all_ops);
 	ops = extract_ops_init(s, all_ops);

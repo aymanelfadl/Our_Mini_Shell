@@ -10,25 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
-
-static int	check_file_before_command_irederection(char *command)
-{
-	int	ret;
-
-	ret = 0;
-	if (get_data_type(command) != NON)
-	{
-		if (get_data_type(skip_ops(command)
-				+ find_next_ops(command)) == INPUT_REDIRECTION)
-		{
-			if (there_is_something_between_2_adresses(command, command
-					+ find_next_ops(command)))
-				ret = 1;
-		}
-	}
-	return (ret);
-}
+#include "minishell.h"
 
 static int	extract_files_commands_strings_helper(char **command,
 		char **commandes_files, int *j)

@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <minishell.h>
+#include "minishell.h"
 
 char	*replace_strin_in_string(char *s, int start_string, int end_string,
 		char *inserted_string)

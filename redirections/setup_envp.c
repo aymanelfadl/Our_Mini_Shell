@@ -51,11 +51,13 @@ t_list	*create_minimal_env(void)
 
 void	increment_shlvl(t_list *env_list)
 {
-	t_list *current;
-	char *current_shlvl = NULL;
-	char *new_shlvl_str = NULL;
-	int shlvl_value;
+	t_list	*current;
+	char	*current_shlvl;
+	char	*new_shlvl_str;
+	int		shlvl_value;
 
+	current_shlvl = NULL;
+	new_shlvl_str = NULL;
 	current = env_list;
 	shlvl_value = 1;
 	current_shlvl = NULL;
