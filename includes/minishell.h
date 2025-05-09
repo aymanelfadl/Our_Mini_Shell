@@ -172,9 +172,6 @@ void add_paths_to_tree(t_tree *tree, char **paths);
 char **ft_split_files(char *files);
 char *get_original_eof(char * tree_data);
 void put_to_tree(t_tree **node, char **commands_files, int index, t_tree *last_node_parent);
-void add_files_to_args(t_tree *node);
-t_tree *find_first_commamd_at_left(t_tree *tree);
-void there_is_a_command(t_tree *tree, int *there_is_a_comm);
 char *assign_file_and_command(char *command, char **commandes_files, int *i);
 
 // Token Extraction & Handling

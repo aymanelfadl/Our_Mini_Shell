@@ -1,26 +1,73 @@
 #include <minishell.h>
 
-t_tree *find_first_commamd_at_left(t_tree *tree)
+static void add_files_to_args_helper(t_tree *node, t_tree **first_command_at_left, int *j)
 {
-    t_tree *command;
-    if (tree->right && tree->right->type == COMMAND)
-        return (tree->right);
-    if ((tree->left) && tree->left->type == COMMAND)
-        return (tree->left);
-    return (find_first_commamd_at_left(tree->left));
-}
-void there_is_a_command(t_tree *tree, int *there_is_a_comm)
-{
-    if (tree == NULL)
-        return;
-    if (tree->type == COMMAND)
+    int i;
+    char *quotes_to_add;
+
+    i = *j;
+
+    if (first_command_at_left && *first_command_at_left)
     {
-        *there_is_a_comm = 1;
-        return;
+        quotes_to_add = "'";
+        if (my_strchr(node->args[i], "'\x22"))
+        {
+            if (*my_strchr(node->args[i], "'\x22") == 39)
+                quotes_to_add = "\x22";
+        }
+        if ((*first_command_at_left)->data)
+            (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, " ");
+        (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, node->args[i]);
     }
-    there_is_a_command(tree->left, there_is_a_comm);
-    there_is_a_command(tree->left, there_is_a_comm);
-    return;
+    i++;
+    *j = i;
+}
+
+static t_tree *get_node_command(t_tree *to_search)
+{
+    t_tree *first_command_at_left;
+
+    first_command_at_left = NULL;
+    while (to_search && !first_command_at_left)
+    {
+        if (!to_search->right)
+        {
+            first_command_at_left = create_one_node(NULL);
+            to_search->right = first_command_at_left;
+            first_command_at_left->parent = to_search;
+        }
+        else if (to_search->right->type == COMMAND)
+            first_command_at_left = to_search->right;
+        else if (to_search->left == NULL)
+        {
+            first_command_at_left = create_one_node(NULL);
+            to_search->left = first_command_at_left;
+            first_command_at_left->parent = to_search;
+        }
+        else if (to_search->left->type == COMMAND)
+            first_command_at_left = to_search->left;
+        to_search = to_search->left;
+    }
+    return (first_command_at_left);
+}
+static void add_files_to_args(t_tree *node)
+{
+    int i;
+    t_tree *first_command_at_left;
+    char *quotes_to_add;
+
+    i = 1;
+    first_command_at_left = NULL;
+    if (double_char_size(node->args) > 1)
+    {
+        first_command_at_left = get_node_command(node->parent);
+        while (node->args[i] && first_command_at_left)
+        {
+            add_files_to_args_helper(node, &first_command_at_left, &i);
+        }
+        if (first_command_at_left)
+            first_command_at_left->args = ft_split_files(first_command_at_left->data);
+    }
 }
 
 void split_tree(t_tree *tree)
@@ -44,8 +91,8 @@ void split_tree(t_tree *tree)
         tree->args[0] = original_eof;
         add_files_to_args(tree);
     }
-    split_tree(tree->right);
     split_tree(tree->left);
+    split_tree(tree->right);
 }
 
 void add_paths_to_tree(t_tree *tree, char **paths)

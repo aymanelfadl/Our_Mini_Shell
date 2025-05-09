@@ -3,7 +3,7 @@
 static char **how_many_file(char *files)
 {
     int files_size;
-    
+
     files_size = 0;
     while (*files)
     {
@@ -58,46 +58,3 @@ char **ft_split_files(char *files)
     return (files_splited);
 }
 
-static void add_files_to_args_helper(t_tree *node, t_tree **first_command_at_left, int *j)
-{
-    int i;
-    char *quotes_to_add;
-
-    i = *j;
-    quotes_to_add = "'";
-    if (my_strchr(node->args[i], "'\x22"))
-    {
-        if (*my_strchr(node->args[i], "'\x22") == 39)
-            quotes_to_add = "\x22";
-    }
-    if ((*first_command_at_left) == NULL)
-        (*first_command_at_left) = find_first_commamd_at_left(node->parent);
-    (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, " ");
-    (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, quotes_to_add);
-    (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, node->args[i]);
-    (*first_command_at_left)->data = ft_strjoin((*first_command_at_left)->data, quotes_to_add);
-    i++;
-    *j = i;
-}
-void add_files_to_args(t_tree *node)
-{
-    int i;
-    t_tree *first_command_at_left;
-    char *quotes_to_add;
-    int there_is_a_comm = 0;
-
-    i = 1;
-    first_command_at_left = NULL;
-    if (double_char_size(node->args) > 1)
-    {
-        if (!node->parent->left)
-        {
-            first_command_at_left = create_one_node(NULL);
-            node->parent->left = first_command_at_left;
-            first_command_at_left->parent = node->parent;
-        }
-        there_is_a_command(node->parent, &there_is_a_comm);
-        while (node->args[i] && there_is_a_comm)
-            add_files_to_args_helper(node, &first_command_at_left, &i);
-    }
-}

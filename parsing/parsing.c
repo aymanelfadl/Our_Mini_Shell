@@ -22,19 +22,6 @@ void print_tree(t_tree *tree)
     print_double_pointer(tree->args);
     if (tree->type == COMMAND)
         printf("      path : %s\n", tree->path);
-    if (tree->parent)
-        printf("parent->data = %s\n",tree->parent->data);
-    else
-        printf("parent is NULL\n");
-    if (tree->right)
-        printf("right-data=%s\n",tree->right->data);
-    else
-        printf("right is NULL\n");
-         if (tree->left)
-        printf("left-data=%s\n",tree->left->data);
-    else
-        printf("left is NULL\n");
-
     printf("\nnext\n");
     print_tree(tree->right);
 }
@@ -51,21 +38,28 @@ int there_is_one_word(char *command)
 int *get_to_skip(char *command, char **ops)
 {
     int i;
-
+    int *to_skip;
     i = 0;
-    int *to_skip = ft_malloc(sizeof(int) * double_char_size(ops));
+
+    to_skip = ft_malloc(sizeof(int) * (double_char_size(ops) + 1));
     if (!ops || !*ops)
         return (NULL);
     while (1)
     {
-        command += find_next_ops(command);
         if (find_next_ops(skip_ops(command)) == -1)
         {
             to_skip[i++] = 0;
             break;
         }
-        else if (there_is_something_between_2_adresses(skip_ops(command), skip_ops(command)))
-            to_skip[i++] = 1;
+        else
+            command += find_next_ops(command);
+        if (get_data_type(command) == PIPE && find_next_ops(skip_ops(command)) != NON)
+        {
+            if (there_is_something_between_2_adresses(skip_ops(command), skip_ops(command) + find_next_ops(skip_ops(command))))
+                to_skip[i++] = 1;
+            else
+                to_skip[i++] = 0;
+        }
         else
             to_skip[i++] = 0;
         command = skip_ops(command);
@@ -83,7 +77,7 @@ static int phrase_check(char *phrase)
     if (!check_unexpected_token(phrase))
     {
         *get_exit_status() = 2;
-        return (ft_putstr_fd("minishell: syntax error near unexpected token\n" , 2), 0);
+        return (ft_putstr_fd("minishell: syntax error near unexpected token\n", 2), 0);
     }
     return (1);
 }
