@@ -12,35 +12,45 @@
 
 #include "minishell.h"
 
+static int	process_heredoc_line(int pipe_fd, char *line, int expand)
+{
+	char	*line_to_write;
+	char	*expanded;
+
+	line_to_write = line;
+	if (expand)
+	{
+		expanded = expand_heredoc_line(line);
+		if (expanded != line)
+			line_to_write = expanded;
+	}
+	if (write_line_to_pipe(pipe_fd, line_to_write) == -1)
+		return (-1);
+	if (line_to_write != line)
+		free(line_to_write);
+	return (0);
+}
+
 static int	read_heredoc_lines(int *pipe_fds, const char *delimiter, int expand)
 {
 	char	*line;
-	char	*line_to_write;
-	char	*expanded;
 
 	while (1)
 	{
 		line = readline("> ");
-		if (!line)
+		if (!line || ft_strcmp(line, (char *)delimiter) == 0)
 		{
-			handle_eof_warning(delimiter);
+			if (!line)
+				handle_eof_warning(delimiter);
 			free(line);
 			break ;
 		}
-		if (ft_strcmp(line, (char *)delimiter) == 0)
+		if (process_heredoc_line(pipe_fds[1], line, expand) == -1)
 		{
 			free(line);
-			break ;
+			close(pipe_fds[1]);
+			return (-1);
 		}
-		line_to_write = line;
-		if (expand)
-		{
-			expanded = expand_heredoc_line(line);
-			if (expanded != line)
-				line_to_write = expanded;
-		}
-		if (write_line_to_pipe(pipe_fds[1], line_to_write) == -1)
-			return (close(pipe_fds[1]), -1);
 		free(line);
 	}
 	return (0);

@@ -26,19 +26,6 @@ void	print_double_pointer(char **s)
 	printf("\n");
 }
 
-void	print_tree(t_tree *tree)
-{
-	if (tree == NULL)
-		return ;
-	print_tree(tree->left);
-	printf("%s %d        double :", tree->data, tree->type);
-	print_double_pointer(tree->args);
-	if (tree->type == COMMAND)
-		printf("      path : %s\n", tree->path);
-	printf("\nnext\n");
-	print_tree(tree->right);
-}
-
 int	there_is_one_word(char *command)
 {
 	if (*command == 34 || *command == 39)
@@ -86,6 +73,5 @@ t_tree	*ilyas_parsing(char *phrase, t_list *envp)
 	split_tree(tree);
 	paths = extract_paths(envp);
 	add_paths_to_tree(tree, paths);
-	print_tree(tree);
 	return (tree);
 }

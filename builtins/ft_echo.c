@@ -21,9 +21,6 @@ char	*skip_spaces(char *s)
 
 static int	is_n_option(char *n_option)
 {
-	int		len;
-
-	len = 0;
 	if (!(*n_option == '-'))
 		return (0);
 	n_option++;
@@ -56,13 +53,9 @@ static void	ft_echo_write(char **to_write, int n_option)
 void	ft_echo(t_tree *node)
 {
 	int		n_option;
-	char	**check_n_option;
-	char	*to_write;
 	int		i;
 
 	i = 2;
-	to_write = NULL;
-	check_n_option = node->args;
 	if (node->args && node->args[1] && is_n_option(node->args[1]))
 		n_option = 1;
 	else

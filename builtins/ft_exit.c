@@ -12,26 +12,6 @@
 
 #include "minishell.h"
 
-int	ft_isnumber(char *str)
-{
-	int	i;
-
-	i = 0;
-	if (!str || !*str)
-		return (0);
-	if (str[i] == '+' || str[i] == '-')
-		i++;
-	if (!str[i])
-		return (0);
-	while (str[i])
-	{
-		if (!ft_isdigit(str[i]))
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 static int	ft_count_args(t_tree *node)
 {
 	int	count;
@@ -42,52 +22,6 @@ static int	ft_count_args(t_tree *node)
 	return (count);
 }
 
-static int	ft_strtoll_check_sign(const char *str, int *i, int *sign)
-{
-	*sign = 1;
-	if (str[*i] == '+' || str[*i] == '-')
-	{
-		if (str[*i] == '-')
-			*sign = -1;
-		(*i)++;
-	}
-	if (!str[*i])
-		return (0);
-	return (1);
-}
-
-int	ft_strtoll(const char *str, long long *result)
-{
-	int					sign;
-	unsigned long long	num;
-	int					i;
-	int					digit;
-
-	i = 0;
-	num = 0;
-	*result = 0;
-	if (!ft_strtoll_check_sign(str, &i, &sign))
-		return (0);
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		digit = str[i] - '0';
-		if (sign == 1 && num > (LLONG_MAX - digit) / 10)
-			return (0);
-		if (sign == -1 && num > ((unsigned long long)LLONG_MAX + 1 - digit)
-			/ 10)
-			return (0);
-		num = num * 10 + digit;
-		i++;
-	}
-	if (str[i] != '\0')
-		return (0);
-	if (sign == 1)
-		*result = (long long)num;
-	else
-		*result = -(long long)num;
-	return (1);
-}
-
 static void	ft_exit_error(char *arg)
 {
 	ft_putstr_fd("minishell: exit: ", STDERR_FILENO);
@@ -96,6 +30,21 @@ static void	ft_exit_error(char *arg)
 	*get_exit_status() = 2;
 	close_saved_fds();
 	exit(2);
+}
+
+static void	handle_exit_code(long long exit_code)
+{
+	close_saved_fds();
+	if (exit_code < 0)
+	{
+		*get_exit_status() = 156;
+		exit(156);
+	}
+	else
+	{
+		*get_exit_status() = exit_code;
+		exit(exit_code);
+	}
 }
 
 void	ft_exit(t_tree *node)
@@ -120,15 +69,5 @@ void	ft_exit(t_tree *node)
 		*get_exit_status() = 1;
 		return ;
 	}
-	close_saved_fds();
-	if (exit_code < 0)
-	{
-		*get_exit_status() = 156;
-		exit(156);
-	}
-	else
-	{
-		*get_exit_status() = exit_code;
-		exit(exit_code);
-	}
+	handle_exit_code(exit_code);
 }

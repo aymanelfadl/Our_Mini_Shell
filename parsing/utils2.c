@@ -53,9 +53,8 @@ char	*handle_commandes_quoets(char *tree_data)
 {
 	char	*command;
 	char	*rest;
-	int		i;
 
-	i = 0;
+
 	rest = NULL;
 	command = skip_spaces(tree_data);
 	command = get_command(command);

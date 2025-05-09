@@ -38,6 +38,7 @@ void	execute_left(t_tree *node)
 	close_saved_fds();
 	exit(execute_node(node->left));
 }
+
 void	execute_right(t_tree *node)
 {
 	dup2(node->pipe_fds[0], STDIN_FILENO);

@@ -71,12 +71,6 @@ int	redir_append(t_redirection *r)
 
 int	redir_heredoc(t_redirection *r)
 {
-	if (r->heredoc_fd <= 0)
-	{
-		ft_putstr_fd("minishell: internal error: heredoc file descriptor missing\n",
-			2);
-		return (1);
-	}
 	if (dup2(r->heredoc_fd, STDIN_FILENO) == -1)
 	{
 		perror("dup2 heredoc error");

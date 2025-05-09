@@ -169,7 +169,7 @@ void						export_switch_cases(char *splited_export,
 								t_list **export_envp, int *exit_status);
 char						*write_envp_content(char *content,
 								int *equal_found);
-
+int ft_strtoll(const char *str, long long *result);
 // ==========================================================================
 //                                 PARSING
 // ==========================================================================

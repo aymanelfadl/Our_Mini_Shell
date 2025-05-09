@@ -14,9 +14,6 @@
 
 static int	is_it_to_expand(char *s, char *dollr_sign)
 {
-	int	there_is_end_of_before;
-
-	there_is_end_of_before = 0;
 	if (here_doc_before_dollar_sign(s, dollr_sign) == 0)
 		return (0);
 	if (string_is_inside(s, dollr_sign - s) == DOUBLE_QUOTES)
@@ -49,12 +46,10 @@ static int	handled_exit_status(char **dollr_sign, char **s)
 static void	if_is_it_to_expand_true(char **dollr_sign, char **s, t_list *envp)
 {
 	int		i;
-	int		start_end_shift;
 	char	*to_replace;
 	int		start;
 	int		end;
 
-	start_end_shift = 0;
 	i = 1;
 	if (ft_isdigit(dollr_sign[0][i]))
 		i = 2;

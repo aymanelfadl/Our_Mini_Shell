@@ -19,6 +19,7 @@ int	command_path_is_dir(char *path)
 	ft_putstr_fd(": Is a directory\n", 2);
 	return (126);
 }
+
 int	handle_no_path(t_tree *node)
 {
 	fprintf(stderr, "minishell: %s: command not found\n", node->args[0]);

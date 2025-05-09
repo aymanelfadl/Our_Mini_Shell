@@ -30,6 +30,7 @@ static char	*remove_all_quotes(char *str, int len)
 	char	*result;
 	int		i;
 	int		j;
+
 	i = 0;
 	j = 0;
 	result = ft_malloc(len + 1);
