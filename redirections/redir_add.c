@@ -69,8 +69,6 @@ void	add_redirection(t_redir_type type, char *file, t_redirection **list)
 	t_redirection	*redir;
 
 	redir = ft_malloc(sizeof(t_redirection));
-	if (!redir)
-		return ;
 	redir->type = type;
 	redir->file = file;
 	if (type == REDIR_INPUT || type == REDIR_HEREDOC)
