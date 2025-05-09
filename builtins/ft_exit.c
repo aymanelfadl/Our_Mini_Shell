@@ -68,7 +68,7 @@ int	ft_strtoll(const char *str, long long *result)
 	}
 	if (str[i] != '\0')
 		return (0);
-	if (sign)
+	if (sign == 1)
 	*result = (long long)num;
 	else
 	*result = -(long long)num;
@@ -96,7 +96,7 @@ void	ft_exit(t_tree *node)
 	{
 		exit_code = *get_exit_status();
 		close_saved_fds();
-		exit(exit_code & 255);
+		exit(exit_code);
 	}
 	arg = node->args[1];
 	if (!ft_strtoll(arg, &exit_code))
@@ -107,8 +107,16 @@ void	ft_exit(t_tree *node)
 		*get_exit_status() = 1;
 		return ;
 	}
-	*get_exit_status() = exit_code & 255;
 	close_saved_fds();
-	exit(exit_code & 255);
+	if (exit_code < 0)
+	{
+		*get_exit_status() = 156;
+		exit(156);
+	}
+	else
+	{
+		*get_exit_status() = exit_code;
+		exit(exit_code);
+	}
 }
 
