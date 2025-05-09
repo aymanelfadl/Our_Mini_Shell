@@ -29,9 +29,9 @@ static char	*remove_all_quotes(char *str, int len)
 {
 	char	*result;
 	int		i;
-
-	i = 0, j;
-	i = 0, j = 0;
+	int		j;
+	i = 0;
+	j = 0;
 	result = ft_malloc(len + 1);
 	if (!result)
 		return (NULL);
