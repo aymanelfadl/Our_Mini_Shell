@@ -73,7 +73,7 @@ typedef enum data_type
 	FT_EOF,
 	UNEXPECTED_TOKEN,
 	NON
-}							e_type;
+}							t_type;
 
 // Quote context
 typedef enum inside_what
@@ -81,7 +81,7 @@ typedef enum inside_what
 	DOUBLE_QUOTES,
 	ONE_QUOTE,
 	INSIDE_NOTHING
-}							e_inside_what;
+}							t_inside_what;
 
 // AST node
 typedef struct s_tree
@@ -94,7 +94,7 @@ typedef struct s_tree
 	struct s_tree			*left;
 	struct s_tree			*right;
 	struct s_tree			*parent;
-	e_type					type;
+	t_type					type;
 	int						to_skip;
 	int						pipe_fds[2];
 	t_redirection			*redirects;
