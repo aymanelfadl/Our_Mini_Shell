@@ -93,6 +93,7 @@ int	read_heredoc_to_pipe(const char *delimiter, int expand)
 	int		read_fd;
 	pid_t	child_pid;
 
+	read_fd = -1;
 	signal(SIGINT, heredoc_sigint_handler);
 	if (pipe(pipe_fds) == -1)
 		return (perror("minishell: pipe error"), -1);

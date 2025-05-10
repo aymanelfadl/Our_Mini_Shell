@@ -71,7 +71,10 @@ static int	process_digits(const char *str, int *i, int sign, long long *result)
 	}
 	if (str[*i] != '\0')
 		return (0);
-	*result = (sign == 1) ? (long long)num : -(long long)num;
+	if (sign == -1)
+		*result = -(long long)num;
+	else
+		*result = (long long)num;
 	return (1);
 }
 

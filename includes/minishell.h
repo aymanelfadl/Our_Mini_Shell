@@ -48,17 +48,17 @@ typedef struct s_redirection
 // AST node type
 typedef enum data_type
 {
-	PIPE,                   // |
-	INPUT_REDIRECTION,      // <
-	APP_OUTPUT_REDIRECTION, // >>
-	OUTPUT_REDIRECTION,     // >
-	APP_INPUT_REDIRECTION,  // <<
-	AND,                    // &&
-	OR,                     // ||
-	COMMAND,                // simple command
-	FT_FILE,                // filename token
+	PIPE,                   
+	INPUT_REDIRECTION,      
+	APP_OUTPUT_REDIRECTION,  
+	OUTPUT_REDIRECTION,     
+	APP_INPUT_REDIRECTION,   
+	AND,                     
+	OR,                      
+	COMMAND,                
+	FT_FILE,                
 	FT_EOF,
-	UNEXPECTED_TOKEN, // end of input
+	UNEXPECTED_TOKEN,
 	NON
 }							e_type;
 

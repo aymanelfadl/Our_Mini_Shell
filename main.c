@@ -12,66 +12,44 @@
 
 #include "minishell.h"
 
-t_list		*garbage_collector = NULL;
+t_list		*g_garbage_collector = NULL;
 
 void	ft_free_split(char **split)
 {
+	int	i;
+
+	i = -1;
 	if (!split)
 		return ;
-	for (int i = 0; split[i]; i++)
+	while (split[++i])
 		free(split[i]);
 	free(split);
 }
 
-int	*get_std_fds(int stdin_fd, int stdout_fd)
+static void	handle_signales(void)
 {
-	static int	fds[2] = {-1, -1};
-
-	if (stdin_fd >= 0 && stdout_fd >= 0)
-	{
-		fds[0] = stdin_fd;
-		fds[1] = stdout_fd;
-	}
-	return (fds);
+	signal(SIGINT, sigint_handler);
+	signal(SIGQUIT, SIG_IGN);
 }
 
-void	save_std_fds(int *saved_stdin, int *saved_stdout)
+static char	**handle_hisotry(char *input)
 {
-	*saved_stdin = dup(STDIN_FILENO);
-	*saved_stdout = dup(STDOUT_FILENO);
-	get_std_fds(*saved_stdin, *saved_stdout);
-}
+	char	**cmds;
 
-void	close_saved_fds(void)
-{
-	int	*fds;
-
-	fds = get_std_fds(-1, -1);
-	if (fds[0] >= 0)
-		close(fds[0]);
-	if (fds[1] >= 0)
-		close(fds[1]);
-}
-
-void	restore_std_fds(int saved_stdin, int saved_stdout)
-{
-	dup2(saved_stdin, STDIN_FILENO);
-	dup2(saved_stdout, STDOUT_FILENO);
-	close(saved_stdin);
-	close(saved_stdout);
+	add_history(input);
+	cmds = ft_split(input, "\n");
+	free(input);
+	return (cmds);
 }
 
 static void	minishell_loop(t_list *env_list)
 {
 	char	*input;
-	char	**cmds;
-	int		saved_stdin;
-	int		saved_stdout;
 
+	int (saved_stdin), (saved_stdout);
 	while (1)
 	{
-		signal(SIGINT, sigint_handler);
-		signal(SIGQUIT, SIG_IGN);
+		handle_signales();
 		input = readline("$>");
 		if (!input)
 		{
@@ -85,16 +63,9 @@ static void	minishell_loop(t_list *env_list)
 			free(input);
 			continue ;
 		}
-		if (input && *input)
-		{
-			add_history(input);
-			cmds = ft_split(input, "\n");
-			free(input);
-			save_std_fds(&saved_stdin, &saved_stdout);
-			execute_commands(cmds, env_list);
-			restore_std_fds(saved_stdin, saved_stdout);
-		}
-	
+		save_std_fds(&saved_stdin, &saved_stdout);
+		execute_commands(handle_hisotry(input), env_list);
+		restore_std_fds(saved_stdin, saved_stdout);
 	}
 }
 
@@ -105,7 +76,11 @@ int	main(int ac, char **av, char **envp)
 	(void)ac;
 	(void)av;
 	if (!*envp)
-		env_list = initialize_env_list(get_envp(list_to_char_array(create_minimal_env())));
+	{
+		env_list = initialize_env_list(
+				get_envp(list_to_char_array
+					(create_minimal_env())));
+	}
 	else
 	{
 		env_list = initialize_env_list(envp);

@@ -25,7 +25,7 @@ typedef struct s_list
 
 # include "../includes/minishell.h"
 
-extern t_list		*garbage_collector;
+extern t_list		*g_garbage_collector;
 
 int					ft_atoi(const char *nptr);
 void				ft_bzero(void *s, size_t n);

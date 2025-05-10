@@ -12,32 +12,40 @@
 
 #include "minishell.h"
 
-void	print_node(t_tree *node, int depth)
+int	*get_std_fds(int stdin_fd, int stdout_fd)
 {
-	if (!node)
-		return ;
-	for (int i = 0; i < depth; i++)
-		printf("  ");
-	printf("[type=%d] data='%s' path='%s' ", node->type,
-		node->data ? node->data : "(null)", node->path ? node->path : "(null)");
-	printf("left=%s right=%s\n", node->left ? "yes" : "no",
-		node->right ? "yes" : "no");
-	if (node->args && node->args[0])
+	static int	fds[2] = {-1, -1};
+
+	if (stdin_fd >= 0 && stdout_fd >= 0)
 	{
-		for (int i = 0; node->args[i]; i++)
-		{
-			for (int j = 0; j < depth + 1; j++)
-				printf("  ");
-			printf("arg[%d]='%s'\n", i, node->args[i]);
-		}
+		fds[0] = stdin_fd;
+		fds[1] = stdout_fd;
 	}
-	if (node->redirects && node->redirects->file)
-	{
-		for (int i = 0; i < depth + 1; i++)
-			printf("  ");
-		printf("redirect: type=%d file='%s'\n", node->redirects->type,
-			node->redirects->file);
-	}
-	print_node(node->left, depth + 1);
-	print_node(node->right, depth + 1);
+	return (fds);
+}
+
+void	save_std_fds(int *saved_stdin, int *saved_stdout)
+{
+	*saved_stdin = dup(STDIN_FILENO);
+	*saved_stdout = dup(STDOUT_FILENO);
+	get_std_fds(*saved_stdin, *saved_stdout);
+}
+
+void	close_saved_fds(void)
+{
+	int	*fds;
+
+	fds = get_std_fds(-1, -1);
+	if (fds[0] >= 0)
+		close(fds[0]);
+	if (fds[1] >= 0)
+		close(fds[1]);
+}
+
+void	restore_std_fds(int saved_stdin, int saved_stdout)
+{
+	dup2(saved_stdin, STDIN_FILENO);
+	dup2(saved_stdout, STDOUT_FILENO);
+	close(saved_stdin);
+	close(saved_stdout);
 }
