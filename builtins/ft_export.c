@@ -49,7 +49,7 @@ static void	sort_envp(t_list *export_envp)
 		while (temp)
 		{
 			if (ft_strcmp((char *)(export_envp)->content,
-					(char *)temp->content) > 0)
+				(char *)temp->content) > 0)
 			{
 				helper = ((export_envp)->content);
 				(export_envp)->content = temp->content;

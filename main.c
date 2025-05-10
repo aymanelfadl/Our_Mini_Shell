@@ -89,11 +89,12 @@ static void	minishell_loop(t_list *env_list)
 		{
 			add_history(input);
 			cmds = ft_split(input, "\n");
+			free(input);
 			save_std_fds(&saved_stdin, &saved_stdout);
 			execute_commands(cmds, env_list);
 			restore_std_fds(saved_stdin, saved_stdout);
 		}
-		free(input);
+	
 	}
 }
 

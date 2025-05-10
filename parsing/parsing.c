@@ -12,30 +12,6 @@
 
 #include "minishell.h"
 
-void	print_double_pointer(char **s)
-{
-	if (s == NULL)
-		printf("double pointer is NULL\n");
-	while (s && *s)
-	{
-		printf("%s", *s);
-		s++;
-		if (*s)
-			printf(",");
-	}
-	printf("\n");
-}
-
-int	there_is_one_word(char *command)
-{
-	if (*command == 34 || *command == 39)
-		command = ft_strchr(command + 1, *command);
-	command = skip_spaces(command);
-	if (get_data_type(command) != NON || *command == 0)
-		return (1);
-	return (0);
-}
-
 static int	phrase_check(char *phrase)
 {
 	if (*phrase == 0)
