@@ -15,8 +15,8 @@
 void	ctrl_d_handle(void)
 {
 	printf("exit\n");
-	ft_free(garbage_collector);
-	exit(0);
+	ft_free(g_garbage_collector);
+	exit(*get_exit_status());
 }
 
 void	sigint_handler(int sig)
@@ -33,7 +33,7 @@ void	heredoc_sigint_handler(int sig)
 {
 	(void)sig;
 	*get_exit_status() = 130;
-	write(STDOUT_FILENO, "\n", 1);
+	write(STDOUT_FILENO, " \n", 1);
 	rl_on_new_line();
 	rl_replace_line("", 0);
 }

@@ -33,7 +33,7 @@ void	*ft_malloc(size_t size)
 	new = malloc(sizeof(t_list));
 	new->content = malloc(size);
 	new->next = NULL;
-	ft_lstadd_back(&garbage_collector, new);
+	ft_lstadd_back(&g_garbage_collector, new);
 	return (new->content);
 }
 
