@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: ibennaje <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/10 19:12:53 by ibennaje          #+#    #+#             */
+/*   Updated: 2025/05/10 19:12:55 by ibennaje         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -5,6 +17,7 @@
 //                                LIBRARIES
 // ==========================================================================
 
+# include "../libft/libft.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
@@ -18,21 +31,20 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
-# include "../libft/libft.h"
 
 // ==========================================================================
 //                              DATA STRUCTURES
 // ==========================================================================
 
-typedef struct s_list t_list;
+typedef struct s_list		t_list;
 // Redirection types
 typedef enum e_redir_type
 {
 	REDIR_NONE,
-	REDIR_INPUT,  // <
-	REDIR_OUTPUT, // >
-	REDIR_APPEND, // >>
-	REDIR_HEREDOC // <<
+	REDIR_INPUT,
+	REDIR_OUTPUT,
+	REDIR_APPEND,
+	REDIR_HEREDOC
 }							t_redir_type;
 
 // Redirection linked-list
@@ -49,15 +61,15 @@ typedef struct s_redirection
 // AST node type
 typedef enum data_type
 {
-	PIPE,                   
-	INPUT_REDIRECTION,      
-	APP_OUTPUT_REDIRECTION,  
-	OUTPUT_REDIRECTION,     
-	APP_INPUT_REDIRECTION,   
-	AND,                     
-	OR,                      
-	COMMAND,                
-	FT_FILE,                
+	PIPE,
+	INPUT_REDIRECTION,
+	APP_OUTPUT_REDIRECTION,
+	OUTPUT_REDIRECTION,
+	APP_INPUT_REDIRECTION,
+	AND,
+	OR,
+	COMMAND,
+	FT_FILE,
 	FT_EOF,
 	UNEXPECTED_TOKEN,
 	NON
@@ -170,7 +182,7 @@ void						export_switch_cases(char *splited_export,
 								t_list **export_envp, int *exit_status);
 char						*write_envp_content(char *content,
 								int *equal_found);
-int ft_strtoll(const char *str, long long *result);
+int							ft_strtoll(const char *str, long long *result);
 // ==========================================================================
 //                                 PARSING
 // ==========================================================================
