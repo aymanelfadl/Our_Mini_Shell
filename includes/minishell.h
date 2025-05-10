@@ -5,7 +5,6 @@
 //                                LIBRARIES
 // ==========================================================================
 
-# include "../libft/libft.h"
 # include <errno.h>
 # include <fcntl.h>
 # include <limits.h>
@@ -19,11 +18,13 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+# include "../libft/libft.h"
 
 // ==========================================================================
 //                              DATA STRUCTURES
 // ==========================================================================
 
+typedef struct s_list t_list;
 // Redirection types
 typedef enum e_redir_type
 {

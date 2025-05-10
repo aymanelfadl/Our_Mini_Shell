@@ -16,14 +16,13 @@
 # include <stdint.h>
 # include <stdlib.h>
 # include <unistd.h>
+# include "../includes/minishell.h"
 
 typedef struct s_list
 {
 	void			*content;
 	struct s_list	*next;
 }					t_list;
-
-# include "../includes/minishell.h"
 
 extern t_list		*g_garbage_collector;
 
